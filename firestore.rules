@@ -6,7 +6,8 @@ service cloud.firestore {
         && request.auth.token.email == "yubami1011@gmail.com";
     }
     match /{collection}/{document} {
-      allow read: if collection in ["songs","notices","schedules","wardrobe","instagram","curiosity"];
+      allow read: if collection in ["songs","notices","schedules","wardrobe","instagram","curiosity",
+        "home"];
       allow create, update, delete: if isAdmin();
     }
   }
