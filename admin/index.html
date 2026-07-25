@@ -24,8 +24,16 @@
         <form class="form singleton-form" data-document="home/main">
           <label>메인 문구<input class="field" name="headline" placeholder="밤 10시, 고양이가 나타나요."></label>
           <label>소개 문구<textarea class="field" name="description" placeholder="유바미의 공식 홈페이지예요."></textarea></label>
-          <input type="hidden" name="imageUrl"><label>메인 사진<div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="home">사진 선택 및 업로드</button><button type="button" class="btn ghost clear-image">사진 제거</button></div></label>
-          <div class="image-preview"></div><p class="save-status" aria-live="polite"></p>
+          <div class="home-image-admin">
+            <h3>홈 메인 사진</h3>
+            <p class="image-help">첫 화면의 문구 옆에 최대 4장이 콜라주로 표시돼요. 3장만 등록해도 자연스럽게 배치됩니다.</p>
+            <div class="home-image-slots">
+              <div class="home-image-slot"><input type="hidden" name="imageUrl"><b>사진 1</b><div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="home" data-target="imageUrl">업로드</button><button type="button" class="btn ghost clear-image" data-target="imageUrl">제거</button></div><div class="image-preview" data-preview-for="imageUrl"></div></div>
+              <div class="home-image-slot"><input type="hidden" name="imageUrl2"><b>사진 2</b><div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="home" data-target="imageUrl2">업로드</button><button type="button" class="btn ghost clear-image" data-target="imageUrl2">제거</button></div><div class="image-preview" data-preview-for="imageUrl2"></div></div>
+              <div class="home-image-slot"><input type="hidden" name="imageUrl3"><b>사진 3</b><div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="home" data-target="imageUrl3">업로드</button><button type="button" class="btn ghost clear-image" data-target="imageUrl3">제거</button></div><div class="image-preview" data-preview-for="imageUrl3"></div></div>
+              <div class="home-image-slot"><input type="hidden" name="imageUrl4"><b>사진 4</b><div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="home" data-target="imageUrl4">업로드</button><button type="button" class="btn ghost clear-image" data-target="imageUrl4">제거</button></div><div class="image-preview" data-preview-for="imageUrl4"></div></div>
+            </div>
+          </div><p class="save-status" aria-live="polite"></p>
           <div class="actions"><button class="btn primary" data-submit>홈 화면 저장</button></div>
         </form>
       </div>
@@ -45,6 +53,12 @@
       </div>
       <div class="panel" id="panel-songs"><h2>노래 관리</h2>
         <form class="form content-form" data-collection="songs"><input type="hidden" name="_id">
+          <div class="song-category-admin"><span>카테고리</span><div class="choice-buttons" data-choice-for="category">
+            <button type="button" data-value="KPOP" class="active">KPOP</button>
+            <button type="button" data-value="JPOP">JPOP</button>
+            <button type="button" data-value="JPOP(한국어 ver)">JPOP(한국어 ver)</button>
+            <button type="button" data-value="POP">POP</button>
+          </div><input type="hidden" name="category" value="KPOP"></div>
           <div class="form-grid"><label>가수<input class="field" name="artist" required></label><label>제목<input class="field" name="title" required></label><label>난이도<select class="field" name="difficulty"><option value="1">★☆☆☆☆</option><option value="2">★★☆☆☆</option><option value="3">★★★☆☆</option><option value="4">★★★★☆</option><option value="5">★★★★★</option></select></label><input type="hidden" name="imageUrl"><label>커버 이미지<div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="covers">커버 업로드</button><button type="button" class="btn ghost clear-image">사진 제거</button></div></label></div>
           <label>해시태그 여러 개<input class="field tag-input" name="tags" placeholder="#발라드 #감성 #고음 또는 발라드, 감성, 고음"></label><div class="tag-preview"></div><div class="image-preview"></div>
           <div class="actions"><button class="btn primary" data-submit>저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div>

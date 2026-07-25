@@ -181,3 +181,57 @@ html[data-theme="morning"] .wardrobe-filter:hover,html[data-theme="morning"] .wa
 .wardrobe-empty{min-height:140px;display:grid;place-items:center}
 @media(max-width:760px){.wardrobe-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.wardrobe-filters{display:grid;grid-template-columns:1fr 1fr}.wardrobe-filter:first-child{grid-column:1/-1}}
 @media(max-width:500px){.wardrobe-grid{grid-template-columns:1fr}.wardrobe-filters{grid-template-columns:1fr}.wardrobe-filter:first-child{grid-column:auto}}
+
+
+/* V7.4 — home photo collage */
+.hero-layout{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,.92fr) minmax(390px,1.08fr);align-items:center;gap:54px;min-height:510px}
+.hero-copy-block{text-align:left;padding-left:28px}
+.hero-copy-block .korean-name,.hero-copy-block .hero-actions{justify-content:flex-start}
+.hero-copy-block .korean-name{margin-left:0}
+.hero-copy-block .hero-sky p{text-align:left}
+.hero-copy-block h1{font-size:clamp(58px,8vw,100px)}
+.hero-gallery{position:relative;height:470px;filter:drop-shadow(0 24px 45px rgba(0,0,0,.34))}
+.hero-gallery.empty{display:none}
+.hero-gallery-item{position:absolute;margin:0;overflow:hidden;border-radius:26px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);box-shadow:0 18px 55px rgba(5,8,30,.35);backdrop-filter:blur(10px);transition:transform .35s ease}
+.hero-gallery-item:hover{transform:translateY(-7px) rotate(0deg)!important;z-index:8}
+.hero-gallery-item img{width:100%;height:100%;display:block;object-fit:cover}
+.hero-gallery .item-1{width:58%;height:64%;left:0;top:5%;transform:rotate(-3deg);z-index:3}
+.hero-gallery .item-2{width:49%;height:52%;right:0;top:0;transform:rotate(3deg);z-index:2}
+.hero-gallery .item-3{width:52%;height:47%;left:8%;bottom:0;transform:rotate(2deg);z-index:4}
+.hero-gallery .item-4{width:43%;height:42%;right:2%;bottom:4%;transform:rotate(-2deg);z-index:5}
+.hero-gallery[data-count="1"] .item-1{width:82%;height:82%;left:9%;top:9%;transform:rotate(0)}
+.hero-gallery[data-count="2"] .item-1{width:61%;height:72%;left:0;top:4%}.hero-gallery[data-count="2"] .item-2{width:58%;height:68%;right:0;top:25%}
+.hero-gallery[data-count="3"] .item-1{width:58%;height:62%}.hero-gallery[data-count="3"] .item-2{width:48%;height:48%}.hero-gallery[data-count="3"] .item-3{width:56%;height:43%;left:25%;bottom:0}
+html[data-theme="morning"] .hero-gallery-item{border-color:rgba(255,255,255,.75);box-shadow:0 20px 50px rgba(64,112,156,.2)}
+.home-image-slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.home-image-slot{padding:15px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.04)}
+.home-image-slot b{display:block;margin-bottom:8px}
+.home-image-slot .image-preview img{height:150px;width:100%;object-fit:cover;margin-top:10px}
+
+/* V7.4 — song categories */
+.choice-buttons,.song-category-filters{display:flex;gap:8px;flex-wrap:wrap}
+.choice-buttons button,.song-category-filters button{border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);border-radius:999px;padding:10px 14px;font-weight:900;cursor:pointer}
+.choice-buttons button.active,.song-category-filters button.active{background:linear-gradient(135deg,#e94389,#ff9858);border-color:transparent;color:#fff;box-shadow:0 8px 24px rgba(232,75,122,.22)}
+.song-category-admin>span{display:block;font-weight:900;margin-bottom:9px}
+.song-toolbar{display:grid;gap:12px}
+.song-category-section{margin-bottom:16px}
+.song-category-head{display:flex;align-items:end;gap:12px;margin-bottom:16px}
+.song-category-head h2{margin:0}
+.song-count{margin-left:auto;border:1px solid var(--line);border-radius:999px;padding:5px 10px;color:var(--muted);font-size:12px}
+.song-meta{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.song-artist{color:var(--muted);font-size:12px;font-weight:800}
+
+@media(max-width:960px){
+  .hero-layout{grid-template-columns:1fr;gap:18px;min-height:auto}
+  .hero-copy-block{text-align:center;padding-left:0}
+  .hero-copy-block .korean-name,.hero-copy-block .hero-actions{justify-content:center}
+  .hero-gallery{width:min(100%,640px);height:430px;margin:0 auto}
+}
+@media(max-width:600px){
+  .hero-layout{gap:10px}
+  .hero-gallery{height:330px}
+  .hero-gallery .item-1{width:60%;height:62%}.hero-gallery .item-2{width:48%;height:48%}.hero-gallery .item-3{width:53%;height:43%}.hero-gallery .item-4{width:43%;height:40%}
+  .home-image-slots{grid-template-columns:1fr}
+  .song-category-filters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:5px}
+  .song-category-filters button{white-space:nowrap}
+}
