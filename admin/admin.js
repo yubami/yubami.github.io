@@ -24,7 +24,7 @@ async function loadImages(select,keepValue=""){
     const response=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`,{headers:{Accept:"application/vnd.github+json"}});
     if(!response.ok)throw new Error(`GitHub 응답 ${response.status}`);
     const files=(await response.json()).filter(x=>x.type==="file"&&!x.name.startsWith('.')&&/\.(png|jpe?g|webp|gif)$/i.test(x.name));
-    select.innerHTML='<option value="">사진 없음</option>'+files.map(x=>`<option value="${esc(x.download_url)}">${esc(x.name)}</option>`).join('');
+    select.innerHTML='<option value="">사진 없음</option>'+files.map(x=>`<option value="../assets/images/${folder}/${encodeURIComponent(x.name)}">${esc(x.name)}</option>`).join('');
     if(keepValue&&![...select.options].some(o=>o.value===keepValue)){select.insertAdjacentHTML('beforeend',`<option value="${esc(keepValue)}">현재 저장된 사진</option>`)}
     select.value=keepValue||"";
   }catch(err){select.innerHTML='<option value="">목록 불러오기 실패 — GitHub 폴더 확인</option>';console.error(err)}finally{select.disabled=false;preview(select.form,select.value)}
