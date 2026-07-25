@@ -1,0 +1,16 @@
+
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import {getFirestore,collection,query,orderBy,limit,onSnapshot} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import {firebaseConfig} from "./config.js";
+const db=getFirestore(initializeApp(firebaseConfig));
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+const br=s=>esc(s).replace(/\n/g,"<br>"), stars=n=>"★".repeat(Number(n)||0)+"☆".repeat(5-(Number(n)||0));
+const empty=(el,msg)=>el.innerHTML=`<div class="empty">${esc(msg)}</div>`;
+function listen(name,render,max){const el=document.querySelector(`[data-collection="${name}"]`);if(!el)return;let q=query(collection(db,name),orderBy("createdAt","desc"));if(max)q=query(collection(db,name),orderBy("createdAt","desc"),limit(max));onSnapshot(q,s=>s.empty?empty(el,el.dataset.empty||"아직 등록된 내용이 없어요."):render(el,s.docs.map(d=>({id:d.id,...d.data()}))),()=>empty(el,"데이터를 불러오지 못했어요."))}
+listen("notices",(el,a)=>el.innerHTML=a.map(x=>`<article class="row" data-searchable="${esc((x.title||"")+" "+(x.content||""))}"><div><h3>${esc(x.title||"제목 없음")}</h3><p>${br(x.content||"")}</p></div><span class="pill">${esc(x.date||"공지")}</span></article>`).join(""));
+listen("schedules",(el,a)=>el.innerHTML=a.map(x=>`<article class="row" data-searchable="${esc((x.title||"")+" "+(x.content||"")+" "+(x.date||""))}"><div><h3>${esc(x.title||"방송")}</h3><p>${br(x.content||"")}</p></div><span class="pill">${esc(x.date||"일정")}${x.time?" · "+esc(x.time):""}</span></article>`).join(""));
+for(const name of ["wardrobe","instagram"]){listen(name,(el,a)=>el.innerHTML=a.map(x=>`<article class="card photo" data-searchable="${esc((x.title||"")+" "+(x.content||""))}">${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="">`:""}<div class="copy"><h3>${esc(x.title||"제목 없음")}</h3><p>${br(x.content||"")}</p></div></article>`).join(""))}
+listen("curiosity",(el,a)=>el.innerHTML=a.map(x=>`<article class="card tile" data-searchable="${esc((x.title||"")+" "+(x.content||""))}"><div class="icon">📚</div><h3>${esc(x.title||"호기심 노트")}</h3><p>${br(x.content||"")}</p></article>`).join(""));
+listen("songs",(el,a)=>{const g={};a.forEach(x=>(g[x.artist||"가수 미등록"]??=[]).push(x));el.innerHTML=Object.entries(g).map(([artist,list])=>`<section class="card pad" style="margin-bottom:14px"><h2>🎤 ${esc(artist)}</h2><div class="list">${list.map(x=>`<article class="row" data-searchable="${esc(artist+" "+(x.title||"")+" "+(x.tags||[]).join(" "))}"><div><h3>${esc(x.title||"제목 없음")}</h3><div>${(x.tags||[]).map(t=>`<span class="tag">#${esc(t)}</span>`).join("")}</div></div><span class="stars">${stars(x.difficulty)}</span></article>`).join("")}</div></section>`).join("")});
+listen("notices",(el,a)=>el.innerHTML=a.map(x=>`<article class="row"><div><h3>${esc(x.title||"제목 없음")}</h3><p>${br(x.content||"")}</p></div><span class="pill">${esc(x.date||"공지")}</span></article>`).join(""),3);
+listen("schedules",(el,a)=>el.innerHTML=a.map(x=>`<article class="row"><div><h3>${esc(x.title||"방송")}</h3><p>${br(x.content||"")}</p></div><span class="pill">${esc(x.date||"일정")}</span></article>`).join(""),1);
