@@ -24,10 +24,10 @@ async function loadImages(select,keepValue=""){
     const response=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`,{headers:{Accept:"application/vnd.github+json"}});
     if(!response.ok)throw new Error(`GitHub 응답 ${response.status}`);
     const files=(await response.json()).filter(x=>x.type==="file"&&!x.name.startsWith('.')&&/\.(png|jpe?g|webp|gif)$/i.test(x.name));
-    select.innerHTML='<option value="">사진 없음</option>'+files.map(x=>`<option value="../assets/images/${folder}/${encodeURIComponent(x.name)}">${esc(x.name)}</option>`).join('');
+    select.innerHTML='<option value="">사진 사용 안 함</option>'+files.map(x=>`<option value="/assets/images/${folder}/${encodeURIComponent(x.name)}">${esc(x.name)}</option>`).join('');
     if(keepValue&&![...select.options].some(o=>o.value===keepValue)){select.insertAdjacentHTML('beforeend',`<option value="${esc(keepValue)}">현재 저장된 사진</option>`)}
     select.value=keepValue||"";
-  }catch(err){select.innerHTML='<option value="">목록 불러오기 실패 — GitHub 폴더 확인</option>';console.error(err)}finally{select.disabled=false;preview(select.form,select.value)}
+  }catch(err){select.innerHTML='<option value="">목록 불러오기 실패 — GitHub 폴더 확인</option>';const status=select.form?.querySelector('.save-status');if(status)status.textContent='사진 폴더를 불러오지 못했어요. GitHub 배포가 끝났는지 확인해 주세요.';console.error(err)}finally{select.disabled=false;preview(select.form,select.value)}
 }
 async function refreshAllImages(){await Promise.all([...document.querySelectorAll('.image-picker')].map(s=>loadImages(s,s.value)))}
 
@@ -44,7 +44,7 @@ function start(){
   loadHome();
   [...document.querySelectorAll('.image-picker')].filter(s=>s.dataset.folder!=="home").forEach(s=>loadImages(s));
   const homeForm=document.querySelector('.singleton-form');
-  homeForm.addEventListener('submit',async e=>{e.preventDefault();const b=homeForm.querySelector('[data-submit]');b.disabled=true;try{await setDoc(doc(db,'home','main'),formData(homeForm),{merge:true});alert('홈 화면이 저장됐어요!')}catch(err){alert(err.message||'저장 중 오류가 발생했어요.')}finally{b.disabled=false}});
+  homeForm.addEventListener('submit',async e=>{e.preventDefault();const b=homeForm.querySelector('[data-submit]'),status=homeForm.querySelector('.save-status');b.disabled=true;if(status)status.textContent='저장 중...';try{await setDoc(doc(db,'home','main'),formData(homeForm),{merge:true});if(status)status.textContent='저장 완료! 일반 사이트에서 Ctrl+F5로 확인해 주세요.';alert('홈 화면이 저장됐어요!')}catch(err){console.error(err);const permission=err?.code==='permission-denied'||String(err?.message||'').includes('permissions');if(status)status.textContent=permission?'저장 권한이 없어요. ZIP 안의 firestore.rules를 Firebase에 게시해 주세요.':'저장 실패: '+(err?.message||'알 수 없는 오류');alert(status?.textContent||'저장 중 오류가 발생했어요.')}finally{b.disabled=false}});
   document.querySelectorAll('.content-form').forEach(form=>{
     form.addEventListener('submit',async e=>{e.preventDefault();const b=form.querySelector('[data-submit]');b.disabled=true;try{const id=form.elements._id.value,data=formData(form);if(id)await updateDoc(doc(db,form.dataset.collection,id),data);else await addDoc(collection(db,form.dataset.collection),{...data,createdAt:serverTimestamp()});reset(form)}catch(err){alert(err.message||'저장 중 오류가 발생했어요.')}finally{b.disabled=false}});
     form.querySelector('[data-cancel]').addEventListener('click',()=>reset(form));

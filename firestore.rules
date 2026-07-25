@@ -5,9 +5,17 @@ service cloud.firestore {
       return request.auth != null
         && request.auth.token.email == "yubami1011@gmail.com";
     }
+
+    match /home/{document} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
     match /{collection}/{document} {
-      allow read: if collection in ["songs","notices","schedules","wardrobe","instagram","curiosity",
-        "home"];
+      allow read: if collection in [
+        "songs", "notices", "schedules", "wardrobe",
+        "instagram", "curiosity"
+      ];
       allow create, update, delete: if isAdmin();
     }
   }
