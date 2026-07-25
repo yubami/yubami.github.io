@@ -6,3 +6,72 @@
 .upload-line{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}.image-url{font-size:13px;color:#ffd36b;margin-top:7px}.setup-guide{margin-top:24px;padding:20px;border:1px solid rgba(255,211,107,.25);border-radius:18px;background:rgba(8,13,40,.35)}.setup-guide li{margin:10px 0;line-height:1.6}.setup-guide p{color:#ffb5ca}.hero-sky{padding-top:130px}.footer{justify-content:center}.mascot-wrap{display:none!important}
 
 .profile-layout{display:grid;grid-template-columns:minmax(240px,360px) 1fr;gap:28px;align-items:center}.profile-image{min-height:360px;border-radius:24px;background:rgba(255,255,255,.05);display:grid;place-items:center;overflow:hidden}.profile-image img{width:100%;height:100%;max-height:520px;object-fit:contain}.profile-copy p{font-size:18px;line-height:1.9}.ember-card img{aspect-ratio:1/1;object-fit:cover}@media(max-width:760px){.profile-layout{grid-template-columns:1fr}.profile-image{min-height:260px}}
+
+/* V7.1 profile/ember image presentation */
+.profile-layout{
+  grid-template-columns:minmax(260px,360px) 1fr;
+  align-items:stretch;
+}
+.profile-image{
+  min-height:0;
+  height:420px;
+  aspect-ratio:4/5;
+  align-self:center;
+  border-radius:24px;
+  background:rgba(255,255,255,.045);
+  overflow:hidden;
+}
+.profile-image img{
+  width:100%;
+  height:100%;
+  max-height:none;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+}
+
+.photo-grid[data-collection="embers"]{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:22px;
+}
+.photo-grid[data-collection="embers"] .ember-card{
+  display:grid;
+  grid-template-columns:minmax(240px,340px) 1fr;
+  align-items:stretch;
+  overflow:hidden;
+  min-height:340px;
+}
+.photo-grid[data-collection="embers"] .ember-card>img{
+  width:100%;
+  height:100%;
+  min-height:340px;
+  aspect-ratio:auto;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+}
+.photo-grid[data-collection="embers"] .ember-card .copy{
+  padding:32px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.photo-grid[data-collection="embers"] .ember-card .copy h3{
+  margin:14px 0 10px;
+  font-size:clamp(24px,3vw,34px);
+}
+.photo-grid[data-collection="embers"] .ember-card .copy p{
+  margin:0;
+  color:var(--muted);
+  line-height:1.9;
+  font-size:16px;
+}
+
+@media(max-width:760px){
+  .profile-layout{grid-template-columns:1fr}
+  .profile-image{width:min(100%,420px);height:auto;aspect-ratio:4/5;justify-self:center}
+  .photo-grid[data-collection="embers"] .ember-card{grid-template-columns:1fr;min-height:0}
+  .photo-grid[data-collection="embers"] .ember-card>img{height:auto;min-height:0;aspect-ratio:4/3}
+  .photo-grid[data-collection="embers"] .ember-card .copy{padding:22px}
+}
