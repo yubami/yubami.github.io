@@ -4,3 +4,5 @@
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.ambient-light,.cursor-star{display:none!important}}
 
 .upload-line{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}.image-url{font-size:13px;color:#ffd36b;margin-top:7px}.setup-guide{margin-top:24px;padding:20px;border:1px solid rgba(255,211,107,.25);border-radius:18px;background:rgba(8,13,40,.35)}.setup-guide li{margin:10px 0;line-height:1.6}.setup-guide p{color:#ffb5ca}.hero-sky{padding-top:130px}.footer{justify-content:center}.mascot-wrap{display:none!important}
+
+.profile-layout{display:grid;grid-template-columns:minmax(240px,360px) 1fr;gap:28px;align-items:center}.profile-image{min-height:360px;border-radius:24px;background:rgba(255,255,255,.05);display:grid;place-items:center;overflow:hidden}.profile-image img{width:100%;height:100%;max-height:520px;object-fit:contain}.profile-copy p{font-size:18px;line-height:1.9}.ember-card img{aspect-ratio:1/1;object-fit:cover}@media(max-width:760px){.profile-layout{grid-template-columns:1fr}.profile-image{min-height:260px}}

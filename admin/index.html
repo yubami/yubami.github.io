@@ -17,7 +17,7 @@
   <h1 class="page-title">사이트 관리</h1><p><span id="adminEmail"></span> · <button class="btn soft" id="logout">로그아웃</button></p>
   <div class="admin-grid">
     <aside class="card side">
-      <button class="active" data-panel="home">🏠 홈 화면</button><button data-panel="songs">🎵 노래</button><button data-panel="notices">📢 공지</button><button data-panel="schedules">📅 일정</button><button data-panel="wardrobe">👗 옷장</button><button data-panel="instagram">📷 바미스타그램</button><button data-panel="curiosity">📚 호기심 노트</button><button data-panel="cloudinary">🖼️ 사진 업로드 설정</button>
+      <button class="active" data-panel="home">🏠 홈 화면</button><button data-panel="profile">👤 자기소개</button><button data-panel="embers">🔥 불씨도감</button><button data-panel="songs">🎵 노래</button><button data-panel="notices">📢 공지</button><button data-panel="schedules">📅 일정</button><button data-panel="wardrobe">👗 옷장</button><button data-panel="instagram">📷 바미스타그램</button><button data-panel="curiosity">📚 호기심 노트</button><button data-panel="cloudinary">🖼️ 사진 업로드 설정</button>
     </aside>
     <section class="card pad">
       <div class="panel active" id="panel-home"><h2>홈 화면 관리</h2>
@@ -28,6 +28,20 @@
           <div class="image-preview"></div><p class="save-status" aria-live="polite"></p>
           <div class="actions"><button class="btn primary" data-submit>홈 화면 저장</button></div>
         </form>
+      </div>
+
+      <div class="panel" id="panel-profile"><h2>자기소개 관리</h2>
+        <form class="form singleton-form" data-document="profile/main">
+          <label>페이지 제목<input class="field" name="title" placeholder="유바미 도감"></label>
+          <label>한 줄 소개<input class="field" name="subtitle" placeholder="유바미의 프로필과 취향을 기록한 페이지예요."></label>
+          <label>자기소개<textarea class="field" name="content" placeholder="자유롭게 자기소개를 작성해 주세요."></textarea></label>
+          <div class="form-grid"><label>생일<input class="field" name="birthday" placeholder="12월 31일"></label><label>MBTI<input class="field" name="mbti" placeholder="ISTP"></label><label>주요 콘텐츠<input class="field" name="mainContent" placeholder="소통 · 노래 · 게임"></label></div>
+          <input type="hidden" name="imageUrl"><label>프로필 사진<div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="profile">사진 선택 및 업로드</button><button type="button" class="btn ghost clear-image">사진 제거</button></div></label>
+          <div class="image-preview"></div><p class="save-status" aria-live="polite"></p><div class="actions"><button class="btn primary" data-submit>자기소개 저장</button></div>
+        </form>
+      </div>
+      <div class="panel" id="panel-embers"><h2>불씨도감 관리</h2><p class="image-help">불씨 사진과 소개를 여러 개 등록할 수 있어요.</p>
+        <form class="form content-form" data-collection="embers"><input type="hidden" name="_id"><label>제목<input class="field" name="title" required placeholder="불씨 이름 또는 기록 제목"></label><label>소개<textarea class="field" name="content" placeholder="불씨에 대한 설명을 적어 주세요."></textarea></label><label>기록 번호<input class="field" name="number" placeholder="예: 1011-01"></label><input type="hidden" name="imageUrl"><label>불씨 사진<div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="embers">사진 선택 및 업로드</button><button type="button" class="btn ghost clear-image">사진 제거</button></div></label><div class="image-preview"></div><div class="actions"><button class="btn primary" data-submit>저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div></form><div class="manage" data-list="embers"></div>
       </div>
       <div class="panel" id="panel-songs"><h2>노래 관리</h2>
         <form class="form content-form" data-collection="songs"><input type="hidden" name="_id">
