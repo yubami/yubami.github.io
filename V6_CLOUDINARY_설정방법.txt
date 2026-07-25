@@ -1,0 +1,24 @@
+유바미 홈페이지 V6 — Cloudinary 사진 업로드 설정
+
+[사이트 파일 적용]
+1. 이 ZIP을 압축 해제합니다.
+2. GitHub yubami/yubami.github.io 저장소에서 Add file > Upload files를 누릅니다.
+3. 압축을 푼 내부 파일과 폴더를 전부 올린 뒤 Commit changes를 누릅니다.
+4. Cloudflare 배포가 끝날 때까지 1~3분 기다립니다.
+
+[Cloudinary 처음 설정]
+1. cloudinary.com에서 무료 계정을 만듭니다.
+2. Cloudinary Console에서 Cloud name을 확인합니다.
+3. Settings > Upload > Upload presets로 이동합니다.
+4. Add upload preset을 누릅니다.
+5. Signing mode를 Unsigned로 설정하고 저장합니다.
+6. preset 이름을 복사합니다.
+7. https://yubami.pages.dev/admin/ 에 로그인합니다.
+8. 사진 업로드 설정 메뉴에서 Cloud name과 Unsigned upload preset을 입력하고 저장합니다.
+
+[사진 올리기]
+홈/옷장/바미스타그램/노래 메뉴에서 사진 업로드 버튼을 누릅니다.
+파일을 선택하고 업로드가 끝나면 미리보기가 나타납니다.
+그 뒤 해당 항목의 저장 버튼을 누르면 홈페이지에 실시간 반영됩니다.
+
+주의: API Secret은 홈페이지나 관리자 페이지에 절대로 입력하지 마세요.

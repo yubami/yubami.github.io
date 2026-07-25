@@ -4,57 +4,34 @@ import {getFirestore,collection,addDoc,updateDoc,deleteDoc,doc,getDoc,setDoc,que
 import {firebaseConfig,ADMIN_EMAIL} from "../assets/config.js";
 
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=s=>document.querySelector(s);
-const REPO="yubami/yubami.github.io",BRANCH="main";
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-const parseTags=value=>[...new Set(String(value||"").split(/[#,\s]+/).map(x=>x.trim()).filter(Boolean))];
+const parseTags=value=>[...new Set(String(value||"").split(/[#\s,]+/).map(x=>x.trim()).filter(Boolean))];
+const CLOUD_KEY='yubamiCloudinarySettings';
 
 $("#loginForm").addEventListener("submit",async e=>{e.preventDefault();$("#loginStatus").textContent="로그인 중...";try{const c=await signInWithEmailAndPassword(auth,$("#email").value.trim(),$("#password").value);if(c.user.email!==ADMIN_EMAIL){await signOut(auth);throw new Error()}$("#loginStatus").textContent=""}catch{$("#loginStatus").textContent="이메일 또는 비밀번호를 확인해 주세요."}});
 $("#logout").addEventListener("click",()=>signOut(auth));
-document.querySelectorAll("[data-panel]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("[data-panel]").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));b.classList.add("active");$("#panel-"+b.dataset.panel).classList.add("active")}));
+document.querySelectorAll("[data-panel]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("[data-panel]").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));b.classList.add("active");$("#panel-"+b.dataset.panel)?.classList.add("active")}));
 
-function preview(form,url){const box=form.querySelector('.image-preview');if(box)box.innerHTML=url?`<img src="${esc(url)}" alt="미리보기">`:''}
-function renderTagPreview(form){const box=form.querySelector('.tag-preview'),input=form.querySelector('.tag-input');if(!box||!input)return;box.innerHTML=parseTags(input.value).map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}
-function reset(form){form.reset();if(form.elements._id)form.elements._id.value="";form.querySelector("[data-submit]").textContent="저장";form.querySelector("[data-cancel]")?.classList.add("hidden");preview(form,"");renderTagPreview(form)}
+function preview(form,url){const box=form.querySelector('.image-preview');if(box)box.innerHTML=url?`<img src="${esc(url)}" alt="미리보기"><p class="image-url">업로드 완료</p>`:''}
+function renderTagPreview(form){const box=form.querySelector('.tag-preview'),input=form.querySelector('.tag-input');if(box&&input)box.innerHTML=parseTags(input.value).map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}
+function reset(form){form.reset();if(form.elements._id)form.elements._id.value="";if(form.elements.imageUrl)form.elements.imageUrl.value="";form.querySelector("[data-submit]").textContent="저장";form.querySelector("[data-cancel]")?.classList.add("hidden");preview(form,"");renderTagPreview(form)}
 function formData(form){const out={};for(const[k,v]of new FormData(form)){if(k!=="_id")out[k]=typeof v==="string"?v.trim():v}if(out.difficulty)out.difficulty=Number(out.difficulty);if("tags" in out)out.tags=parseTags(out.tags);out.updatedAt=serverTimestamp();return out}
+function cloudSettings(){try{return JSON.parse(localStorage.getItem(CLOUD_KEY)||'{}')}catch{return {}}}
+function saveCloudSettings(v){localStorage.setItem(CLOUD_KEY,JSON.stringify(v))}
 
-async function loadImages(select,keepValue=""){
-  const folder=select.dataset.folder,path=`assets/images/${folder}`;
-  select.disabled=true;select.innerHTML='<option value="">사진 목록 불러오는 중...</option>';
-  try{
-    const response=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`,{headers:{Accept:"application/vnd.github+json"}});
-    if(!response.ok)throw new Error(`GitHub 응답 ${response.status}`);
-    const files=(await response.json()).filter(x=>x.type==="file"&&!x.name.startsWith('.')&&/\.(png|jpe?g|webp|gif)$/i.test(x.name));
-    select.innerHTML='<option value="">사진 사용 안 함</option>'+files.map(x=>`<option value="/assets/images/${folder}/${encodeURIComponent(x.name)}">${esc(x.name)}</option>`).join('');
-    if(keepValue&&![...select.options].some(o=>o.value===keepValue)){select.insertAdjacentHTML('beforeend',`<option value="${esc(keepValue)}">현재 저장된 사진</option>`)}
-    select.value=keepValue||"";
-  }catch(err){select.innerHTML='<option value="">목록 불러오기 실패 — GitHub 폴더 확인</option>';const status=select.form?.querySelector('.save-status');if(status)status.textContent='사진 폴더를 불러오지 못했어요. GitHub 배포가 끝났는지 확인해 주세요.';console.error(err)}finally{select.disabled=false;preview(select.form,select.value)}
-}
-async function refreshAllImages(){await Promise.all([...document.querySelectorAll('.image-picker')].map(s=>loadImages(s,s.value)))}
+const cloudForm=$('#cloudinarySettings');
+if(cloudForm){const saved=cloudSettings();cloudForm.elements.cloudName.value=saved.cloudName||'';cloudForm.elements.uploadPreset.value=saved.uploadPreset||'';cloudForm.addEventListener('submit',e=>{e.preventDefault();const v={cloudName:cloudForm.elements.cloudName.value.trim(),uploadPreset:cloudForm.elements.uploadPreset.value.trim()};saveCloudSettings(v);cloudForm.querySelector('.save-status').textContent='저장됐어요. 이제 다른 메뉴에서 사진 업로드 버튼을 눌러보세요.'})}
 
-document.querySelectorAll('.image-picker').forEach(s=>s.addEventListener('change',()=>preview(s.form,s.value)));
-document.querySelectorAll('.refresh-images').forEach(b=>b.addEventListener('click',()=>loadImages(b.form,b.form.querySelector('.image-picker')?.value||"")));
+function openUpload(form,folder){const cfg=cloudSettings();if(!cfg.cloudName||!cfg.uploadPreset){alert('먼저 왼쪽의 사진 업로드 설정에서 Cloud name과 Unsigned upload preset을 저장해 주세요.');document.querySelector('[data-panel="cloudinary"]')?.click();return}if(!window.cloudinary){alert('Cloudinary 업로드 도구를 불러오지 못했어요. 인터넷 연결 후 새로고침해 주세요.');return}
+ const widget=window.cloudinary.createUploadWidget({cloudName:cfg.cloudName,uploadPreset:cfg.uploadPreset,sources:['local','camera','url'],multiple:false,resourceType:'image',clientAllowedFormats:['png','jpg','jpeg','webp','gif'],maxFileSize:8000000,folder:`yubami/${folder}`,cropping:false,showAdvancedOptions:false,styles:{palette:{window:'#0b102b',windowBorder:'#9b6cff',tabIcon:'#ffd36b',menuIcons:'#ffffff',textDark:'#ffffff',textLight:'#ffffff',link:'#ffd36b',action:'#ff6b9a',inactiveTabIcon:'#9da4c7',error:'#ff5b70',inProgress:'#ffd36b',complete:'#67e8a5',sourceBg:'#131a3a'}}},(error,result)=>{if(error){console.error(error);alert('사진 업로드에 실패했어요: '+(error.statusText||error.message||'설정을 확인해 주세요.'));return}if(result&&result.event==='success'){const url=result.info.secure_url;form.elements.imageUrl.value=url;preview(form,url);widget.close();}});widget.open()}
+
+document.querySelectorAll('.cloud-upload').forEach(b=>b.addEventListener('click',()=>openUpload(b.form,b.dataset.folder||'misc')));
+document.querySelectorAll('.clear-image').forEach(b=>b.addEventListener('click',()=>{if(b.form.elements.imageUrl)b.form.elements.imageUrl.value='';preview(b.form,'')}));
 document.querySelectorAll('.tag-input').forEach(i=>i.addEventListener('input',()=>renderTagPreview(i.form)));
 
-async function loadHome(){const f=document.querySelector('.singleton-form'),snap=await getDoc(doc(db,'home','main'));if(snap.exists()){const x=snap.data();for(const e of f.elements)if(e.name&&x[e.name]!==undefined)e.value=x[e.name];await loadImages(f.elements.imageUrl,x.imageUrl||"")}else await loadImages(f.elements.imageUrl)}
+async function loadHome(){const f=document.querySelector('.singleton-form'),snap=await getDoc(doc(db,'home','main'));if(snap.exists()){const x=snap.data();for(const e of f.elements)if(e.name&&x[e.name]!==undefined)e.value=x[e.name];preview(f,x.imageUrl||'')}}
+let started=false;onAuthStateChanged(auth,user=>{const ok=user&&user.email===ADMIN_EMAIL;$("#loginView").classList.toggle("hidden",ok);$("#adminView").classList.toggle("hidden",!ok);if(ok){$("#adminEmail").textContent=user.email;if(!started){started=true;start()}}});
 
-let started=false;
-onAuthStateChanged(auth,user=>{const ok=user&&user.email===ADMIN_EMAIL;$("#loginView").classList.toggle("hidden",ok);$("#adminView").classList.toggle("hidden",!ok);if(ok){$("#adminEmail").textContent=user.email;if(!started){started=true;start()}}});
-
-function start(){
-  loadHome();
-  [...document.querySelectorAll('.image-picker')].filter(s=>s.dataset.folder!=="home").forEach(s=>loadImages(s));
-  const homeForm=document.querySelector('.singleton-form');
-  homeForm.addEventListener('submit',async e=>{e.preventDefault();const b=homeForm.querySelector('[data-submit]'),status=homeForm.querySelector('.save-status');b.disabled=true;if(status)status.textContent='저장 중...';try{await setDoc(doc(db,'home','main'),formData(homeForm),{merge:true});if(status)status.textContent='저장 완료! 일반 사이트에서 Ctrl+F5로 확인해 주세요.';alert('홈 화면이 저장됐어요!')}catch(err){console.error(err);const permission=err?.code==='permission-denied'||String(err?.message||'').includes('permissions');if(status)status.textContent=permission?'저장 권한이 없어요. ZIP 안의 firestore.rules를 Firebase에 게시해 주세요.':'저장 실패: '+(err?.message||'알 수 없는 오류');alert(status?.textContent||'저장 중 오류가 발생했어요.')}finally{b.disabled=false}});
-  document.querySelectorAll('.content-form').forEach(form=>{
-    form.addEventListener('submit',async e=>{e.preventDefault();const b=form.querySelector('[data-submit]');b.disabled=true;try{const id=form.elements._id.value,data=formData(form);if(id)await updateDoc(doc(db,form.dataset.collection,id),data);else await addDoc(collection(db,form.dataset.collection),{...data,createdAt:serverTimestamp()});reset(form)}catch(err){alert(err.message||'저장 중 오류가 발생했어요.')}finally{b.disabled=false}});
-    form.querySelector('[data-cancel]').addEventListener('click',()=>reset(form));
-  });
-  ['songs','notices','schedules','wardrobe','instagram','curiosity'].forEach(name=>{
-    const el=document.querySelector(`[data-list="${name}"]`);
-    onSnapshot(query(collection(db,name),orderBy('createdAt','desc')),snap=>{
-      el.innerHTML=snap.empty?'<div class="empty">등록된 내용이 없어요.</div>':snap.docs.map(d=>{const x=d.data();return `<div class="manage-row"><div class="manage-copy">${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="">`:''}<div><h3>${esc(x.title||'제목 없음')}${x.artist?' · '+esc(x.artist):''}</h3><p>${esc(x.content||x.date||'')}</p>${(x.tags||[]).map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}</div></div><div class="mini"><button class="soft" data-edit="${d.id}">수정</button><button class="danger" data-delete="${d.id}">삭제</button></div></div>`}).join('');
-      el.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',async()=>{if(confirm('정말 삭제할까요?'))await deleteDoc(doc(db,name,b.dataset.delete))}));
-      el.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',async()=>{const item=snap.docs.find(d=>d.id===b.dataset.edit),x=item.data(),form=document.querySelector(`form[data-collection="${name}"]`);form.elements._id.value=item.id;for(const e of form.elements){if(!e.name||e.name==='_id')continue;e.value=e.name==='tags'?(x.tags||[]).map(t=>'#'+t).join(' '):(x[e.name]??'')}if(form.querySelector('.image-picker'))await loadImages(form.querySelector('.image-picker'),x.imageUrl||"");preview(form,x.imageUrl||"");renderTagPreview(form);form.querySelector('[data-submit]').textContent='수정 저장';form.querySelector('[data-cancel]').classList.remove('hidden');form.scrollIntoView({behavior:'smooth',block:'start'})}));
-    });
-  });
-}
+function start(){loadHome();const homeForm=document.querySelector('.singleton-form');homeForm.addEventListener('submit',async e=>{e.preventDefault();const b=homeForm.querySelector('[data-submit]'),status=homeForm.querySelector('.save-status');b.disabled=true;if(status)status.textContent='저장 중...';try{await setDoc(doc(db,'home','main'),formData(homeForm),{merge:true});if(status)status.textContent='저장 완료! 일반 사이트에 실시간 반영돼요.'}catch(err){console.error(err);if(status)status.textContent='저장 실패: '+(err?.message||'알 수 없는 오류')}finally{b.disabled=false}});
+ document.querySelectorAll('.content-form').forEach(form=>{form.addEventListener('submit',async e=>{e.preventDefault();const b=form.querySelector('[data-submit]');b.disabled=true;try{const id=form.elements._id.value,data=formData(form);if(id)await updateDoc(doc(db,form.dataset.collection,id),data);else await addDoc(collection(db,form.dataset.collection),{...data,createdAt:serverTimestamp()});reset(form)}catch(err){console.error(err);alert('저장 중 오류: '+(err?.message||'알 수 없는 오류'))}finally{b.disabled=false}});form.querySelector('[data-cancel]')?.addEventListener('click',()=>reset(form))});
+ ['songs','notices','schedules','wardrobe','instagram','curiosity'].forEach(name=>{const el=document.querySelector(`[data-list="${name}"]`);onSnapshot(query(collection(db,name),orderBy('createdAt','desc')),snap=>{el.innerHTML=snap.empty?'<div class="empty">등록된 내용이 없어요.</div>':snap.docs.map(d=>{const x=d.data();return `<div class="manage-row"><div class="manage-copy">${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="">`:''}<div><h3>${esc(x.title||'제목 없음')}${x.artist?' · '+esc(x.artist):''}</h3><p>${esc(x.content||x.date||'')}</p>${(x.tags||[]).map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}</div></div><div class="mini"><button class="soft" data-edit="${d.id}">수정</button><button class="danger" data-delete="${d.id}">삭제</button></div></div>`}).join('');el.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',async()=>{if(confirm('정말 삭제할까요?'))await deleteDoc(doc(db,name,b.dataset.delete))}));el.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{const item=snap.docs.find(d=>d.id===b.dataset.edit),x=item.data(),form=document.querySelector(`form[data-collection="${name}"]`);form.elements._id.value=item.id;for(const e of form.elements){if(!e.name||e.name==='_id')continue;e.value=e.name==='tags'?(x.tags||[]).map(t=>'#'+t).join(' '):(x[e.name]??'')}preview(form,x.imageUrl||'');renderTagPreview(form);form.querySelector('[data-submit]').textContent='수정 저장';form.querySelector('[data-cancel]')?.classList.remove('hidden');form.scrollIntoView({behavior:'smooth',block:'start'})}))})})}
