@@ -74,9 +74,72 @@ document.querySelectorAll('.tag-input').forEach(i=>i.addEventListener('input',()
 async function loadSingleton(form){const [collectionName,documentName]=form.dataset.document.split('/'),snap=await getDoc(doc(db,collectionName,documentName));if(snap.exists()){const x=snap.data();for(const e of form.elements)if(e.name&&x[e.name]!==undefined){if(e.type==="checkbox")e.checked=!!x[e.name];else e.value=x[e.name];}previewAll(form);syncChoiceButtons(form)}}
 let started=false;onAuthStateChanged(auth,user=>{const ok=user&&user.email===ADMIN_EMAIL;$("#loginView").classList.toggle("hidden",ok);$("#adminView").classList.toggle("hidden",!ok);if(ok){$("#adminEmail").textContent=user.email;if(!started){started=true;start()}}});
 
-function start(){onSnapshot(query(collection(db,'wardrobeCollections'),orderBy('createdAt','desc')),snap=>{const categories=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(Number(a.sortOrder)||0)-(Number(b.sortOrder)||0)||String(a.title||'').localeCompare(String(b.title||''),'ko'));document.querySelectorAll('[data-wardrobe-category-select]').forEach(select=>{const current=select.value;select.innerHTML='<option value="">카테고리 선택</option>'+categories.map(x=>`<option value="${esc(x.title||'')}">${esc(x.title||'이름 없음')}</option>`).join('');if(current)select.value=current})});document.querySelectorAll('.singleton-form').forEach(form=>{loadSingleton(form);form.addEventListener('submit',async e=>{e.preventDefault();const b=form.querySelector('[data-submit]'),status=form.querySelector('.save-status'),[collectionName,documentName]=form.dataset.document.split('/');b.disabled=true;if(status)status.textContent='저장 중...';try{await setDoc(doc(db,collectionName,documentName),formData(form),{merge:true});if(status)status.textContent='저장 완료! 일반 사이트에 실시간 반영돼요.'}catch(err){console.error(err);if(status)status.textContent='저장 실패: '+(err?.message||'알 수 없는 오류')}finally{b.disabled=false}})});
+
+let avatarGalleryItems=[];
+const avatarGalleryForm=document.querySelector('[data-avatar-gallery-editor]');
+const avatarGalleryList=document.querySelector('[data-avatar-gallery-list]');
+function resetAvatarGalleryForm(){
+  if(!avatarGalleryForm)return;
+  avatarGalleryForm.reset();
+  avatarGalleryForm.elements.editIndex.value='-1';
+  avatarGalleryForm.elements.imageUrl.value='';
+  preview(avatarGalleryForm,'');
+  avatarGalleryForm.querySelector('[data-avatar-gallery-submit]').textContent='갤러리 추가';
+  avatarGalleryForm.querySelector('[data-avatar-gallery-cancel]').classList.add('hidden');
+}
+function renderAvatarGalleryAdmin(){
+  if(!avatarGalleryList)return;
+  avatarGalleryList.innerHTML=avatarGalleryItems.length?avatarGalleryItems.map((item,index)=>`<div class="manage-row"><div class="manage-copy">${item.imageUrl?`<img src="${esc(item.imageUrl)}" alt="">`:''}<div><h3>${esc(item.title||'아바타')}</h3><p>${esc(item.content||'')}</p></div></div><div class="mini"><button class="soft" type="button" data-avatar-edit="${index}">수정</button><button class="danger" type="button" data-avatar-delete="${index}">삭제</button></div></div>`).join(''):'<div class="empty">등록된 아바타가 없어요.</div>';
+  avatarGalleryList.querySelectorAll('[data-avatar-edit]').forEach(button=>button.addEventListener('click',()=>{
+    const index=Number(button.dataset.avatarEdit),item=avatarGalleryItems[index];
+    if(!item||!avatarGalleryForm)return;
+    avatarGalleryForm.elements.editIndex.value=String(index);
+    avatarGalleryForm.elements.title.value=item.title||'';
+    avatarGalleryForm.elements.content.value=item.content||'';
+    avatarGalleryForm.elements.imageUrl.value=item.imageUrl||'';
+    preview(avatarGalleryForm,item.imageUrl||'');
+    avatarGalleryForm.querySelector('[data-avatar-gallery-submit]').textContent='수정 저장';
+    avatarGalleryForm.querySelector('[data-avatar-gallery-cancel]').classList.remove('hidden');
+    avatarGalleryForm.scrollIntoView({behavior:'smooth',block:'start'});
+  }));
+  avatarGalleryList.querySelectorAll('[data-avatar-delete]').forEach(button=>button.addEventListener('click',async()=>{
+    const index=Number(button.dataset.avatarDelete);
+    if(!confirm('이 아바타를 삭제할까요?'))return;
+    const next=avatarGalleryItems.filter((_,i)=>i!==index);
+    try{await setDoc(doc(db,'profile','main'),{avatarGallery:next,updatedAt:serverTimestamp()},{merge:true});resetAvatarGalleryForm()}
+    catch(err){console.error(err);alert('삭제 중 오류: '+(err?.message||'알 수 없는 오류'))}
+  }));
+}
+function initAvatarGalleryAdmin(){
+  if(!avatarGalleryForm||!avatarGalleryList)return;
+  onSnapshot(doc(db,'profile','main'),snap=>{
+    const data=snap.exists()?snap.data():{};
+    avatarGalleryItems=Array.isArray(data.avatarGallery)?data.avatarGallery:[];
+    renderAvatarGalleryAdmin();
+  },err=>{console.error(err);avatarGalleryList.innerHTML='<div class="empty">아바타 갤러리를 불러오지 못했어요.</div>'});
+  avatarGalleryForm.addEventListener('submit',async event=>{
+    event.preventDefault();
+    const button=avatarGalleryForm.querySelector('[data-avatar-gallery-submit]');
+    const title=avatarGalleryForm.elements.title.value.trim();
+    const content=avatarGalleryForm.elements.content.value.trim();
+    const imageUrl=avatarGalleryForm.elements.imageUrl.value.trim();
+    const editIndex=Number(avatarGalleryForm.elements.editIndex.value);
+    if(!title){alert('아바타 제목을 입력해 주세요.');return}
+    if(!imageUrl){alert('아바타 사진을 업로드해 주세요.');return}
+    const item={title,content,imageUrl};
+    const next=[...avatarGalleryItems];
+    if(editIndex>=0&&editIndex<next.length)next[editIndex]=item;else next.unshift(item);
+    button.disabled=true;
+    try{await setDoc(doc(db,'profile','main'),{avatarGallery:next,updatedAt:serverTimestamp()},{merge:true});resetAvatarGalleryForm()}
+    catch(err){console.error(err);alert('저장 중 오류: '+(err?.message||'알 수 없는 오류'))}
+    finally{button.disabled=false}
+  });
+  avatarGalleryForm.querySelector('[data-avatar-gallery-cancel]').addEventListener('click',resetAvatarGalleryForm);
+}
+
+function start(){initAvatarGalleryAdmin();onSnapshot(query(collection(db,'wardrobeCollections'),orderBy('createdAt','desc')),snap=>{const categories=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(Number(a.sortOrder)||0)-(Number(b.sortOrder)||0)||String(a.title||'').localeCompare(String(b.title||''),'ko'));document.querySelectorAll('[data-wardrobe-category-select]').forEach(select=>{const current=select.value;select.innerHTML='<option value="">카테고리 선택</option>'+categories.map(x=>`<option value="${esc(x.title||'')}">${esc(x.title||'이름 없음')}</option>`).join('');if(current)select.value=current})});document.querySelectorAll('.singleton-form').forEach(form=>{loadSingleton(form);form.addEventListener('submit',async e=>{e.preventDefault();const b=form.querySelector('[data-submit]'),status=form.querySelector('.save-status'),[collectionName,documentName]=form.dataset.document.split('/');b.disabled=true;if(status)status.textContent='저장 중...';try{await setDoc(doc(db,collectionName,documentName),formData(form),{merge:true});if(status)status.textContent='저장 완료! 일반 사이트에 실시간 반영돼요.'}catch(err){console.error(err);if(status)status.textContent='저장 실패: '+(err?.message||'알 수 없는 오류')}finally{b.disabled=false}})});
  document.querySelectorAll('.content-form').forEach(form=>{form.addEventListener('submit',async e=>{e.preventDefault();const b=form.querySelector('[data-submit]');b.disabled=true;try{const id=form.elements._id.value,data=formData(form);if(id)await updateDoc(doc(db,form.dataset.collection,id),data);else await addDoc(collection(db,form.dataset.collection),{...data,createdAt:serverTimestamp()});reset(form)}catch(err){console.error(err);alert('저장 중 오류: '+(err?.message||'알 수 없는 오류'))}finally{b.disabled=false}});form.querySelector('[data-cancel]')?.addEventListener('click',()=>reset(form))});
- ['songs','notices','schedules','wardrobeCollections','wardrobe','instagram','embers','profileGallery','siteRules'].forEach(name=>{const el=document.querySelector(`[data-list="${name}"]`);onSnapshot(query(collection(db,name),orderBy('createdAt','desc')),snap=>{el.innerHTML=snap.empty?'<div class="empty">등록된 내용이 없어요.</div>':snap.docs.map(d=>{const x=d.data(),heading=name==='rouletteDebts'?`${x.viewerName||'이름 없음'} · 업보 ${Number(x.debtCount)||0}개`:(x.title||'제목 없음')+(x.artist?' · '+x.artist:''),summary=name==='rouletteDebts'?`${x.viewerId||'아이디 미등록'} · ${x.content||''}`:(x.content||x.date||'');return `<div class="manage-row"><div class="manage-copy">${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="">`:''}<div><h3>${esc(heading)}</h3><p>${esc(summary)}</p>${(x.tags||[]).map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}</div></div><div class="mini"><button class="soft" data-edit="${d.id}">수정</button><button class="danger" data-delete="${d.id}">삭제</button></div></div>`}).join('');el.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',async()=>{if(confirm('정말 삭제할까요?'))await deleteDoc(doc(db,name,b.dataset.delete))}));el.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{const item=snap.docs.find(d=>d.id===b.dataset.edit),x=item.data(),form=document.querySelector(`form[data-collection="${name}"]`);form.elements._id.value=item.id;for(const e of form.elements){if(!e.name||e.name==='_id')continue;e.type==='checkbox'?e.checked=!!x[e.name]:e.value=e.name==='tags'?(x.tags||[]).map(t=>'#'+t).join(' '):(x[e.name]??'')}if(form.elements.category&&!form.elements.category.value)form.elements.category.value='KPOP';previewAll(form);syncChoiceButtons(form);renderTagPreview(form);form.querySelector('[data-submit]').textContent='수정 저장';form.querySelector('[data-cancel]')?.classList.remove('hidden');form.scrollIntoView({behavior:'smooth',block:'start'})}))})})}
+ ['songs','notices','schedules','wardrobeCollections','wardrobe','instagram','embers','siteRules'].forEach(name=>{const el=document.querySelector(`[data-list="${name}"]`);onSnapshot(query(collection(db,name),orderBy('createdAt','desc')),snap=>{el.innerHTML=snap.empty?'<div class="empty">등록된 내용이 없어요.</div>':snap.docs.map(d=>{const x=d.data(),heading=name==='rouletteDebts'?`${x.viewerName||'이름 없음'} · 업보 ${Number(x.debtCount)||0}개`:(x.title||'제목 없음')+(x.artist?' · '+x.artist:''),summary=name==='rouletteDebts'?`${x.viewerId||'아이디 미등록'} · ${x.content||''}`:(x.content||x.date||'');return `<div class="manage-row"><div class="manage-copy">${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="">`:''}<div><h3>${esc(heading)}</h3><p>${esc(summary)}</p>${(x.tags||[]).map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}</div></div><div class="mini"><button class="soft" data-edit="${d.id}">수정</button><button class="danger" data-delete="${d.id}">삭제</button></div></div>`}).join('');el.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',async()=>{if(confirm('정말 삭제할까요?'))await deleteDoc(doc(db,name,b.dataset.delete))}));el.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{const item=snap.docs.find(d=>d.id===b.dataset.edit),x=item.data(),form=document.querySelector(`form[data-collection="${name}"]`);form.elements._id.value=item.id;for(const e of form.elements){if(!e.name||e.name==='_id')continue;e.type==='checkbox'?e.checked=!!x[e.name]:e.value=e.name==='tags'?(x.tags||[]).map(t=>'#'+t).join(' '):(x[e.name]??'')}if(form.elements.category&&!form.elements.category.value)form.elements.category.value='KPOP';previewAll(form);syncChoiceButtons(form);renderTagPreview(form);form.querySelector('[data-submit]').textContent='수정 저장';form.querySelector('[data-cancel]')?.classList.remove('hidden');form.scrollIntoView({behavior:'smooth',block:'start'})}))})})}
 
 
 function debtItemsOf(x){

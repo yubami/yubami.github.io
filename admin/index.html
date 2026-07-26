@@ -6,7 +6,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#080d28" name="theme-color"/>
 <title>유바미 관리자</title>
-<link href="../assets/style.css?v=8.1" rel="stylesheet"/>
+<link href="../assets/style.css?v=8.2" rel="stylesheet"/>
 </head>
 <body><div aria-hidden="true" id="ambientLights"></div><div aria-hidden="true" id="cursorStars"></div>
 <header><div class="shell nav"><a class="brand" href="../index.html"><span class="brand-word">YUBAMI</span></a><div aria-label="화면 테마" class="theme-switch" role="group"><button data-theme-choice="morning" type="button">☀ <span>아침</span></button><button data-theme-choice="night" type="button">🌙 <span>밤</span></button></div><a class="btn soft" href="../index.html">일반 사이트</a></div></header>
@@ -68,13 +68,12 @@
 </div>
 <div class="actions"><button class="btn primary" data-submit="">자기소개 저장</button></div>
 </form>
-</div>
 
-<div class="admin-subsection avatar-gallery-admin">
+<div class="admin-subsection avatar-gallery-admin" data-avatar-gallery-admin>
   <h3>아바타 갤러리</h3>
   <p class="image-help">아바타가 변경될 때마다 사진과 간단한 제목을 추가해 주세요.</p>
-  <form class="form content-form" data-collection="profileGallery">
-    <input name="_id" type="hidden"/>
+  <form class="form" data-avatar-gallery-editor>
+    <input name="editIndex" type="hidden" value="-1"/>
     <label>아바타 제목
       <input class="field" name="title" placeholder="예: 2026 여름 아바타" required/>
     </label>
@@ -90,12 +89,14 @@
     </label>
     <div class="image-preview"></div>
     <div class="actions">
-      <button class="btn primary" data-submit="">갤러리 추가</button>
-      <button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button>
+      <button class="btn primary" data-avatar-gallery-submit>갤러리 추가</button>
+      <button class="btn ghost hidden" data-avatar-gallery-cancel type="button">수정 취소</button>
     </div>
   </form>
-  <div class="manage" data-list="profileGallery"></div>
+  <div class="manage" data-avatar-gallery-list></div>
 </div>
+</div>
+
 <div class="panel" id="panel-embers"><h2>불씨도감 관리</h2><p class="image-help">불씨 사진과 소개를 여러 개 등록할 수 있어요.</p>
 <form class="form content-form" data-collection="embers"><input name="_id" type="hidden"/><label>제목<input class="field" name="title" placeholder="불씨 이름 또는 기록 제목" required=""/></label><label>소개<textarea class="field" name="content" placeholder="불씨에 대한 설명을 적어 주세요."></textarea></label><input name="imageUrl" type="hidden"/><label>불씨 사진<div class="upload-line"><button class="btn soft cloud-upload" data-folder="embers" type="button">사진 선택 및 업로드</button><button class="btn ghost clear-image" type="button">사진 제거</button></div></label><div class="image-preview"></div><div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div></form><div class="manage" data-list="embers"></div>
 </div>
@@ -217,5 +218,5 @@
 </div>
 </section>
 </div></main>
-<script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script><script src="admin.js?v=8.1" type="module"></script>
+<script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script><script src="admin.js?v=8.2" type="module"></script>
 <script src="../assets/effects.js?v=7.9"></script></body></html>

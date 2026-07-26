@@ -3057,3 +3057,16 @@ html[data-theme="morning"] .portrait-pop-bubble::after{
   .notice-card>img{height:auto;aspect-ratio:16/10}
   .notice-card-copy{align-items:flex-start}
 }
+
+
+/* V8.2 요청 수정: 아바타 갤러리와 업적 섹션 동일 비율 */
+.avatar-history-section,
+.profile-achievements-section{
+  width:min(1180px,calc(100% - 32px));
+  margin:42px auto 0;
+  padding:0;
+}
+.avatar-history-grid,
+.achievement-list{
+  width:100%;
+}

@@ -18,7 +18,23 @@ if(homeImg||homeGallery||homePortrait||homeTitle||homeDesc||homeMessage||homeMus
   if(homeTitle&&x.headline!==undefined)homeTitle.innerHTML=br(x.headline||'YUBAMI');if(homeLinks){const a=Array.isArray(x.links)?x.links:[{icon:'📺',label:'유바미 본채널',url:'#'},{icon:'🎬',label:'유바미 서브채널',url:'#'},{icon:'▶',label:'다시보기 채널',url:'#'},{icon:'𝕏',label:'X 트위터',url:'#'},{icon:'☕',label:'팬카페',url:'#'}];homeLinks.innerHTML=a.map((l,i)=>`<a class="cozy-link cozy-link-${i%3}" style="--link-color:${esc(l.color||'#8b5cf6')}" href="${esc(l.url||'#')}" target="_blank" rel="noopener"><span>${esc(l.icon||'🐾')}</span>${esc(l.label||'바로가기')}<b>↗</b></a>`).join('')}if(homeDesc&&x.description!==undefined)homeDesc.innerHTML=br(x.description||'');if(homeMessage&&x.message!==undefined)homeMessage.innerHTML=br(x.message||'');if(homeMusicSection){homeMusicSection.hidden=!x.musicUrl;homeMusicSection.dataset.musicUrl=x.musicUrl||'';homeMusicSection.dataset.musicTitle=x.musicTitle||'오늘의 추천곡';homeMusicSection.dataset.musicAuthor=x.musicAuthor||'유바미가 좋아하는 음악';if(homeMusicTitle)homeMusicTitle.textContent=x.musicTitle||'오늘의 추천곡';if(homeMusicAuthor)homeMusicAuthor.textContent=x.musicAuthor||'유바미가 좋아하는 음악';window.dispatchEvent(new CustomEvent('yubami-music-change',{detail:{url:x.musicUrl||''}}))}
 })}
 
-const profileRoot=document.querySelector('[data-profile-root]');const profileAchievements=document.querySelector('[data-profile-achievements]');if(profileRoot){onSnapshot(doc(db,'profile','main'),snap=>{if(!snap.exists())return;const x=snap.data();const set=(sel,val,html=false)=>{const el=document.querySelector(sel);if(el&&val!==undefined)html?el.innerHTML=br(val||''):el.textContent=val||''};set('[data-profile-title]',x.title);set('[data-profile-subtitle]',x.subtitle);set('[data-profile-content]',x.content,true);set('[data-profile-birthday]',x.birthday);set('[data-profile-mbti]',x.mbti);const img=document.querySelector('[data-profile-image]');if(img)img.innerHTML=x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="유바미 프로필 사진">`:''
+const profileRoot=document.querySelector('[data-profile-root]');const profileAchievements=document.querySelector('[data-profile-achievements]');const profileGalleryRoot=document.querySelector('[data-profile-gallery]');if(profileRoot){onSnapshot(doc(db,'profile','main'),snap=>{if(!snap.exists())return;const x=snap.data();const set=(sel,val,html=false)=>{const el=document.querySelector(sel);if(el&&val!==undefined)html?el.innerHTML=br(val||''):el.textContent=val||''};set('[data-profile-title]',x.title);set('[data-profile-subtitle]',x.subtitle);set('[data-profile-content]',x.content,true);set('[data-profile-birthday]',x.birthday);set('[data-profile-mbti]',x.mbti);const img=document.querySelector('[data-profile-image]');if(img)img.innerHTML=x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="유바미 프로필 사진">`:''
+if(profileGalleryRoot){
+  const gallery=Array.isArray(x.avatarGallery)?x.avatarGallery:[];
+  if(!gallery.length){
+    empty(profileGalleryRoot,profileGalleryRoot.dataset.empty||'아직 등록된 아바타가 없어요.');
+  }else{
+    profileGalleryRoot.innerHTML=gallery.map((item,index)=>`<article class="avatar-history-card card" tabindex="0" role="button" data-avatar-index="${index}">${item.imageUrl?`<img src="${esc(item.imageUrl)}" alt="${esc(item.title||'유바미 아바타')}">`:''}<div class="avatar-history-copy"><h3>${esc(item.title||'아바타')}</h3>${item.content?`<p>${br(item.content)}</p>`:''}</div></article>`).join('');
+    const openAvatar=card=>{
+      const item=gallery[Number(card.dataset.avatarIndex)];if(!item)return;
+      let dialog=document.querySelector('[data-avatar-dialog]');
+      if(!dialog){dialog=document.createElement('dialog');dialog.className='bami-dialog avatar-dialog';dialog.dataset.avatarDialog='';dialog.innerHTML='<button class="bami-dialog-close" type="button" aria-label="닫기">×</button><div data-avatar-detail></div>';document.body.appendChild(dialog);dialog.querySelector('.bami-dialog-close').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()})}
+      dialog.querySelector('[data-avatar-detail]').innerHTML=`${item.imageUrl?`<img src="${esc(item.imageUrl)}" alt="${esc(item.title||'유바미 아바타')}">`:''}<div class="bami-dialog-copy"><h2>${esc(item.title||'아바타')}</h2><p>${br(item.content||'')}</p></div>`;
+      dialog.showModal();
+    };
+    profileGalleryRoot.querySelectorAll('[data-avatar-index]').forEach(card=>{card.addEventListener('click',()=>openAvatar(card));card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openAvatar(card)}})});
+  }
+}
 if(profileAchievements){
   const achievements=String(x.achievements||'').split(/\n+/).map(v=>v.trim()).filter(Boolean);
   profileAchievements.innerHTML=achievements.length
@@ -28,52 +44,20 @@ if(profileAchievements){
 })}
 function listen(name,render,max){const el=document.querySelector(`[data-collection="${name}"]`);if(!el)return;let q=query(collection(db,name),orderBy("createdAt","desc"));if(max)q=query(collection(db,name),orderBy("createdAt","desc"),limit(max));onSnapshot(q,s=>s.empty?empty(el,el.dataset.empty||"아직 등록된 내용이 없어요."):render(el,s.docs.map(d=>({id:d.id,...d.data()}))),()=>empty(el,"데이터를 불러오지 못했어요."))}
 listen("notices",(el,a)=>{
-  el.innerHTML=a.map(x=>`<article class="notice-card card" tabindex="0" role="button" data-notice-id="${esc(x.id)}" data-searchable="${esc((x.title||"")+" "+(x.content||""))}">
-    ${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="${esc(x.title||'공지')} 사진">`:''}
-    <div class="notice-card-copy">
-      <div>
-        <h3>${esc(x.title||"제목 없음")}</h3>
-        <p>${br(x.content||"")}</p>
-      </div>
-      <span class="pill">${x.imageUrl?"사진 공지":"공지"}</span>
-    </div>
-  </article>`).join("");
-
+  if(el.classList.contains('mini-list')){
+    el.innerHTML=a.slice(0,3).map(x=>`<article class="row"><div><h3>${esc(x.title||'제목 없음')}</h3><p>${br(x.content||'')}</p></div><span class="pill">공지</span></article>`).join('');
+    return;
+  }
+  el.innerHTML=a.map(x=>`<article class="notice-card card" tabindex="0" role="button" data-notice-id="${esc(x.id)}" data-searchable="${esc((x.title||'')+' '+(x.content||''))}">${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="${esc(x.title||'공지')} 사진">`:''}<div class="notice-card-copy"><div><h3>${esc(x.title||'제목 없음')}</h3><p>${br(x.content||'')}</p></div><span class="pill">${x.imageUrl?'사진 공지':'공지'}</span></div></article>`).join('');
   const map=new Map(a.map(x=>[x.id,x]));
   const openNotice=card=>{
-    const x=map.get(card.dataset.noticeId);
-    if(!x)return;
-
+    const x=map.get(card.dataset.noticeId);if(!x)return;
     let dialog=document.querySelector('[data-notice-dialog]');
-    if(!dialog){
-      dialog=document.createElement('dialog');
-      dialog.className='bami-dialog notice-dialog';
-      dialog.dataset.noticeDialog='';
-      dialog.innerHTML='<button class="bami-dialog-close" type="button" aria-label="닫기">×</button><div data-notice-detail></div>';
-      document.body.appendChild(dialog);
-      dialog.querySelector('.bami-dialog-close').addEventListener('click',()=>dialog.close());
-      dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
-    }
-
-    const detail=dialog.querySelector('[data-notice-detail]');
-    detail.innerHTML=`${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="${esc(x.title||'공지')} 사진">`:''}
-      <div class="bami-dialog-copy">
-        <h2>${esc(x.title||'제목 없음')}</h2>
-        <p>${br(x.content||'')}</p>
-        ${x.downloadAllowed&&x.imageUrl?`<a class="btn primary" href="${esc(cloudinaryDownload(x.imageUrl))}" download target="_blank" rel="noopener">사진 다운로드</a>`:''}
-      </div>`;
+    if(!dialog){dialog=document.createElement('dialog');dialog.className='bami-dialog notice-dialog';dialog.dataset.noticeDialog='';dialog.innerHTML='<button class="bami-dialog-close" type="button" aria-label="닫기">×</button><div data-notice-detail></div>';document.body.appendChild(dialog);dialog.querySelector('.bami-dialog-close').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()})}
+    dialog.querySelector('[data-notice-detail]').innerHTML=`${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="${esc(x.title||'공지')} 사진">`:''}<div class="bami-dialog-copy"><h2>${esc(x.title||'제목 없음')}</h2><p>${br(x.content||'')}</p>${x.downloadAllowed&&x.imageUrl?`<a class="btn primary" href="${esc(cloudinaryDownload(x.imageUrl))}" download target="_blank" rel="noopener">사진 다운로드</a>`:''}</div>`;
     dialog.showModal();
   };
-
-  el.querySelectorAll('[data-notice-id]').forEach(card=>{
-    card.addEventListener('click',()=>openNotice(card));
-    card.addEventListener('keydown',e=>{
-      if(e.key==='Enter'||e.key===' '){
-        e.preventDefault();
-        openNotice(card);
-      }
-    });
-  });
+  el.querySelectorAll('[data-notice-id]').forEach(card=>{card.addEventListener('click',()=>openNotice(card));card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openNotice(card)}})});
 });
 listen("schedules",(el,a)=>el.innerHTML=a.map(x=>`<article class="row" data-searchable="${esc((x.title||"")+" "+(x.content||"")+" "+(x.date||""))}"><div><h3>${esc(x.title||"방송")}</h3><p>${br(x.content||"")}</p></div><span class="pill">${esc(x.date||"일정")}${x.time?" · "+esc(x.time):""}</span></article>`).join(""));
 listen("instagram",(el,a)=>{
@@ -84,51 +68,6 @@ listen("instagram",(el,a)=>{
 });
 function cloudinaryDownload(url){return String(url||'').includes('/upload/')?String(url).replace('/upload/','/upload/fl_attachment/'):url}
 
-
-listen("profileGallery",(el,a)=>{
-  el.innerHTML=a.map(x=>`<article class="avatar-history-card card" tabindex="0" role="button" data-avatar-id="${esc(x.id)}">
-    ${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="${esc(x.title||'유바미 아바타')}">`:''}
-    <div class="avatar-history-copy">
-      <h3>${esc(x.title||'아바타')}</h3>
-      ${x.content?`<p>${br(x.content)}</p>`:''}
-    </div>
-  </article>`).join("");
-
-  const map=new Map(a.map(x=>[x.id,x]));
-  const openAvatar=card=>{
-    const x=map.get(card.dataset.avatarId);
-    if(!x)return;
-
-    let dialog=document.querySelector('[data-avatar-dialog]');
-    if(!dialog){
-      dialog=document.createElement('dialog');
-      dialog.className='bami-dialog avatar-dialog';
-      dialog.dataset.avatarDialog='';
-      dialog.innerHTML='<button class="bami-dialog-close" type="button" aria-label="닫기">×</button><div data-avatar-detail></div>';
-      document.body.appendChild(dialog);
-      dialog.querySelector('.bami-dialog-close').addEventListener('click',()=>dialog.close());
-      dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
-    }
-
-    dialog.querySelector('[data-avatar-detail]').innerHTML=
-      `${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="${esc(x.title||'유바미 아바타')}">`:''}
-       <div class="bami-dialog-copy">
-         <h2>${esc(x.title||'아바타')}</h2>
-         <p>${br(x.content||'')}</p>
-       </div>`;
-    dialog.showModal();
-  };
-
-  el.querySelectorAll('[data-avatar-id]').forEach(card=>{
-    card.addEventListener('click',()=>openAvatar(card));
-    card.addEventListener('keydown',e=>{
-      if(e.key==='Enter'||e.key===' '){
-        e.preventDefault();
-        openAvatar(card);
-      }
-    });
-  });
-});
 
 const wardrobeRoot=document.querySelector('[data-collection="wardrobe"]');
 if(wardrobeRoot){let wardrobeItems=[],wardrobeCollections=[];const renderWardrobe=()=>{const collectionNames=[...new Set([...wardrobeCollections.map(x=>x.title).filter(Boolean),...wardrobeItems.map(x=>x.category).filter(Boolean)])];const sorted=collectionNames.sort((a,b)=>{const aa=wardrobeCollections.find(x=>x.title===a),bb=wardrobeCollections.find(x=>x.title===b);return (Number(aa?.sortOrder)||0)-(Number(bb?.sortOrder)||0)||a.localeCompare(b,'ko')});const filters=document.querySelector('[data-wardrobe-dynamic-filters]');if(filters)filters.innerHTML='<button class="wardrobe-filter active" type="button" data-wardrobe-filter="all">전체</button>'+sorted.map(name=>`<button class="wardrobe-filter" type="button" data-wardrobe-filter="${esc(name)}">${esc(name)}</button>`).join('');wardrobeRoot.innerHTML=sorted.map(category=>{const items=wardrobeItems.filter(x=>(x.category||'미분류')===category);return `<section class="wardrobe-month" data-wardrobe-group="${esc(category)}"><div class="wardrobe-month-head"><div><span class="kicker">COLLECTION</span><h2>${esc(category)}</h2></div><span class="wardrobe-count">${items.length}</span></div>${['의상','헤어'].map(type=>{const group=items.filter(x=>(x.subcategory||'의상')===type);return `<div class="wardrobe-type"><h3>${esc(type)} <small>${group.length}</small></h3><div class="wardrobe-mini-grid">${group.length?group.map(x=>`<article class="wardrobe-mini-card" data-searchable="${esc((x.title||'')+' '+(x.content||'')+' '+category+' '+type)}">${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="${esc(x.title||type)}">`:''}<div class="wardrobe-mini-copy"><b>${esc(x.title||'제목 없음')}</b>${x.content?`<p>${br(x.content)}</p>`:''}</div></article>`).join(''):`<div class="empty wardrobe-mini-empty">등록된 ${esc(type)}가 없어요.</div>`}</div></div>`}).join('')}</section>`}).join('')||'<div class="empty">아직 만든 옷장 카테고리가 없어요.</div>';const buttons=[...document.querySelectorAll('[data-wardrobe-filter]')];buttons.forEach(button=>button.addEventListener('click',()=>{const value=button.dataset.wardrobeFilter;document.querySelectorAll('[data-wardrobe-group]').forEach(section=>section.style.display=value==='all'||section.dataset.wardrobeGroup===value?'':'none');buttons.forEach(b=>b.classList.toggle('active',b===button))}))};onSnapshot(query(collection(db,'wardrobe'),orderBy('createdAt','desc')),s=>{wardrobeItems=s.docs.map(d=>({id:d.id,...d.data()}));renderWardrobe()});onSnapshot(query(collection(db,'wardrobeCollections'),orderBy('createdAt','desc')),s=>{wardrobeCollections=s.docs.map(d=>({id:d.id,...d.data()}));renderWardrobe()})}
@@ -145,7 +84,6 @@ listen("songs",(el,a)=>{
   const apply=value=>{document.querySelectorAll('[data-song-category]').forEach(section=>section.style.display=value==='all'||section.dataset.songCategory===value?'':'none');buttons.forEach(b=>b.classList.toggle('active',b.dataset.songFilter===value))};
   buttons.forEach(button=>button.addEventListener('click',()=>apply(button.dataset.songFilter)));
 });
-listen("notices",(el,a)=>el.innerHTML=a.map(x=>`<article class="row"><div><h3>${esc(x.title||"제목 없음")}</h3><p>${br(x.content||"")}</p></div><span class="pill">${esc(x.date||"공지")}</span></article>`).join(""),3);
 listen("schedules",(el,a)=>el.innerHTML=a.map(x=>`<article class="row"><div><h3>${esc(x.title||"방송")}</h3><p>${br(x.content||"")}</p></div><span class="pill">${esc(x.date||"일정")}</span></article>`).join(""),1);
 
 
