@@ -166,15 +166,149 @@ musicFetchButton?.addEventListener('click',fetchMusicMetadata);
 musicUrlInput?.addEventListener('change',fetchMusicMetadata);
 musicUrlInput?.addEventListener('paste',()=>setTimeout(fetchMusicMetadata,80));
 
-// V7.15 바로가기 버튼 관리
+// V7.24 바로가기 버튼 관리 — 입력 중 재렌더링 방지
 const homeLinksManager=document.querySelector('[data-home-links-manager]');
+const homeLinksStatus=document.querySelector('[data-home-links-status]');
 let homeLinksDraft=[];
-const defaultHomeLinks=[{id:'main',icon:'📺',label:'유바미 본채널',url:'#'},{id:'sub',icon:'🎬',label:'유바미 서브채널',url:'#'},{id:'vod',icon:'▶',label:'다시보기 채널',url:'#'},{id:'x',icon:'𝕏',label:'X 트위터',url:'#'},{id:'cafe',icon:'☕',label:'팬카페',url:'#'}];
+let homeLinksLoaded=false;
+let homeLinksEditing=false;
+let homeLinksSaving=false;
+
+const defaultHomeLinks=[
+  {id:'main',icon:'📺',label:'유바미 본채널',url:'#'},
+  {id:'sub',icon:'🎬',label:'유바미 서브채널',url:'#'},
+  {id:'vod',icon:'▶',label:'다시보기 채널',url:'#'},
+  {id:'x',icon:'𝕏',label:'X 트위터',url:'#'},
+  {id:'cafe',icon:'☕',label:'팬카페',url:'#'}
+];
+
 const linkId=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());
-function renderHomeLinks(){if(!homeLinksManager)return;homeLinksManager.innerHTML=homeLinksDraft.map(x=>`<div class="home-link-edit-row" data-link-id="${x.id}"><input class="field icon-field" data-k="icon" value="${esc(x.icon||'🐾')}"><input class="field" data-k="label" value="${esc(x.label||'')}"><input class="field" data-k="url" value="${esc(x.url||'')}"><div class="mini"><button type="button" class="soft" data-up>↑</button><button type="button" class="soft" data-down>↓</button><button type="button" class="danger" data-remove>삭제</button></div></div>`).join('')}
-onSnapshot(doc(db,'home','main'),s=>{if(!s.exists())return;homeLinksDraft=Array.isArray(s.data().links)?s.data().links:defaultHomeLinks;renderHomeLinks()});
-document.querySelector('[data-add-home-link]')?.addEventListener('click',()=>{homeLinksDraft.push({id:linkId(),icon:'🐾',label:'새 바로가기',url:'https://'});renderHomeLinks()});
-homeLinksManager?.addEventListener('input',e=>{const row=e.target.closest('[data-link-id]'),x=homeLinksDraft.find(v=>v.id===row?.dataset.linkId);if(x&&e.target.dataset.k)x[e.target.dataset.k]=e.target.value});
-homeLinksManager?.addEventListener('click',e=>{const row=e.target.closest('[data-link-id]');if(!row)return;const i=homeLinksDraft.findIndex(v=>v.id===row.dataset.linkId);if(i<0)return;if(e.target.closest('[data-remove]'))homeLinksDraft.splice(i,1);if(e.target.closest('[data-up]')&&i>0)[homeLinksDraft[i-1],homeLinksDraft[i]]=[homeLinksDraft[i],homeLinksDraft[i-1]];if(e.target.closest('[data-down]')&&i<homeLinksDraft.length-1)[homeLinksDraft[i+1],homeLinksDraft[i]]=[homeLinksDraft[i],homeLinksDraft[i+1]];renderHomeLinks()});
-document.querySelector('[data-save-home-links]')?.addEventListener('click',async()=>{const st=document.querySelector('[data-home-links-status]');try{await setDoc(doc(db,'home','main'),{links:homeLinksDraft},{merge:true});st.textContent='바로가기를 저장했어요.'}catch(err){st.textContent='저장 실패: '+err.message}});
+
+function normalizeHomeLink(x={}){
+  return {
+    id:x.id||linkId(),
+    icon:x.icon||'🐾',
+    label:x.label||'새 바로가기',
+    url:x.url||'https://'
+  };
+}
+
+function renderHomeLinks({preserveFocus=false}={}){
+  if(!homeLinksManager)return;
+
+  const active=document.activeElement;
+  const activeRow=preserveFocus?active?.closest?.('[data-link-id]')?.dataset.linkId:null;
+  const activeKey=preserveFocus?active?.dataset?.k:null;
+  const selectionStart=preserveFocus&&typeof active?.selectionStart==='number'?active.selectionStart:null;
+  const selectionEnd=preserveFocus&&typeof active?.selectionEnd==='number'?active.selectionEnd:null;
+
+  homeLinksManager.innerHTML=homeLinksDraft.map((x,index)=>`
+    <div class="home-link-edit-row" data-link-id="${x.id}">
+      <input class="field icon-field" data-k="icon" value="${esc(x.icon||'🐾')}" aria-label="아이콘">
+      <input class="field" data-k="label" value="${esc(x.label||'')}" placeholder="채널명">
+      <input class="field" data-k="url" value="${esc(x.url||'')}" placeholder="채널 주소">
+      <div class="mini">
+        <button type="button" class="soft" data-up ${index===0?'disabled':''}>↑</button>
+        <button type="button" class="soft" data-down ${index===homeLinksDraft.length-1?'disabled':''}>↓</button>
+        <button type="button" class="danger" data-remove>삭제</button>
+      </div>
+    </div>`).join('');
+
+  if(activeRow&&activeKey){
+    const next=homeLinksManager.querySelector(`[data-link-id="${activeRow}"] [data-k="${activeKey}"]`);
+    if(next){
+      next.focus();
+      if(selectionStart!==null&&selectionEnd!==null){
+        try{next.setSelectionRange(selectionStart,selectionEnd)}catch(_){}
+      }
+    }
+  }
+}
+
+onSnapshot(doc(db,'home','main'),snap=>{
+  if(!snap.exists())return;
+
+  // 최초 1회만 바로 그립니다.
+  if(!homeLinksLoaded){
+    homeLinksDraft=Array.isArray(snap.data().links)
+      ? snap.data().links.map(normalizeHomeLink)
+      : defaultHomeLinks.map(normalizeHomeLink);
+    homeLinksLoaded=true;
+    renderHomeLinks();
+    return;
+  }
+
+  // 사용자가 입력 중이거나 저장 중이면 DOM을 교체하지 않습니다.
+  if(homeLinksEditing||homeLinksSaving)return;
+
+  homeLinksDraft=Array.isArray(snap.data().links)
+    ? snap.data().links.map(normalizeHomeLink)
+    : defaultHomeLinks.map(normalizeHomeLink);
+  renderHomeLinks();
+});
+
+document.querySelector('[data-add-home-link]')?.addEventListener('click',()=>{
+  homeLinksDraft.push(normalizeHomeLink());
+  homeLinksEditing=true;
+  renderHomeLinks();
+  const last=homeLinksManager?.querySelector('.home-link-edit-row:last-child [data-k="label"]');
+  last?.focus();
+});
+
+homeLinksManager?.addEventListener('focusin',()=>{
+  homeLinksEditing=true;
+});
+
+homeLinksManager?.addEventListener('input',e=>{
+  const row=e.target.closest('[data-link-id]');
+  const item=homeLinksDraft.find(v=>v.id===row?.dataset.linkId);
+  const key=e.target.dataset.k;
+  if(item&&key){
+    item[key]=e.target.value;
+    homeLinksEditing=true;
+  }
+});
+
+homeLinksManager?.addEventListener('click',e=>{
+  const row=e.target.closest('[data-link-id]');
+  if(!row)return;
+
+  const index=homeLinksDraft.findIndex(v=>v.id===row.dataset.linkId);
+  if(index<0)return;
+
+  if(e.target.closest('[data-remove]')){
+    homeLinksDraft.splice(index,1);
+    homeLinksEditing=true;
+    renderHomeLinks();
+    return;
+  }
+
+  if(e.target.closest('[data-up]')&&index>0){
+    [homeLinksDraft[index-1],homeLinksDraft[index]]=[homeLinksDraft[index],homeLinksDraft[index-1]];
+    homeLinksEditing=true;
+    renderHomeLinks();
+    return;
+  }
+
+  if(e.target.closest('[data-down]')&&index<homeLinksDraft.length-1){
+    [homeLinksDraft[index+1],homeLinksDraft[index]]=[homeLinksDraft[index],homeLinksDraft[index+1]];
+    homeLinksEditing=true;
+    renderHomeLinks();
+  }
+});
+
+document.querySelector('[data-save-home-links]')?.addEventListener('click',async()=>{
+  homeLinksSaving=true;
+  try{
+    const clean=homeLinksDraft.map(normalizeHomeLink);
+    await setDoc(doc(db,'home','main'),{links:clean},{merge:true});
+    homeLinksDraft=clean;
+    homeLinksEditing=false;
+    if(homeLinksStatus)homeLinksStatus.textContent='바로가기를 저장했어요.';
+  }catch(err){
+    if(homeLinksStatus)homeLinksStatus.textContent='저장 실패: '+err.message;
+  }finally{
+    homeLinksSaving=false;
+  }
+});st.textContent='바로가기를 저장했어요.'}catch(err){st.textContent='저장 실패: '+err.message}});
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-debt-inline-edit]');if(!b)return;const ref=doc(db,'rouletteDebts',b.dataset.docId),snap=await getDoc(ref);if(!snap.exists())return;const items=debtItemsOf(snap.data()),item=items.find(x=>x.id===b.dataset.itemId);if(!item)return;const value=prompt('업보 내용을 수정해 주세요.',item.content||'');if(value===null||!value.trim())return;await updateDoc(ref,{items:items.map(x=>x.id===item.id?{...x,content:value.trim()}:x),updatedAt:serverTimestamp()})});
