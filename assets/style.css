@@ -983,3 +983,160 @@ html:not([data-theme="morning"]) .hero-sky::before{
     justify-self:center;
   }
 }
+
+
+/* V7.17 긴급 홈 레이아웃 수정 */
+.hero-v716{
+  min-height:auto !important;
+}
+.hero-v716 .hero-sky{
+  max-width:1500px !important;
+  padding-top:24px !important;
+  padding-bottom:28px !important;
+}
+.hero-layout-v716{
+  min-height:0 !important;
+  display:grid !important;
+  grid-template-columns:minmax(360px,1.05fr) minmax(360px,.95fr) 330px !important;
+  align-items:center !important;
+  gap:30px !important;
+  padding:20px 0 28px !important;
+}
+
+/* 사진 4장 정확한 2x2 */
+.hero-gallery-v716{
+  width:100% !important;
+  height:470px !important;
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  grid-template-rows:1fr 1fr !important;
+  gap:10px !important;
+  overflow:visible !important;
+}
+.hero-gallery-v716 .hero-photo-card,
+.hero-gallery-v716 > figure,
+.hero-gallery-v716 > div,
+.hero-gallery-v716 > img{
+  width:100% !important;
+  height:100% !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  margin:0 !important;
+  overflow:hidden !important;
+  border-radius:22px !important;
+}
+.hero-gallery-v716 img{
+  display:block !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:none !important;
+  max-height:none !important;
+  object-fit:cover !important;
+  border-radius:22px !important;
+}
+
+/* 중앙 소개 항상 보이게 */
+.hero-copy-v716{
+  position:relative !important;
+  z-index:3 !important;
+  min-width:0 !important;
+  width:100% !important;
+  padding:18px 8px !important;
+}
+.hero-copy-v716 h1{
+  font-size:clamp(62px,5.6vw,96px) !important;
+  margin:12px 0 16px !important;
+}
+.hero-copy-v716 [data-home-description]{
+  margin:20px 0 0 !important;
+  font-size:17px !important;
+  line-height:1.7 !important;
+}
+.hero-links-v716{
+  margin-top:22px !important;
+  max-width:520px !important;
+}
+.hero-links-v716 .cozy-link{
+  padding:12px 15px !important;
+  border-radius:20px !important;
+  font-size:13px !important;
+}
+
+/* 음악 카드 첫 화면 안에 */
+.hero-music-v716{
+  display:block !important;
+  width:330px !important;
+  max-width:330px !important;
+  justify-self:end !important;
+  align-self:center !important;
+  margin:0 !important;
+}
+.hero-music-v716[hidden]{
+  display:none !important;
+}
+.hero-music-v716 .cat-music-player{
+  width:330px !important;
+  min-height:455px !important;
+  padding:18px 16px 16px !important;
+  border-radius:28px !important;
+  box-sizing:border-box !important;
+}
+.hero-music-v716 .cat-music-heading{
+  margin-bottom:4px !important;
+}
+.hero-music-v716 .cat-cd-stage{
+  height:245px !important;
+  margin-top:4px !important;
+}
+.hero-music-v716 .cat-cd-shell{
+  width:202px !important;
+}
+.hero-music-v716 .cat-player-controls{
+  margin-top:10px !important;
+}
+
+/* 기존 큰 단일 이미지 규칙 무력화 */
+.hero-gallery-v716 > *:first-child{
+  grid-row:auto !important;
+  grid-column:auto !important;
+}
+
+/* 1366~1600 화면 */
+@media(max-width:1500px){
+  .hero-v716 .hero-sky{max-width:1320px !important}
+  .hero-layout-v716{
+    grid-template-columns:minmax(330px,1fr) minmax(320px,.9fr) 310px !important;
+    gap:22px !important;
+  }
+  .hero-gallery-v716{height:430px !important}
+  .hero-music-v716,.hero-music-v716 .cat-music-player{
+    width:310px !important;
+    max-width:310px !important;
+  }
+  .hero-copy-v716 h1{font-size:72px !important}
+}
+
+/* 태블릿은 2단 */
+@media(max-width:1100px){
+  .hero-layout-v716{
+    grid-template-columns:1fr 1fr !important;
+  }
+  .hero-gallery-v716{height:410px !important}
+  .hero-music-v716{
+    grid-column:1 / -1 !important;
+    justify-self:center !important;
+  }
+}
+
+/* 모바일 */
+@media(max-width:760px){
+  .hero-layout-v716{
+    grid-template-columns:1fr !important;
+  }
+  .hero-gallery-v716{
+    height:420px !important;
+  }
+  .hero-copy-v716 h1{
+    font-size:58px !important;
+  }
+}
