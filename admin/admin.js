@@ -133,3 +133,35 @@ if(debtAdminList)onSnapshot(query(collection(db,'rouletteDebts'),orderBy('create
     if(confirm('이 시청자의 업보 카드 전체를 삭제할까요?'))await deleteDoc(doc(db,'rouletteDebts',b.dataset.debtCardDelete));
   }));
 });
+
+
+// V7.14 YouTube 링크 자동 정보 불러오기
+const musicUrlInput=document.querySelector('[data-music-url]');
+const musicTitleInput=document.querySelector('[data-music-title]');
+const musicAuthorInput=document.querySelector('[data-music-author]');
+const musicFetchButton=document.querySelector('[data-fetch-music-info]');
+const musicFetchStatus=document.querySelector('[data-music-fetch-status]');
+
+async function fetchMusicMetadata(){
+  const url=(musicUrlInput?.value||'').trim();
+  if(!url){if(musicFetchStatus)musicFetchStatus.textContent='유튜브 링크를 먼저 입력해 주세요.';return}
+  if(musicFetchButton)musicFetchButton.disabled=true;
+  if(musicFetchStatus)musicFetchStatus.textContent='영상 정보를 불러오는 중...';
+  try{
+    const endpoint='https://www.youtube.com/oembed?format=json&url='+encodeURIComponent(url);
+    const response=await fetch(endpoint);
+    if(!response.ok)throw new Error('영상 정보를 가져올 수 없어요.');
+    const data=await response.json();
+    if(musicTitleInput)musicTitleInput.value=data.title||'';
+    if(musicAuthorInput)musicAuthorInput.value=data.author_name||'';
+    if(musicFetchStatus)musicFetchStatus.textContent='제목과 채널명을 가져왔어요. 이제 홈 화면 저장을 눌러 주세요.';
+  }catch(err){
+    console.error(err);
+    if(musicFetchStatus)musicFetchStatus.textContent='자동으로 가져오지 못했어요. 공개 영상인지 링크를 확인해 주세요.';
+  }finally{
+    if(musicFetchButton)musicFetchButton.disabled=false;
+  }
+}
+musicFetchButton?.addEventListener('click',fetchMusicMetadata);
+musicUrlInput?.addEventListener('change',fetchMusicMetadata);
+musicUrlInput?.addEventListener('paste',()=>setTimeout(fetchMusicMetadata,80));
