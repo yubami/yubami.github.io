@@ -1522,3 +1522,318 @@ html:not([data-theme="morning"]) .hero-sky::before{
     width:100% !important;
   }
 }
+
+
+/* V7.20: 왼쪽 소개+음악 / 오른쪽 세로 사진 */
+.hero-v720{
+  min-height:auto !important;
+}
+.hero-v720 .hero-sky{
+  max-width:1480px !important;
+  padding:30px 30px 36px !important;
+}
+.hero-layout-v720{
+  display:grid !important;
+  grid-template-columns:minmax(560px,1.05fr) minmax(420px,.8fr) !important;
+  gap:clamp(44px,5vw,84px) !important;
+  align-items:start !important;
+  min-height:calc(100vh - 105px) !important;
+}
+
+.hero-content-v720{
+  width:100%;
+  max-width:760px;
+  justify-self:center;
+  display:grid;
+  align-content:start;
+  justify-items:center;
+  padding:18px 0 26px;
+}
+
+.hero-copy-v720{
+  width:100%;
+  text-align:center;
+  display:grid;
+  justify-items:center;
+}
+.hero-slogan-editable{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:48px;
+  padding:10px 24px;
+  border-radius:16px;
+  border:1px dashed rgba(255,115,181,.68);
+  background:rgba(20,20,60,.28);
+  color:#ffd06d;
+  font-weight:900;
+  font-size:18px;
+}
+.hero-copy-v720 h1{
+  font-family:Georgia,serif;
+  font-size:clamp(74px,7.6vw,122px);
+  line-height:.9;
+  margin:22px 0 14px;
+  letter-spacing:.04em;
+  background:linear-gradient(90deg,#ffe4a4,#ffb0d6,#cba8ff);
+  -webkit-background-clip:text;
+  color:transparent;
+  text-shadow:0 0 28px rgba(255,168,216,.16);
+}
+.korean-name-v720{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+.korean-name-v720 i{
+  width:86px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,#ffd36c);
+}
+.korean-name-v720 i:last-child{
+  background:linear-gradient(90deg,#ffd36c,transparent);
+}
+.hero-copy-v720 [data-home-description]{
+  margin:22px 0 0;
+  font-size:18px;
+  line-height:1.7;
+}
+
+.hero-links-v720{
+  display:grid !important;
+  grid-template-columns:repeat(6,minmax(0,1fr)) !important;
+  gap:12px !important;
+  width:min(100%,690px) !important;
+  margin-top:28px !important;
+}
+.hero-links-v720 .cozy-link{
+  justify-content:center !important;
+  min-width:0 !important;
+  padding:14px 14px !important;
+  font-size:13px !important;
+  white-space:nowrap !important;
+}
+.hero-links-v720 .cozy-link:nth-child(1),
+.hero-links-v720 .cozy-link:nth-child(2),
+.hero-links-v720 .cozy-link:nth-child(3){
+  grid-column:span 2 !important;
+}
+.hero-links-v720 .cozy-link:nth-child(4){
+  grid-column:2 / span 2 !important;
+}
+.hero-links-v720 .cozy-link:nth-child(5){
+  grid-column:4 / span 2 !important;
+}
+
+/* 고양이 발바닥 구분선 */
+.paw-divider{
+  width:min(100%,620px);
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:14px;
+  margin:30px auto 20px;
+}
+.paw-divider span{
+  height:1px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,204,120,.8) 0 4px,
+      transparent 4px 8px
+    );
+}
+.paw-divider b{
+  font-size:22px;
+  filter:drop-shadow(0 0 8px rgba(255,164,214,.45));
+}
+.paw-divider-bottom{
+  margin:22px auto 0;
+}
+
+/* 음악: 카드 없이 가운데 정렬 */
+.hero-music-v720{
+  width:100% !important;
+  max-width:640px !important;
+  margin:0 auto !important;
+  background:transparent !important;
+}
+.hero-music-v720 .cat-music-player{
+  width:100% !important;
+  max-width:640px !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  overflow:visible !important;
+}
+.hero-music-v720 .cat-music-heading{
+  text-align:center !important;
+  margin-bottom:12px !important;
+}
+.hero-music-v720 .cat-music-heading strong{
+  font-size:29px !important;
+}
+.hero-music-v720 .cat-cd-stage{
+  width:100% !important;
+  height:320px !important;
+  display:grid !important;
+  place-items:end center !important;
+  margin:0 auto !important;
+}
+.hero-music-v720 .cat-cd-shell{
+  width:270px !important;
+  height:270px !important;
+}
+.hero-music-v720 .cat-cd{
+  width:270px !important;
+  height:270px !important;
+}
+.hero-music-v720 .cat-ear{
+  top:0 !important;
+  width:86px !important;
+  height:96px !important;
+}
+.hero-music-v720 .cat-ear-left{left:calc(50% - 150px) !important}
+.hero-music-v720 .cat-ear-right{right:calc(50% - 150px) !important}
+
+.hero-music-v720 .cat-player-controls{
+  width:min(100%,420px) !important;
+  display:grid !important;
+  grid-template-columns:54px 44px 24px minmax(120px,1fr) 44px !important;
+  gap:10px !important;
+  align-items:center !important;
+  margin:18px auto 0 !important;
+}
+.hero-music-v720 .cat-player-controls input[type="range"]{
+  min-width:0 !important;
+  width:100% !important;
+}
+
+/* 오른쪽 세로형 사진 */
+.hero-portrait-v720{
+  position:relative;
+  width:min(100%,500px);
+  min-height:760px;
+  height:calc(100vh - 145px);
+  max-height:860px;
+  overflow:hidden;
+  border-radius:30px;
+  border:5px solid rgba(210,164,255,.58);
+  background:linear-gradient(145deg,rgba(114,77,188,.72),rgba(255,121,174,.22));
+  box-shadow:
+    0 28px 60px rgba(3,5,25,.4),
+    0 0 0 3px rgba(255,184,226,.12),
+    0 0 34px rgba(159,125,255,.18);
+  align-self:start;
+}
+.hero-portrait-v720 img{
+  display:block !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:none !important;
+  max-height:none !important;
+  object-fit:cover !important;
+  object-position:center top !important;
+}
+.hero-portrait-v720::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(125deg,rgba(255,255,255,.14),transparent 26% 75%,rgba(255,166,218,.12));
+}
+.hero-portrait-v720 .hero-portrait-placeholder{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  color:rgba(255,255,255,.65);
+  font-weight:800;
+}
+
+/* 불씨냥 왼쪽 아래 + 외곽선 두껍게 */
+.bulssinyang-wrap{
+  left:16px !important;
+  right:auto !important;
+  bottom:12px !important;
+}
+.bulssinyang img{
+  filter:
+    drop-shadow(2px 0 0 #222)
+    drop-shadow(-2px 0 0 #222)
+    drop-shadow(0 2px 0 #222)
+    drop-shadow(0 -2px 0 #222)
+    drop-shadow(0 10px 14px rgba(0,0,0,.35)) !important;
+}
+
+/* 아래 카드와 간격 */
+.hero-v720 + .quick-strip{
+  margin-top:24px !important;
+}
+
+/* 태블릿 */
+@media(max-width:1200px){
+  .hero-layout-v720{
+    grid-template-columns:1fr !important;
+    min-height:auto !important;
+  }
+  .hero-content-v720,
+  .hero-portrait-v720{
+    grid-column:1 !important;
+  }
+  .hero-portrait-v720{
+    width:min(88vw,540px);
+    height:720px;
+    min-height:0;
+    justify-self:center;
+  }
+}
+
+/* 모바일 */
+@media(max-width:720px){
+  .hero-v720 .hero-sky{
+    padding-left:14px !important;
+    padding-right:14px !important;
+  }
+  .hero-copy-v720 h1{
+    font-size:clamp(60px,17vw,88px);
+  }
+  .hero-links-v720{
+    grid-template-columns:1fr 1fr !important;
+    width:min(100%,460px) !important;
+  }
+  .hero-links-v720 .cozy-link{
+    grid-column:auto !important;
+  }
+  .hero-links-v720 .cozy-link:last-child{
+    grid-column:1 / -1 !important;
+    width:calc(50% - 6px) !important;
+    justify-self:center !important;
+  }
+  .hero-portrait-v720{
+    height:620px;
+  }
+}
+
+@media(max-width:500px){
+  .hero-links-v720{
+    grid-template-columns:1fr !important;
+  }
+  .hero-links-v720 .cozy-link,
+  .hero-links-v720 .cozy-link:last-child{
+    grid-column:1 !important;
+    width:100% !important;
+  }
+  .hero-music-v720 .cat-player-controls{
+    width:min(100%,340px) !important;
+    grid-template-columns:48px 40px 20px minmax(80px,1fr) 38px !important;
+    gap:7px !important;
+  }
+  .hero-portrait-v720{
+    height:520px;
+  }
+}
