@@ -7,8 +7,8 @@ service cloud.firestore {
     }
 
     match /{singleCollection}/{document} {
-      allow read: if singleCollection in ["home", "profile"];
-      allow create, update, delete: if singleCollection in ["home", "profile"] && isAdmin();
+      allow read: if singleCollection in ["home", "profile", "debtPage"];
+      allow create, update, delete: if singleCollection in ["home", "profile", "debtPage"] && isAdmin();
     }
 
     match /{collection}/{document} {

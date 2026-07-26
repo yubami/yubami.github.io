@@ -274,3 +274,9 @@ html[data-theme="morning"] .hero-gallery-item{border-color:rgba(255,255,255,.75)
 
 @media(max-width:900px){.debt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.debt-grid{grid-template-columns:1fr}.rule-card{grid-template-columns:1fr}.song-row{align-items:flex-start}.song-actions{flex-direction:column;align-items:flex-end}}
+
+
+/* V7.7 — home favorite music */
+.home-music-section{margin-top:34px}.home-music-card{display:grid;grid-template-columns:74px 1fr auto;align-items:center;gap:20px;padding:20px 24px}.home-music-icon{display:grid;place-items:center;width:66px;height:66px;border-radius:21px;background:linear-gradient(135deg,#7446d8,#e94389,#ff9858);color:#fff;font-size:30px;box-shadow:0 14px 35px rgba(227,69,139,.24)}.home-music-copy h2{margin:4px 0}.home-music-copy p{margin:0;color:var(--muted)}.home-music-play{border:0;border-radius:999px;padding:13px 20px;background:linear-gradient(135deg,#e94389,#ff9858);color:#fff;font-weight:1000;cursor:pointer;box-shadow:0 12px 30px rgba(227,69,139,.25)}
+.debt-page-settings{margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid var(--line)}
+@media(max-width:620px){.home-music-card{grid-template-columns:58px 1fr}.home-music-icon{width:54px;height:54px}.home-music-play{grid-column:1/-1;width:100%}}
