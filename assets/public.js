@@ -68,8 +68,155 @@ listen("embers",(el,a)=>el.innerHTML=a.map(x=>`<article class="card photo ember-
 
 const debtSubtitle=document.querySelector('[data-debt-subtitle]');if(debtSubtitle){onSnapshot(doc(db,'debtPage','main'),s=>{if(s.exists())debtSubtitle.innerHTML=br(s.data().subtitle||'')})}
 
-const weeklyRoot=document.querySelector('[data-weekly-calendar]');const monthRoot=document.querySelector('[data-month-calendar]');if(weeklyRoot||monthRoot){let allSchedules=[],viewDate=new Date();const dateKey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;const renderWeek=()=>{if(!weeklyRoot)return;const today=new Date(),day=today.getDay(),monday=new Date(today);monday.setDate(today.getDate()-((day+6)%7));monday.setHours(0,0,0,0);weeklyRoot.innerHTML=Array.from({length:7},(_,i)=>{const d=new Date(monday);d.setDate(monday.getDate()+i);const key=dateKey(d),items=allSchedules.filter(x=>x.date===key);return `<article class="week-day ${key===dateKey(today)?'today':''}"><div class="week-date"><span>${['월','화','수','목','금','토','일'][i]}</span><b>${d.getDate()}</b></div><div class="week-events">${items.length?items.map(x=>`<div class="week-event"><strong>${esc(x.title||'방송')}</strong>${x.time?`<small>${esc(x.time)}</small>`:''}</div>`).join(''):'<span class="week-empty">휴식 또는 미정</span>'}</div></article>`}).join('')};const renderMonth=()=>{if(!monthRoot)return;const y=viewDate.getFullYear(),m=viewDate.getMonth();document.querySelector('[data-calendar-label]').textContent=`${y}년 ${m+1}월`;const first=new Date(y,m,1),last=new Date(y,m+1,0),start=(first.getDay()+6)%7;let html=['월','화','수','목','금','토','일'].map(x=>`<div class="calendar-weekday">${x}</div>`).join('');for(let i=0;i<start;i++)html+='<div class="calendar-cell muted"></div>';for(let d=1;d<=last.getDate();d++){const date=new Date(y,m,d),key=dateKey(date),items=allSchedules.filter(x=>x.date===key);html+=`<div class="calendar-cell ${key===dateKey(new Date())?'today':''}"><div class="calendar-day">${d}</div><div class="calendar-events">${items.map(x=>`<div class="calendar-event"><b>${esc(x.title||'방송')}</b>${x.time?`<small>${esc(x.time)}</small>`:''}${x.content?`<span>${esc(x.content)}</span>`:''}</div>`).join('')}</div></div>`}monthRoot.innerHTML=html};onSnapshot(query(collection(db,'schedules'),orderBy('createdAt','desc')),s=>{allSchedules=s.docs.map(d=>({id:d.id,...d.data()}));renderWeek();renderMonth()});document.querySelector('[data-calendar-prev]')?.addEventListener('click',()=>{viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()-1,1);renderMonth()});document.querySelector('[data-calendar-next]')?.addEventListener('click',()=>{viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,1);renderMonth()});document.querySelector('[data-calendar-today]')?.addEventListener('click',()=>{viewDate=new Date();renderMonth()})}
 
+const weeklyRoot=document.querySelector('[data-weekly-calendar]');
+const monthRoot=document.querySelector('[data-month-calendar]');
+
+if(weeklyRoot||monthRoot){
+  let allSchedules=[];
+  let viewDate=new Date();
+  viewDate.setDate(1);
+
+  const toLocalDate=value=>{
+    if(!value)return null;
+    const [y,m,d]=String(value).split('-').map(Number);
+    if(!y||!m||!d)return null;
+    const date=new Date(y,m-1,d);
+    date.setHours(0,0,0,0);
+    return date;
+  };
+
+  const dateKey=date=>{
+    const y=date.getFullYear();
+    const m=String(date.getMonth()+1).padStart(2,'0');
+    const d=String(date.getDate()).padStart(2,'0');
+    return `${y}-${m}-${d}`;
+  };
+
+  const scheduleRange=item=>{
+    const start=toLocalDate(item.startDate||item.date);
+    const end=toLocalDate(item.endDate||item.startDate||item.date);
+    return {start,end};
+  };
+
+  const includesDate=(item,date)=>{
+    const {start,end}=scheduleRange(item);
+    return !!(start&&end&&date>=start&&date<=end);
+  };
+
+  const renderWeek=()=>{
+    if(!weeklyRoot)return;
+
+    const today=new Date();
+    today.setHours(0,0,0,0);
+    const day=today.getDay();
+    const monday=new Date(today);
+    monday.setDate(today.getDate()-((day+6)%7));
+
+    weeklyRoot.innerHTML=Array.from({length:7},(_,index)=>{
+      const date=new Date(monday);
+      date.setDate(monday.getDate()+index);
+      const key=dateKey(date);
+      const items=allSchedules.filter(item=>includesDate(item,date));
+
+      return `<article class="week-day ${key===dateKey(today)?'today':''}">
+        <div class="week-date">
+          <span>${['월','화','수','목','금','토','일'][index]}</span>
+          <b>${date.getDate()}</b>
+        </div>
+        <div class="week-events">
+          ${items.length
+            ?items.map(item=>`<div class="week-event"><strong>${esc(item.title||'방송')}</strong></div>`).join('')
+            :'<span class="week-empty">휴식 또는 미정</span>'}
+        </div>
+      </article>`;
+    }).join('');
+  };
+
+  const renderMonth=()=>{
+    if(!monthRoot)return;
+
+    const year=viewDate.getFullYear();
+    const month=viewDate.getMonth();
+    const label=document.querySelector('[data-calendar-label]');
+    if(label)label.textContent=`${year}년 ${month+1}월`;
+
+    // Monday-first calendar, always 6 rows so every month has the same shape.
+    const firstOfMonth=new Date(year,month,1);
+    const mondayOffset=(firstOfMonth.getDay()+6)%7;
+    const gridStart=new Date(year,month,1-mondayOffset);
+    const todayKey=dateKey(new Date());
+
+    const weekdays=['월','화','수','목','금','토','일']
+      .map(day=>`<div class="calendar-weekday">${day}</div>`)
+      .join('');
+
+    const cells=Array.from({length:42},(_,index)=>{
+      const date=new Date(gridStart);
+      date.setDate(gridStart.getDate()+index);
+
+      const key=dateKey(date);
+      const inCurrentMonth=date.getMonth()===month;
+      const items=allSchedules.filter(item=>includesDate(item,date));
+
+      const events=items.map(item=>{
+        const {start,end}=scheduleRange(item);
+        if(!start||!end)return '';
+
+        const startsHere=dateKey(start)===key;
+        const endsHere=dateKey(end)===key;
+        const continuesBefore=start<date;
+        const continuesAfter=end>date;
+
+        const classes=[
+          'calendar-range-event',
+          startsHere?'is-start':'',
+          endsHere?'is-end':'',
+          continuesBefore?'continues-before':'',
+          continuesAfter?'continues-after':''
+        ].filter(Boolean).join(' ');
+
+        // Show title on the first visible day of the event in this calendar row,
+        // including ranges that began in a previous month.
+        const column=index%7;
+        const showTitle=startsHere||column===0||index===0;
+
+        return `<div class="${classes}" title="${esc(item.title||'방송 일정')}">
+          <span>${showTitle?esc(item.title||'방송 일정'):''}</span>
+        </div>`;
+      }).join('');
+
+      return `<div class="calendar-cell ${inCurrentMonth?'':'is-outside'} ${key===todayKey?'today':''}" data-date="${key}">
+        <div class="calendar-day-number">${date.getDate()}</div>
+        <div class="calendar-events">${events}</div>
+      </div>`;
+    }).join('');
+
+    monthRoot.innerHTML=weekdays+cells;
+  };
+
+  onSnapshot(collection(db,'schedules'),snapshot=>{
+    allSchedules=snapshot.docs.map(document=>({id:document.id,...document.data()}));
+    renderWeek();
+    renderMonth();
+  });
+
+  document.querySelector('[data-calendar-prev]')?.addEventListener('click',()=>{
+    viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()-1,1);
+    renderMonth();
+  });
+
+  document.querySelector('[data-calendar-next]')?.addEventListener('click',()=>{
+    viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,1);
+    renderMonth();
+  });
+
+  document.querySelector('[data-calendar-today]')?.addEventListener('click',()=>{
+    viewDate=new Date();
+    viewDate.setDate(1);
+    renderMonth();
+  });
+}
 
 // V7.14 고양이 CD 플레이어
 let yubamiMusicPlayer=null;
@@ -197,69 +344,3 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 const bs=document.querySelector('[data-bulssinyang]'),bubble=document.querySelector('[data-bulssinyang-bubble]');const lines=['모닥불 앞에서 쉬다 가냥!','불씨단 안녕!','오늘도 방송 보러 가냥!','10시에 다시 만나냥!','유바미 기다리고 있었냥!'];bs?.addEventListener('click',e=>{e.stopPropagation();bubble.textContent=lines[Math.floor(Math.random()*lines.length)];bubble.hidden=false;clearTimeout(window.bsTimer);window.bsTimer=setTimeout(()=>bubble.hidden=true,2500)});document.addEventListener('pointerdown',e=>{if(e.button!==0)return;const p=document.createElement('span');p.className='click-paw';p.textContent='🐾';p.style.left=e.clientX+'px';p.style.top=e.clientY+'px';p.style.setProperty('--r',(Math.random()*40-20)+'deg');document.body.appendChild(p);p.addEventListener('animationend',()=>p.remove())});
-
-
-// V7.28 월간 캘린더 범위 일정
-const calendarGrid=document.querySelector('[data-calendar-grid]');
-const calendarTitle=document.querySelector('[data-calendar-title]');
-const calendarPrev=document.querySelector('[data-calendar-prev]');
-const calendarNext=document.querySelector('[data-calendar-next]');
-let calendarCursor=new Date();
-calendarCursor.setDate(1);
-let calendarSchedules=[];
-
-function parseLocalDate(value){
-  if(!value)return null;
-  const [y,m,d]=String(value).split('-').map(Number);
-  return new Date(y,m-1,d);
-}
-function dateKey(date){
-  const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,'0'),d=String(date.getDate()).padStart(2,'0');
-  return `${y}-${m}-${d}`;
-}
-function datesBetween(start,end){
-  const out=[],cursor=new Date(start);
-  while(cursor<=end){out.push(new Date(cursor));cursor.setDate(cursor.getDate()+1)}
-  return out;
-}
-function renderRangeCalendar(){
-  if(!calendarGrid)return;
-  const year=calendarCursor.getFullYear(),month=calendarCursor.getMonth();
-  if(calendarTitle)calendarTitle.textContent=`${year}년 ${month+1}월`;
-
-  const first=new Date(year,month,1);
-  const last=new Date(year,month+1,0);
-  const start=new Date(first);start.setDate(first.getDate()-first.getDay());
-  const end=new Date(last);end.setDate(last.getDate()+(6-last.getDay()));
-
-  const cells=datesBetween(start,end);
-  calendarGrid.innerHTML=cells.map(day=>{
-    const key=dateKey(day);
-    const isOther=day.getMonth()!==month;
-    const isToday=key===dateKey(new Date());
-    const events=calendarSchedules.filter(item=>{
-      const s=parseLocalDate(item.startDate||item.date);
-      const e=parseLocalDate(item.endDate||item.startDate||item.date);
-      return s&&e&&day>=s&&day<=e;
-    });
-    const eventHtml=events.map(item=>{
-      const s=parseLocalDate(item.startDate||item.date),e=parseLocalDate(item.endDate||item.startDate||item.date);
-      const startHere=dateKey(day)===dateKey(s);
-      const endHere=dateKey(day)===dateKey(e);
-      const cls=['calendar-range-event',startHere?'is-start':'',endHere?'is-end':'',(!startHere&&!endHere)?'is-middle':''].filter(Boolean).join(' ');
-      return `<div class="${cls}" title="${esc(item.title||'방송 일정')}"><span>${startHere?esc(item.title||'방송 일정'):''}</span></div>`;
-    }).join('');
-    return `<div class="calendar-day ${isOther?'is-other':''} ${isToday?'is-today':''}" data-date="${key}">
-      <div class="calendar-day-number">${day.getDate()}</div>
-      <div class="calendar-events">${eventHtml}</div>
-    </div>`;
-  }).join('');
-}
-calendarPrev?.addEventListener('click',()=>{calendarCursor.setMonth(calendarCursor.getMonth()-1);renderRangeCalendar()});
-calendarNext?.addEventListener('click',()=>{calendarCursor.setMonth(calendarCursor.getMonth()+1);renderRangeCalendar()});
-if(calendarGrid){
-  onSnapshot(collection(db,'schedules'),snap=>{
-    calendarSchedules=snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderRangeCalendar();
-  });
-}
