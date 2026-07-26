@@ -3106,3 +3106,69 @@ html[data-theme="morning"] .portrait-pop-bubble::after{
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
   }
 }
+
+
+/* V8.4 요청 수정 */
+
+/* 일정 날짜와 시작 시간 */
+.schedule-basic-grid{
+  grid-template-columns:minmax(220px,1fr) minmax(220px,1fr);
+}
+.schedule-date-time{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 14px;
+  margin:7px 0 0;
+  color:var(--muted);
+  font-size:13px;
+}
+.week-event small{
+  display:block;
+  margin-top:3px;
+  font-size:11px;
+  font-weight:800;
+  opacity:.88;
+}
+
+/* 업보 개수: 검정 고양이 얼굴 실루엣 */
+.debt-count{
+  position:relative!important;
+  width:82px!important;
+  height:76px!important;
+  border-radius:48% 48% 42% 42%!important;
+  background:#11131b!important;
+  color:#fff!important;
+  box-shadow:
+    0 10px 22px rgba(0,0,0,.24),
+    inset 0 -6px 0 rgba(255,255,255,.035)!important;
+  isolation:isolate;
+}
+.debt-count::before,
+.debt-count::after{
+  content:"";
+  position:absolute;
+  top:-14px;
+  width:31px;
+  height:35px;
+  background:#11131b;
+  z-index:-1;
+}
+.debt-count::before{
+  left:4px;
+  clip-path:polygon(0 0,100% 76%,15% 100%);
+}
+.debt-count::after{
+  right:4px;
+  clip-path:polygon(100% 0,85% 100%,0 76%);
+}
+.debt-count strong{
+  font-size:29px!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.15);
+}
+.debt-count span{
+  font-size:10px!important;
+  letter-spacing:.04em;
+}
+@media(max-width:680px){
+  .schedule-basic-grid{grid-template-columns:1fr}
+}

@@ -6,6 +6,14 @@ const db=getFirestore(initializeApp(firebaseConfig));
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 const br=s=>esc(s).replace(/\n/g,"<br>"), stars=n=>"★".repeat(Number(n)||0)+"☆".repeat(5-(Number(n)||0));
 const empty=(el,msg)=>el.innerHTML=`<div class="empty">${esc(msg)}</div>`;
+const scheduleDateLabel=item=>{
+  const start=item.startDate||item.date||'';
+  const end=item.endDate||start;
+  if(!start)return '날짜 미정';
+  return start===end?start:`${start} ~ ${end}`;
+};
+const scheduleTimeLabel=item=>item.startTime||item.time||'시간 미정';
+
 const homeImg=document.querySelector('[data-home-image]'),homeGallery=document.querySelector('[data-home-gallery]'),homePortrait=document.querySelector('[data-home-portrait]'),homeTitle=document.querySelector('[data-home-headline]'),homeDesc=document.querySelector('[data-home-description]'),homeMessage=document.querySelector('[data-home-message]'),homeMusicSection=document.querySelector('[data-home-music-section]'),homeMusicTitle=document.querySelector('[data-home-music-title]'),homeMusicAuthor=document.querySelector('[data-home-music-author]'),homeLinks=document.querySelector('[data-home-links]');
 if(homeImg||homeGallery||homePortrait||homeTitle||homeDesc||homeMessage||homeMusicSection){onSnapshot(doc(db,'home','main'),s=>{if(!s.exists())return;const x=s.data();
   if(homeImg){if(x.imageUrl){homeImg.innerHTML=`<img src="${esc(x.imageUrl)}" alt="유바미 메인 이미지">`;homeImg.classList.add('has-image')}else{homeImg.innerHTML='';homeImg.classList.remove('has-image')}}
@@ -61,7 +69,7 @@ listen("notices",(el,a)=>{
   };
   el.querySelectorAll('[data-notice-id]').forEach(card=>{card.addEventListener('click',()=>openNotice(card));card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openNotice(card)}})});
 });
-listen("schedules",(el,a)=>el.innerHTML=a.map(x=>`<article class="row" data-searchable="${esc((x.title||"")+" "+(x.content||"")+" "+(x.date||""))}"><div><h3>${esc(x.title||"방송")}</h3><p>${br(x.content||"")}</p></div><span class="pill">${esc(x.date||"일정")}${x.time?" · "+esc(x.time):""}</span></article>`).join(""));
+listen("schedules",(el,a)=>el.innerHTML=a.map(x=>`<article class="row schedule-list-row" data-searchable="${esc((x.title||"")+" "+scheduleDateLabel(x)+" "+scheduleTimeLabel(x))}"><div><h3>${esc(x.title||"방송")}</h3><p class="schedule-date-time"><span>📅 ${esc(scheduleDateLabel(x))}</span><span>🕙 ${esc(scheduleTimeLabel(x))}</span></p></div><span class="pill">${esc(scheduleTimeLabel(x))}</span></article>`).join(""));
 listen("instagram",(el,a)=>{
   el.innerHTML=a.map(x=>`<article class="card photo bami-card" tabindex="0" role="button" data-bami-id="${esc(x.id)}" data-searchable="${esc((x.title||"")+" "+(x.content||""))}">${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="${esc(x.title||'바미스타그램')}">`:""}<div class="copy"><h3>${esc(x.title||"제목 없음")}</h3><p>${br(x.content||"")}</p>${x.downloadAllowed?'<span class="download-ok">⬇ 다운로드 가능</span>':''}</div></article>`).join("");
   const map=new Map(a.map(x=>[x.id,x]));
@@ -86,7 +94,7 @@ listen("songs",(el,a)=>{
   const apply=value=>{document.querySelectorAll('[data-song-category]').forEach(section=>section.style.display=value==='all'||section.dataset.songCategory===value?'':'none');buttons.forEach(b=>b.classList.toggle('active',b.dataset.songFilter===value))};
   buttons.forEach(button=>button.addEventListener('click',()=>apply(button.dataset.songFilter)));
 });
-listen("schedules",(el,a)=>el.innerHTML=a.map(x=>`<article class="row"><div><h3>${esc(x.title||"방송")}</h3><p>${br(x.content||"")}</p></div><span class="pill">${esc(x.date||"일정")}</span></article>`).join(""),1);
+listen("schedules",(el,a)=>el.innerHTML=a.map(x=>`<article class="row"><div><h3>${esc(x.title||"방송")}</h3><p>${esc(scheduleDateLabel(x))} · ${esc(scheduleTimeLabel(x))}</p></div><span class="pill">${esc(scheduleTimeLabel(x))}</span></article>`).join(""),1);
 
 
 listen("siteRules",(el,a)=>{
@@ -166,7 +174,7 @@ if(weeklyRoot||monthRoot){
         </div>
         <div class="week-events">
           ${items.length
-            ?items.map(item=>`<div class="week-event" style="--event-color:${esc(item.color||'#8b5cf6')}"><strong>${esc(item.title||'방송')}</strong></div>`).join('')
+            ?items.map(item=>`<div class="week-event" style="--event-color:${esc(item.color||'#8b5cf6')}"><strong>${esc(item.title||'방송')}</strong>${item.startTime?`<small>${esc(item.startTime)}</small>`:''}</div>`).join('')
             :'<span class="week-empty">휴식 또는 미정</span>'}
         </div>
       </article>`;
