@@ -4,56 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080d28">
   <title>유바미 관리자</title>
-  <link rel="stylesheet" href="../assets/style.css?v=7.20">
+  <link rel="stylesheet" href="../assets/style.css?v=7.21">
 </head>
 <body><div id="ambientLights" aria-hidden="true"></div><div id="cursorStars" aria-hidden="true"></div>
 <header><div class="shell nav"><a class="brand" href="../index.html"><span class="brand-word">YUBAMI</span></a><div class="theme-switch" role="group" aria-label="화면 테마"><button type="button" data-theme-choice="morning">☀ <span>아침</span></button><button type="button" data-theme-choice="night">🌙 <span>밤</span></button></div><a class="btn soft" href="../index.html">일반 사이트</a></div></header>
 <main><div class="shell">
 <section id="loginView" class="card login">
   <div class="kicker">ADMIN LOGIN</div><h1 class="page-title" style="font-size:40px">관리자 로그인</h1>
-  <form id="loginForm" class="form"><label>이메일<input class="field" id="email" type="email" required></label><label>비밀번호<input class="field" id="password" type="password" required></label><button class="btn primary">로그인</button><p id="loginStatus"></p></form>
-</section>
-<section id="adminView" class="hidden">
-  <h1 class="page-title">사이트 관리</h1><p><span id="adminEmail"></span> · <button class="btn soft" id="logout">로그아웃</button></p>
-  <div class="admin-grid">
-    <aside class="card side">
-      <button class="active" data-panel="home">🏠 홈 화면</button><button data-panel="profile">👤 자기소개</button><button data-panel="embers">🔥 불씨도감</button><button data-panel="songs">🎵 노래</button><button data-panel="notices">📢 공지</button><button data-panel="schedules">📅 일정</button><button data-panel="wardrobe-categories">🗂️ 옷장 카테고리</button><button data-panel="wardrobe">👗 옷장</button><button data-panel="instagram">📷 바미스타그램</button><button data-panel="debts">🎯 룰렛 업보</button><button data-panel="rules">📜 규칙</button><button data-panel="cloudinary">🖼️ 사진 업로드 설정</button>
-    </aside>
-    <section class="card pad">
-      <div class="panel active" id="panel-home"><h2>홈 화면 관리</h2>
-        <form class="form singleton-form" data-document="home/main"><label>메인 슬로건<input class="field" name="slogan" placeholder="예: 10시에 나타나는 고양이"></label>
-          <label>메인 문구<input class="field" name="headline" placeholder="밤 10시, 고양이가 나타나요."></label>
-          <label>소개 문구<textarea class="field" name="description" placeholder="유바미의 공식 홈페이지예요."></textarea></label><label>유바미의 한마디<input class="field" name="message" placeholder="오늘도 와줘서 고마워요, 불씨단! ✨"></label><div class="music-admin-box">
-<label>홈 음악 유튜브 링크
-  <div class="inline-add">
-    <input class="field" type="url" name="musicUrl" data-music-url placeholder="유튜브 링크만 붙여넣어 주세요.">
-    <button type="button" class="btn soft" data-fetch-music-info>정보 불러오기</button>
-  </div>
-</label>
-<div class="form-grid">
-  <label>자동으로 가져온 제목<input class="field" name="musicTitle" data-music-title placeholder="영상 제목" readonly></label>
-  <label>자동으로 가져온 채널명<input class="field" name="musicAuthor" data-music-author placeholder="채널명" readonly></label>
-</div>
-<p class="image-help">링크를 붙여넣으면 영상 제목과 채널명을 자동으로 가져와요. 저장하면 고양이 CD 안의 영상만 바뀝니다.</p>
-<p class="save-status" data-music-fetch-status aria-live="polite"></p>
-</div>
-          <div class="home-image-admin">
-            <h3>홈 메인 사진</h3>
-            <p class="image-help">첫 화면의 문구 옆에 최대 4장이 콜라주로 표시돼요. 3장만 등록해도 자연스럽게 배치됩니다.</p>
-            <div class="home-image-slots">
-              <div class="home-image-slot"><input type="hidden" name="imageUrl"><b>사진 1</b><div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="home" data-target="imageUrl">업로드</button><button type="button" class="btn ghost clear-image" data-target="imageUrl">제거</button></div><div class="image-preview" data-preview-for="imageUrl"></div></div>
-              <div class="home-image-slot"><input type="hidden" name="imageUrl2"><b>사진 2</b><div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="home" data-target="imageUrl2">업로드</button><button type="button" class="btn ghost clear-image" data-target="imageUrl2">제거</button></div><div class="image-preview" data-preview-for="imageUrl2"></div></div>
-              <div class="home-image-slot"><input type="hidden" name="imageUrl3"><b>사진 3</b><div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="home" data-target="imageUrl3">업로드</button><button type="button" class="btn ghost clear-image" data-target="imageUrl3">제거</button></div><div class="image-preview" data-preview-for="imageUrl3"></div></div>
-              <div class="home-image-slot"><input type="hidden" name="imageUrl4"><b>사진 4</b><div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="home" data-target="imageUrl4">업로드</button><button type="button" class="btn ghost clear-image" data-target="imageUrl4">제거</button></div><div class="image-preview" data-preview-for="imageUrl4"></div></div>
-            </div>
-          </div><p class="save-status" aria-live="polite"></p>
-          <div class="actions"><button class="btn primary" data-submit>홈 화면 저장</button></div>
-        </form>
-      <div class="admin-subsection"><h3>바로가기 버튼 관리</h3><p class="image-help">아이콘, 이름, 링크와 순서를 직접 바꿀 수 있어요.</p><div data-home-links-manager class="home-links-editor"></div><div class="actions"><button type="button" class="btn soft" data-add-home-link>+ 버튼 추가</button><button type="button" class="btn primary" data-save-home-links>바로가기 저장</button></div><p class="save-status" data-home-links-status></p></div></div>
-
-      <div class="panel" id="panel-profile"><h2>자기소개 관리</h2>
-        <form class="form singleton-form" data-document="profile/main">
-          <label>페이지 제목<input class="field" name="title" placeholder="유바미 도감"></label>
+  <form id="loginForm" class="form">
           <label>한 줄 소개<input class="field" name="subtitle" placeholder="유바미의 프로필과 취향을 기록한 페이지예요."></label>
           <label>자기소개<textarea class="field" name="content" placeholder="자유롭게 자기소개를 작성해 주세요."></textarea></label>
           <div class="form-grid"><label>주요 콘텐츠<input class="field" name="mainContent" placeholder="소통 · 노래 · 게임"></label></div>
@@ -127,5 +85,5 @@
   </div>
 </section>
 </div></main>
-<script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script><script type="module" src="admin.js?v=7.20"></script>
+<script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script><script type="module" src="admin.js?v=7.21"></script>
 <script src="../assets/effects.js?v=7.9"></script></body></html>

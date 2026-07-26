@@ -1837,3 +1837,151 @@ html:not([data-theme="morning"]) .hero-sky::before{
     height:520px;
   }
 }
+
+
+/* V7.21: 슬로건 삭제 후 상단 여백 정리 */
+.hero-copy-v720{
+  padding-top:0 !important;
+}
+.hero-copy-v720 h1{
+  margin-top:0 !important;
+}
+
+/* V7.21: 발바닥 구분선 스타일 통일 */
+.paw-divider,
+.paw-divider-bottom{
+  width:min(100%,620px) !important;
+  margin:26px auto 18px !important;
+  display:grid !important;
+  grid-template-columns:1fr auto 1fr !important;
+  align-items:center !important;
+  gap:14px !important;
+}
+.paw-divider span,
+.paw-divider-bottom span{
+  height:2px !important;
+  border-radius:999px !important;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,184,224,.35) 12%,
+      rgba(255,211,112,.92) 48%,
+      rgba(255,184,224,.35) 88%,
+      transparent
+    ) !important;
+  box-shadow:0 0 10px rgba(255,181,220,.18) !important;
+}
+.paw-divider b,
+.paw-divider-bottom b{
+  display:grid !important;
+  place-items:center !important;
+  width:36px !important;
+  height:36px !important;
+  border-radius:50% !important;
+  background:rgba(255,255,255,.07) !important;
+  border:1px solid rgba(255,211,112,.28) !important;
+  color:#ffd370 !important;
+  font-size:18px !important;
+  filter:drop-shadow(0 0 8px rgba(255,163,216,.42)) !important;
+}
+.paw-divider-bottom{
+  margin-top:22px !important;
+}
+
+/* V7.21: CD를 확실한 고양이 얼굴 실루엣으로 */
+.hero-music-v720 .cat-cd-stage{
+  position:relative !important;
+  width:340px !important;
+  height:330px !important;
+  margin:0 auto !important;
+  overflow:visible !important;
+}
+.hero-music-v720 .cat-cd-shell{
+  position:absolute !important;
+  left:50% !important;
+  bottom:0 !important;
+  transform:translateX(-50%) !important;
+  width:270px !important;
+  height:270px !important;
+  z-index:3 !important;
+}
+.hero-music-v720 .cat-cd{
+  width:270px !important;
+  height:270px !important;
+  border-radius:50% !important;
+  overflow:hidden !important;
+}
+
+/* 기존 귀 모양 완전 덮어쓰기 */
+.hero-music-v720 .cat-ear{
+  position:absolute !important;
+  top:8px !important;
+  width:96px !important;
+  height:112px !important;
+  z-index:1 !important;
+  border:5px solid rgba(238,208,255,.95) !important;
+  background:linear-gradient(145deg,#d7b8ff,#9eb8ff) !important;
+  box-shadow:
+    0 0 18px rgba(198,154,255,.5),
+    inset 0 0 12px rgba(255,255,255,.18) !important;
+  clip-path:polygon(50% 0, 100% 100%, 0 100%) !important;
+  border-radius:26px 26px 18px 18px !important;
+  transform-origin:50% 100% !important;
+}
+.hero-music-v720 .cat-ear i{
+  position:absolute !important;
+  left:50% !important;
+  bottom:16px !important;
+  transform:translateX(-50%) !important;
+  width:48px !important;
+  height:62px !important;
+  background:linear-gradient(145deg,#ffd4df,#ff9fc8) !important;
+  clip-path:polygon(50% 0, 100% 100%, 0 100%) !important;
+  border-radius:16px !important;
+  box-shadow:none !important;
+}
+.hero-music-v720 .cat-ear-left{
+  left:10px !important;
+  right:auto !important;
+  transform:rotate(-18deg) !important;
+}
+.hero-music-v720 .cat-ear-right{
+  right:10px !important;
+  left:auto !important;
+  transform:rotate(18deg) !important;
+}
+
+/* 귀와 원형 CD가 자연스럽게 연결되도록 */
+.hero-music-v720 .cat-cd-shell::before,
+.hero-music-v720 .cat-cd-shell::after{
+  content:"" !important;
+  position:absolute !important;
+  top:-14px !important;
+  width:58px !important;
+  height:28px !important;
+  background:#17172f !important;
+  z-index:-1 !important;
+}
+.hero-music-v720 .cat-cd-shell::before{
+  left:25px !important;
+  transform:rotate(-12deg) !important;
+}
+.hero-music-v720 .cat-cd-shell::after{
+  right:25px !important;
+  transform:rotate(12deg) !important;
+}
+
+/* 재생 시 귀 점등 */
+.hero-music-v720 .cat-cd-stage.play-start .cat-ear{
+  filter:brightness(1.28) !important;
+  box-shadow:
+    0 0 20px rgba(255,165,221,.78),
+    0 0 36px rgba(162,151,255,.48) !important;
+}
+
+/* 관리자 홈 사진은 한 장만 쓰므로 불필요한 빈 업로드 줄 숨김 */
+#panel-home .upload-line:empty,
+#panel-home label:empty{
+  display:none !important;
+}
