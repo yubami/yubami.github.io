@@ -1,139 +1,120 @@
 <!doctype html>
+<!DOCTYPE html>
+
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080d28">
-  <title>유바미 관리자</title>
-  <link rel="stylesheet" href="../assets/style.css?v=7.25">
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#080d28" name="theme-color"/>
+<title>유바미 관리자</title>
+<link href="../assets/style.css?v=7.26" rel="stylesheet"/>
 </head>
-<body><div id="ambientLights" aria-hidden="true"></div><div id="cursorStars" aria-hidden="true"></div>
-<header><div class="shell nav"><a class="brand" href="../index.html"><span class="brand-word">YUBAMI</span></a><div class="theme-switch" role="group" aria-label="화면 테마"><button type="button" data-theme-choice="morning">☀ <span>아침</span></button><button type="button" data-theme-choice="night">🌙 <span>밤</span></button></div><a class="btn soft" href="../index.html">일반 사이트</a></div></header>
+<body><div aria-hidden="true" id="ambientLights"></div><div aria-hidden="true" id="cursorStars"></div>
+<header><div class="shell nav"><a class="brand" href="../index.html"><span class="brand-word">YUBAMI</span></a><div aria-label="화면 테마" class="theme-switch" role="group"><button data-theme-choice="morning" type="button">☀ <span>아침</span></button><button data-theme-choice="night" type="button">🌙 <span>밤</span></button></div><a class="btn soft" href="../index.html">일반 사이트</a></div></header>
 <main><div class="shell">
-<section id="loginView" class="card login">
-  <div class="kicker">ADMIN LOGIN</div><h1 class="page-title" style="font-size:40px">관리자 로그인</h1>
-  <form id="loginForm" class="form"><label>이메일<input class="field" id="email" type="email" required></label><label>비밀번호<input class="field" id="password" type="password" required></label><button class="btn primary">로그인</button><p id="loginStatus"></p></form>
+<section class="card login" id="loginView">
+<div class="kicker">ADMIN LOGIN</div><h1 class="page-title" style="font-size:40px">관리자 로그인</h1>
+<form class="form" id="loginForm"><label>이메일<input class="field" id="email" required="" type="email"/></label><label>비밀번호<input class="field" id="password" required="" type="password"/></label><button class="btn primary">로그인</button><p id="loginStatus"></p></form>
 </section>
-<section id="adminView" class="hidden">
-  <h1 class="page-title">사이트 관리</h1><p><span id="adminEmail"></span> · <button class="btn soft" id="logout">로그아웃</button></p>
-  <div class="admin-grid">
-    <aside class="card side">
-      <button class="active" data-panel="home">🏠 홈 화면</button><button data-panel="profile">👤 자기소개</button><button data-panel="embers">🔥 불씨도감</button><button data-panel="songs">🎵 노래</button><button data-panel="notices">📢 공지</button><button data-panel="schedules">📅 일정</button><button data-panel="wardrobe-categories">🗂️ 옷장 카테고리</button><button data-panel="wardrobe">👗 옷장</button><button data-panel="instagram">📷 바미스타그램</button><button data-panel="debts">🎯 룰렛 업보</button><button data-panel="rules">📜 규칙</button><button data-panel="cloudinary">🖼️ 사진 업로드 설정</button>
-    </aside>
-    <section class="card pad">
-      <div class="panel active" id="panel-home"><h2>홈 화면 관리</h2>
-        <form class="form singleton-form" data-document="home/main">
-          <label>메인 문구<input class="field" name="headline" placeholder="밤 10시, 고양이가 나타나요."></label>
-          <label>소개 문구<textarea class="field" name="description" placeholder="유바미의 공식 홈페이지예요."></textarea></label><label>유바미의 한마디<input class="field" name="message" placeholder="오늘도 와줘서 고마워요, 불씨단! ✨"></label><div class="music-admin-box">
+<section class="hidden" id="adminView">
+<h1 class="page-title">사이트 관리</h1><p><span id="adminEmail"></span> · <button class="btn soft" id="logout">로그아웃</button></p>
+<div class="admin-grid">
+<aside class="card side">
+<button class="active" data-panel="home">🏠 홈 화면</button><button data-panel="profile">👤 자기소개</button><button data-panel="embers">🔥 불씨도감</button><button data-panel="songs">🎵 노래</button><button data-panel="notices">📢 공지</button><button data-panel="schedules">📅 일정</button><button data-panel="wardrobe-categories">🗂️ 옷장 카테고리</button><button data-panel="wardrobe">👗 옷장</button><button data-panel="instagram">📷 바미스타그램</button><button data-panel="debts">🎯 룰렛 업보</button><button data-panel="rules">📜 규칙</button><button data-panel="cloudinary">🖼️ 사진 업로드 설정</button>
+</aside>
+<section class="card pad">
+<div class="panel active" id="panel-home"><h2>홈 화면 관리</h2>
+<form class="form singleton-form" data-document="home/main">
+<label>메인 문구<input class="field" name="headline" placeholder="밤 10시, 고양이가 나타나요."/></label>
+<label>소개 문구<textarea class="field" name="description" placeholder="유바미의 공식 홈페이지예요."></textarea></label><label>유바미의 한마디<input class="field" name="message" placeholder="오늘도 와줘서 고마워요, 불씨단! ✨"/></label><div class="music-admin-box">
 <label>홈 음악 유튜브 링크
   <div class="inline-add">
-    <input class="field" type="url" name="musicUrl" data-music-url placeholder="유튜브 링크만 붙여넣어 주세요.">
-    <button type="button" class="btn soft" data-fetch-music-info>정보 불러오기</button>
-  </div>
+<input class="field" data-music-url="" name="musicUrl" placeholder="유튜브 링크만 붙여넣어 주세요." type="url"/>
+<button class="btn soft" data-fetch-music-info="" type="button">정보 불러오기</button>
+</div>
 </label>
 <div class="form-grid">
-  <label>자동으로 가져온 제목<input class="field" name="musicTitle" data-music-title placeholder="영상 제목" readonly></label>
-  <label>자동으로 가져온 채널명<input class="field" name="musicAuthor" data-music-author placeholder="채널명" readonly></label>
+<label>자동으로 가져온 제목<input class="field" data-music-title="" name="musicTitle" placeholder="영상 제목" readonly=""/></label>
+<label>자동으로 가져온 채널명<input class="field" data-music-author="" name="musicAuthor" placeholder="채널명" readonly=""/></label>
 </div>
 <p class="image-help">링크를 붙여넣으면 영상 제목과 채널명을 자동으로 가져와요. 저장하면 고양이 CD 안의 영상만 바뀝니다.</p>
-<p class="save-status" data-music-fetch-status aria-live="polite"></p>
+<p aria-live="polite" class="save-status" data-music-fetch-status=""></p>
 </div>
-          <div class="home-image-admin">
-            
-<p class="image-help">홈 오른쪽 세로형 프레임에 표시할 사진 한 장만 등록해 주세요.</p>
-<div class="home-photo-single">
-  
-</div>
+<div class="home-image-admin"><h3>홈 메인 사진</h3><p class="image-help">홈 오른쪽 세로형 프레임에 표시할 사진 한 장만 등록해 주세요.</p><div class="home-image-slots single"><div class="home-image-slot"><input name="imageUrl" type="hidden"/><b>메인 프로필 사진</b><div class="upload-line"><button class="btn soft cloud-upload" data-folder="home" data-target="imageUrl" type="button">업로드</button><button class="btn ghost clear-image" data-target="imageUrl" type="button">제거</button></div><div class="image-preview" data-preview-for="imageUrl"></div></div></div></div><p aria-live="polite" class="save-status"></p>
+<div class="actions"><button class="btn primary" data-submit="">홈 화면 저장</button></div>
 </form>
-      <div class="admin-subsection"><h3>바로가기 버튼 관리</h3><p class="image-help">아이콘, 이름, 링크와 순서를 직접 바꿀 수 있어요.</p><div data-home-links-manager class="home-links-editor"></div>
-<div class="admin-subsection home-photo-single">
-  <h3>홈 메인 사진</h3>
-  <p class="image-help">홈 오른쪽 세로형 프레임에 표시할 사진 한 장만 등록해 주세요.</p>
-  <input type="hidden" name="imageUrl">
-  <label>메인 프로필 사진
-    <div class="upload-line">
-      <button type="button" class="btn soft cloud-upload" data-folder="home">사진 선택 및 업로드</button>
-      <button type="button" class="btn ghost clear-image">사진 제거</button>
-    </div>
-  </label>
-  <div class="image-preview"></div>
+<div class="admin-subsection"><h3>바로가기 버튼 관리</h3><p class="image-help">아이콘, 채널명, 주소와 순서를 수정한 뒤 바로가기 저장을 눌러 주세요.</p><div class="home-links-editor" data-home-links-manager=""></div><div class="actions"><button class="btn soft" data-add-home-link="" type="button">+ 버튼 추가</button><button class="btn primary" data-save-home-links="" type="button">바로가기 저장</button></div><p class="save-status" data-home-links-status=""></p></div></div>
+<div class="panel" id="panel-profile"><h2>자기소개 관리</h2>
+<form class="form singleton-form" data-document="profile/main">
+<label>페이지 제목<input class="field" name="title" placeholder="유바미 도감"/></label>
+<label>한 줄 소개<input class="field" name="subtitle" placeholder="유바미의 프로필과 취향을 기록한 페이지예요."/></label>
+<label>자기소개<textarea class="field" name="content" placeholder="자유롭게 자기소개를 작성해 주세요."></textarea></label>
+<div class="form-grid"><label>주요 콘텐츠<input class="field" name="mainContent" placeholder="소통 · 노래 · 게임"/></label></div>
+<input name="imageUrl" type="hidden"/><label>프로필 사진<div class="upload-line"><button class="btn soft cloud-upload" data-folder="profile" type="button">사진 선택 및 업로드</button><button class="btn ghost clear-image" type="button">사진 제거</button></div></label>
+<div class="image-preview"></div><p aria-live="polite" class="save-status"></p><div class="actions"><button class="btn primary" data-submit="">자기소개 저장</button></div>
+</form>
 </div>
-<div class="actions"><button type="button" class="btn soft" data-add-home-link>+ 버튼 추가</button><button type="button" class="btn primary" data-save-home-links>바로가기 저장</button></div><p class="save-status" data-home-links-status></p></div></div>
-
-      <div class="panel" id="panel-profile"><h2>자기소개 관리</h2>
-        <form class="form singleton-form" data-document="profile/main">
-          <label>페이지 제목<input class="field" name="title" placeholder="유바미 도감"></label>
-          <label>한 줄 소개<input class="field" name="subtitle" placeholder="유바미의 프로필과 취향을 기록한 페이지예요."></label>
-          <label>자기소개<textarea class="field" name="content" placeholder="자유롭게 자기소개를 작성해 주세요."></textarea></label>
-          <div class="form-grid"><label>주요 콘텐츠<input class="field" name="mainContent" placeholder="소통 · 노래 · 게임"></label></div>
-          <input type="hidden" name="imageUrl"><label>프로필 사진<div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="profile">사진 선택 및 업로드</button><button type="button" class="btn ghost clear-image">사진 제거</button></div></label>
-          <div class="image-preview"></div><p class="save-status" aria-live="polite"></p><div class="actions"><button class="btn primary" data-submit>자기소개 저장</button></div>
-        </form>
-      </div>
-      <div class="panel" id="panel-embers"><h2>불씨도감 관리</h2><p class="image-help">불씨 사진과 소개를 여러 개 등록할 수 있어요.</p>
-        <form class="form content-form" data-collection="embers"><input type="hidden" name="_id"><label>제목<input class="field" name="title" required placeholder="불씨 이름 또는 기록 제목"></label><label>소개<textarea class="field" name="content" placeholder="불씨에 대한 설명을 적어 주세요."></textarea></label><label>기록 번호<input class="field" name="number" placeholder="예: 1011-01"></label><input type="hidden" name="imageUrl"><label>불씨 사진<div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="embers">사진 선택 및 업로드</button><button type="button" class="btn ghost clear-image">사진 제거</button></div></label><div class="image-preview"></div><div class="actions"><button class="btn primary" data-submit>저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div></form><div class="manage" data-list="embers"></div>
-      </div>
-      <div class="panel" id="panel-songs"><h2>노래 관리</h2>
-        <form class="form content-form" data-collection="songs"><input type="hidden" name="_id">
-          <div class="song-category-admin"><span>카테고리</span><div class="choice-buttons" data-choice-for="category">
-            <button type="button" data-value="KPOP" class="active">KPOP</button>
-            <button type="button" data-value="JPOP">JPOP</button>
-            <button type="button" data-value="JPOP(한국어 ver)">JPOP(한국어 ver)</button>
-            <button type="button" data-value="POP">POP</button>
-          </div><input type="hidden" name="category" value="KPOP"></div>
-          <div class="form-grid"><label>가수<input class="field" name="artist" required></label><label>제목<input class="field" name="title" required></label><label>난이도<select class="field" name="difficulty"><option value="1">★☆☆☆☆</option><option value="2">★★☆☆☆</option><option value="3">★★★☆☆</option><option value="4">★★★★☆</option><option value="5">★★★★★</option></select></label><input type="hidden" name="imageUrl"><label>커버 이미지<div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="covers">커버 업로드</button><button type="button" class="btn ghost clear-image">사진 제거</button></div></label></div>
-          <label>해시태그 여러 개<input class="field tag-input" name="tags" placeholder="#발라드 #감성 #고음 또는 발라드, 감성, 고음"></label><div class="tag-preview"></div><div class="image-preview"></div>
-          <div class="actions"><button class="btn primary" data-submit>저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div>
-        </form><div class="manage" data-list="songs"></div>
-      </div>
-      <div class="panel" id="panel-notices"><h2>공지 관리</h2><form class="form content-form" data-collection="notices"><input type="hidden" name="_id"><label>제목<input class="field" name="title" required></label><label>내용<textarea class="field" name="content"></textarea></label><div class="actions"><button class="btn primary" data-submit>저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div></form><div class="manage" data-list="notices"></div></div>
-      <div class="panel" id="panel-schedules"><h2>일정 관리</h2><form class="form content-form" data-collection="schedules"><input type="hidden" name="_id"><label>제목<input class="field" name="title" required></label><label>날짜<input class="field" type="date" name="date"></label><label>시간<input class="field" type="time" name="time"></label><label>내용<textarea class="field" name="content"></textarea></label><div class="actions"><button class="btn primary" data-submit>저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div></form><div class="manage" data-list="schedules"></div></div>
-      <div class="panel" id="panel-wardrobe-categories"><h2>옷장 카테고리 관리</h2><p class="image-help">예: 2026년 7월 의상, 여름 휴가 컬렉션. 만든 카테고리 안에서 헤어와 의상이 따로 정리돼요.</p><form class="form content-form" data-collection="wardrobeCollections"><input type="hidden" name="_id"><div class="form-grid"><label>카테고리 이름<input class="field" name="title" required placeholder="예: 2026년 7월 의상"></label><label>정렬 순서<input class="field" type="number" name="sortOrder" value="0" placeholder="숫자가 작을수록 먼저 표시"></label></div><label>설명<input class="field" name="content" placeholder="선택 사항"></label><div class="actions"><button class="btn primary" data-submit>카테고리 저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div></form><div class="manage" data-list="wardrobeCollections"></div></div>
-      <div class="panel" id="panel-wardrobe"><h2>옷장 관리</h2><p class="image-help">먼저 만든 월별·테마별 카테고리를 선택하고, 헤어 또는 의상으로 분류해 주세요.</p><form class="form content-form" data-collection="wardrobe"><input type="hidden" name="_id"><div class="form-grid"><label>카테고리<select class="field" name="category" required data-wardrobe-category-select><option value="">카테고리를 먼저 만들어 주세요</option></select></label><label>종류<select class="field" name="subcategory" required><option value="의상">의상</option><option value="헤어">헤어</option></select></label></div><label>제목<input class="field" name="title" required></label><label>내용<textarea class="field" name="content"></textarea></label><input type="hidden" name="imageUrl"><label>사진<div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="wardrobe">의상 사진 업로드</button><button type="button" class="btn ghost clear-image">사진 제거</button></div></label><div class="image-preview"></div><div class="actions"><button class="btn primary" data-submit>저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div></form><div class="manage" data-list="wardrobe"></div></div>
-      <div class="panel" id="panel-instagram"><h2>바미스타그램 관리</h2>
-<form class="form content-form" data-collection="instagram"><input type="hidden" name="_id">
-<label>제목<input class="field" name="title" required></label>
+<div class="panel" id="panel-embers"><h2>불씨도감 관리</h2><p class="image-help">불씨 사진과 소개를 여러 개 등록할 수 있어요.</p>
+<form class="form content-form" data-collection="embers"><input name="_id" type="hidden"/><label>제목<input class="field" name="title" placeholder="불씨 이름 또는 기록 제목" required=""/></label><label>소개<textarea class="field" name="content" placeholder="불씨에 대한 설명을 적어 주세요."></textarea></label><label>기록 번호<input class="field" name="number" placeholder="예: 1011-01"/></label><input name="imageUrl" type="hidden"/><label>불씨 사진<div class="upload-line"><button class="btn soft cloud-upload" data-folder="embers" type="button">사진 선택 및 업로드</button><button class="btn ghost clear-image" type="button">사진 제거</button></div></label><div class="image-preview"></div><div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div></form><div class="manage" data-list="embers"></div>
+</div>
+<div class="panel" id="panel-songs"><h2>노래 관리</h2>
+<form class="form content-form" data-collection="songs"><input name="_id" type="hidden"/>
+<div class="song-category-admin"><span>카테고리</span><div class="choice-buttons" data-choice-for="category">
+<button class="active" data-value="KPOP" type="button">KPOP</button>
+<button data-value="JPOP" type="button">JPOP</button>
+<button data-value="JPOP(한국어 ver)" type="button">JPOP(한국어 ver)</button>
+<button data-value="POP" type="button">POP</button>
+</div><input name="category" type="hidden" value="KPOP"/></div>
+<div class="form-grid"><label>가수<input class="field" name="artist" required=""/></label><label>제목<input class="field" name="title" required=""/></label><label>난이도<select class="field" name="difficulty"><option value="1">★☆☆☆☆</option><option value="2">★★☆☆☆</option><option value="3">★★★☆☆</option><option value="4">★★★★☆</option><option value="5">★★★★★</option></select></label><input name="imageUrl" type="hidden"/><label>커버 이미지<div class="upload-line"><button class="btn soft cloud-upload" data-folder="covers" type="button">커버 업로드</button><button class="btn ghost clear-image" type="button">사진 제거</button></div></label></div>
+<label>해시태그 여러 개<input class="field tag-input" name="tags" placeholder="#발라드 #감성 #고음 또는 발라드, 감성, 고음"/></label><div class="tag-preview"></div><div class="image-preview"></div>
+<div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div>
+</form><div class="manage" data-list="songs"></div>
+</div>
+<div class="panel" id="panel-notices"><h2>공지 관리</h2><form class="form content-form" data-collection="notices"><input name="_id" type="hidden"/><label>제목<input class="field" name="title" required=""/></label><label>내용<textarea class="field" name="content"></textarea></label><div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div></form><div class="manage" data-list="notices"></div></div>
+<div class="panel" id="panel-schedules"><h2>일정 관리</h2><form class="form content-form" data-collection="schedules"><input name="_id" type="hidden"/><label>제목<input class="field" name="title" required=""/></label><label>날짜<input class="field" name="date" type="date"/></label><label>시간<input class="field" name="time" type="time"/></label><label>내용<textarea class="field" name="content"></textarea></label><div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div></form><div class="manage" data-list="schedules"></div></div>
+<div class="panel" id="panel-wardrobe-categories"><h2>옷장 카테고리 관리</h2><p class="image-help">예: 2026년 7월 의상, 여름 휴가 컬렉션. 만든 카테고리 안에서 헤어와 의상이 따로 정리돼요.</p><form class="form content-form" data-collection="wardrobeCollections"><input name="_id" type="hidden"/><div class="form-grid"><label>카테고리 이름<input class="field" name="title" placeholder="예: 2026년 7월 의상" required=""/></label><label>정렬 순서<input class="field" name="sortOrder" placeholder="숫자가 작을수록 먼저 표시" type="number" value="0"/></label></div><label>설명<input class="field" name="content" placeholder="선택 사항"/></label><div class="actions"><button class="btn primary" data-submit="">카테고리 저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div></form><div class="manage" data-list="wardrobeCollections"></div></div>
+<div class="panel" id="panel-wardrobe"><h2>옷장 관리</h2><p class="image-help">먼저 만든 월별·테마별 카테고리를 선택하고, 헤어 또는 의상으로 분류해 주세요.</p><form class="form content-form" data-collection="wardrobe"><input name="_id" type="hidden"/><div class="form-grid"><label>카테고리<select class="field" data-wardrobe-category-select="" name="category" required=""><option value="">카테고리를 먼저 만들어 주세요</option></select></label><label>종류<select class="field" name="subcategory" required=""><option value="의상">의상</option><option value="헤어">헤어</option></select></label></div><label>제목<input class="field" name="title" required=""/></label><label>내용<textarea class="field" name="content"></textarea></label><input name="imageUrl" type="hidden"/><label>사진<div class="upload-line"><button class="btn soft cloud-upload" data-folder="wardrobe" type="button">의상 사진 업로드</button><button class="btn ghost clear-image" type="button">사진 제거</button></div></label><div class="image-preview"></div><div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div></form><div class="manage" data-list="wardrobe"></div></div>
+<div class="panel" id="panel-instagram"><h2>바미스타그램 관리</h2>
+<form class="form content-form" data-collection="instagram"><input name="_id" type="hidden"/>
+<label>제목<input class="field" name="title" required=""/></label>
 <label>내용<textarea class="field" name="content"></textarea></label>
-<input type="hidden" name="imageUrl">
-<label>사진<div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="instagram">사진 업로드</button><button type="button" class="btn ghost clear-image">사진 제거</button></div></label>
+<input name="imageUrl" type="hidden"/>
+<label>사진<div class="upload-line"><button class="btn soft cloud-upload" data-folder="instagram" type="button">사진 업로드</button><button class="btn ghost clear-image" type="button">사진 제거</button></div></label>
 <div class="image-preview"></div>
-<label class="check-row"><input type="checkbox" name="downloadAllowed"> 일반 사이트에서 이 사진 다운로드 허용</label>
+<label class="check-row"><input name="downloadAllowed" type="checkbox"/> 일반 사이트에서 이 사진 다운로드 허용</label>
 <p class="image-help">성격 유형 검사지나 배포용 자료처럼 시청자가 저장해도 되는 게시물에만 체크해 주세요.</p>
-<div class="actions"><button class="btn primary" data-submit>저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div>
+<div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div>
 </form><div class="manage" data-list="instagram"></div></div>
-      
-      <div class="panel" id="panel-debts"><h2>룰렛 업보 관리</h2>
+<div class="panel" id="panel-debts"><h2>룰렛 업보 관리</h2>
 <form class="form singleton-form debt-page-settings" data-document="debtPage/main">
-<label>페이지 안내 문구<input class="field" name="subtitle" placeholder="불씨단의 룰렛 기록을 확인해 보세요."></label>
-<div class="actions"><button class="btn primary" data-submit>안내 문구 저장</button></div><p class="save-status" aria-live="polite"></p>
+<label>페이지 안내 문구<input class="field" name="subtitle" placeholder="불씨단의 룰렛 기록을 확인해 보세요."/></label>
+<div class="actions"><button class="btn primary" data-submit="">안내 문구 저장</button></div><p aria-live="polite" class="save-status"></p>
 </form>
 <div class="debt-admin-box">
 <div class="form-grid">
-<label>시청자 이름<input class="field" id="debtViewerName" placeholder="닉네임"></label>
-<label>시청자 아이디<input class="field" id="debtViewerId" placeholder="플랫폼 아이디"></label>
+<label>시청자 이름<input class="field" id="debtViewerName" placeholder="닉네임"/></label>
+<label>시청자 아이디<input class="field" id="debtViewerId" placeholder="플랫폼 아이디"/></label>
 </div>
-<label>업보 내용<div class="inline-add"><input class="field" id="debtContentInput" placeholder="예: 공포게임 1회"><button type="button" class="btn primary" id="debtQuickAdd">+ 추가</button></div></label>
+<label>업보 내용<div class="inline-add"><input class="field" id="debtContentInput" placeholder="예: 공포게임 1회"/><button class="btn primary" id="debtQuickAdd" type="button">+ 추가</button></div></label>
 <p class="image-help">내용 한 개를 추가하면 업보 개수가 자동으로 1개 올라가요. 같은 이름 또는 아이디로 추가하면 기존 카드에 누적돼요.</p>
-<p class="save-status" id="debtQuickStatus" aria-live="polite"></p>
+<p aria-live="polite" class="save-status" id="debtQuickStatus"></p>
 </div>
 <div class="manage debt-admin-list" data-list="rouletteDebts"></div>
 </div>
-
-      <div class="panel" id="panel-rules"><h2>규칙 관리</h2>
-        <p class="image-help">방송 규칙, 채팅 규칙, 팬카페 규칙처럼 여러 항목을 자유롭게 추가할 수 있어요.</p>
-        <form class="form content-form" data-collection="siteRules"><input type="hidden" name="_id">
-          <div class="form-grid">
-            <label>규칙 제목<input class="field" name="title" required placeholder="예: 방송 채팅 규칙"></label>
-            <label>정렬 순서<input class="field" type="number" name="sortOrder" value="0" placeholder="작은 숫자가 먼저 표시"></label>
-          </div>
-          <label>규칙 내용<textarea class="field" name="content" required placeholder="한 줄씩 자유롭게 작성해 주세요."></textarea></label>
-          <div class="actions"><button class="btn primary" data-submit>규칙 저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div>
-        </form><div class="manage" data-list="siteRules"></div>
-      </div>
-
-      <div class="panel" id="panel-cloudinary"><h2>Cloudinary 사진 업로드 설정</h2><p class="image-help">Cloudinary에서 확인한 두 값을 한 번 저장하면 이 브라우저에서 사진 업로드 버튼을 사용할 수 있어요.</p><form id="cloudinarySettings" class="form"><label>Cloud name<input class="field" name="cloudName" placeholder="예: yubami" required></label><label>Unsigned upload preset<input class="field" name="uploadPreset" placeholder="예: yubami_unsigned" required></label><div class="actions"><button class="btn primary">설정 저장</button></div><p class="save-status" aria-live="polite"></p></form><div class="setup-guide"><h3>처음 한 번 설정</h3><ol><li>Cloudinary 계정을 만들고 Console에 로그인</li><li>Settings → Upload → Upload presets로 이동</li><li>Add upload preset을 누르고 Signing mode를 Unsigned로 설정</li><li>Cloud name과 preset 이름을 위에 입력하고 저장</li></ol><p>API Secret은 절대로 입력하거나 공개하지 마세요.</p></div></div>
-    </section>
-  </div>
+<div class="panel" id="panel-rules"><h2>규칙 관리</h2>
+<p class="image-help">방송 규칙, 채팅 규칙, 팬카페 규칙처럼 여러 항목을 자유롭게 추가할 수 있어요.</p>
+<form class="form content-form" data-collection="siteRules"><input name="_id" type="hidden"/>
+<div class="form-grid">
+<label>규칙 제목<input class="field" name="title" placeholder="예: 방송 채팅 규칙" required=""/></label>
+<label>정렬 순서<input class="field" name="sortOrder" placeholder="작은 숫자가 먼저 표시" type="number" value="0"/></label>
+</div>
+<label>규칙 내용<textarea class="field" name="content" placeholder="한 줄씩 자유롭게 작성해 주세요." required=""></textarea></label>
+<div class="actions"><button class="btn primary" data-submit="">규칙 저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div>
+</form><div class="manage" data-list="siteRules"></div>
+</div>
+<div class="panel" id="panel-cloudinary"><h2>Cloudinary 사진 업로드 설정</h2><p class="image-help">Cloudinary에서 확인한 두 값을 한 번 저장하면 이 브라우저에서 사진 업로드 버튼을 사용할 수 있어요.</p><form class="form" id="cloudinarySettings"><label>Cloud name<input class="field" name="cloudName" placeholder="예: yubami" required=""/></label><label>Unsigned upload preset<input class="field" name="uploadPreset" placeholder="예: yubami_unsigned" required=""/></label><div class="actions"><button class="btn primary">설정 저장</button></div><p aria-live="polite" class="save-status"></p></form><div class="setup-guide"><h3>처음 한 번 설정</h3><ol><li>Cloudinary 계정을 만들고 Console에 로그인</li><li>Settings → Upload → Upload presets로 이동</li><li>Add upload preset을 누르고 Signing mode를 Unsigned로 설정</li><li>Cloud name과 preset 이름을 위에 입력하고 저장</li></ol><p>API Secret은 절대로 입력하거나 공개하지 마세요.</p></div></div>
+</section>
+</div>
 </section>
 </div></main>
-<script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script><script type="module" src="admin.js?v=7.25"></script>
+<script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script><script src="admin.js?v=7.26" type="module"></script>
 <script src="../assets/effects.js?v=7.9"></script></body></html>

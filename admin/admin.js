@@ -34,26 +34,7 @@ function reset(form){
   previewAll(form);
   renderTagPreview(form);
 }
-function formData(form){
-  const out={};
-  for(const[k,v]of new FormData(form)){
-    if(k!=="_id")out[k]=typeof v==="string"?v.trim():v;
-  }
-  if(form.dataset.document==="home/main"){
-    const imageInput=form.querySelector('input[name="imageUrl"]');
-    out.imageUrl=imageInput?.value?.trim()||"";
-    delete out.imageUrl2;
-    delete out.imageUrl3;
-    delete out.imageUrl4;
-  }
-  if(form.dataset.collection==="instagram")out.downloadAllowed=!!form.elements.downloadAllowed?.checked;
-  if(out.difficulty)out.difficulty=Number(out.difficulty);
-  if(out.debtCount!==undefined&&out.debtCount!=="")out.debtCount=Number(out.debtCount);
-  if(out.sortOrder!==undefined&&out.sortOrder!=="")out.sortOrder=Number(out.sortOrder);
-  if("tags" in out)out.tags=parseTags(out.tags);
-  out.updatedAt=serverTimestamp();
-  return out
-}
+function formData(form){const out={};for(const[k,v]of new FormData(form)){if(k!=="_id")out[k]=typeof v==="string"?v.trim():v}if(form.dataset.document==="home/main"){const image=form.querySelector('input[name="imageUrl"]');out.imageUrl=image?.value?.trim()||"";delete out.imageUrl2;delete out.imageUrl3;delete out.imageUrl4;}if(form.dataset.collection==="instagram")out.downloadAllowed=!!form.elements.downloadAllowed?.checked;if(out.difficulty)out.difficulty=Number(out.difficulty);if(out.debtCount!==undefined&&out.debtCount!=="")out.debtCount=Number(out.debtCount);if(out.sortOrder!==undefined&&out.sortOrder!=="")out.sortOrder=Number(out.sortOrder);if("tags" in out)out.tags=parseTags(out.tags);out.updatedAt=serverTimestamp();return out}
 
 function syncChoiceButtons(form){
   form.querySelectorAll('[data-choice-for]').forEach(group=>{
@@ -185,14 +166,12 @@ musicFetchButton?.addEventListener('click',fetchMusicMetadata);
 musicUrlInput?.addEventListener('change',fetchMusicMetadata);
 musicUrlInput?.addEventListener('paste',()=>setTimeout(fetchMusicMetadata,80));
 
-// V7.25 바로가기 버튼 관리 — 편집 중 재렌더링 방지
+// V7.26 바로가기 버튼 관리 — 입력 중 DOM 재생성 금지
 const homeLinksManager=document.querySelector('[data-home-links-manager]');
 const homeLinksStatus=document.querySelector('[data-home-links-status]');
 let homeLinksDraft=[];
 let homeLinksInitialized=false;
-let homeLinksDirty=false;
 let homeLinksSaving=false;
-
 const defaultHomeLinks=[
   {id:'main',icon:'📺',label:'유바미 본채널',url:'#'},
   {id:'sub',icon:'🎬',label:'유바미 서브채널',url:'#'},
@@ -201,70 +180,21 @@ const defaultHomeLinks=[
   {id:'cafe',icon:'☕',label:'팬카페',url:'#'}
 ];
 const linkId=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());
-function normalizeHomeLink(v={}){
-  return {id:v.id||linkId(),icon:v.icon||'🐾',label:v.label||'새 바로가기',url:v.url||'https://'};
-}
+function normalizeHomeLink(v={}){return{id:v.id||linkId(),icon:v.icon||'🐾',label:v.label||'새 바로가기',url:v.url||'https://'}}
 function renderHomeLinks(){
   if(!homeLinksManager)return;
-  homeLinksManager.innerHTML=homeLinksDraft.map((item,index)=>`
-    <div class="home-link-edit-row" data-link-id="${item.id}">
-      <input class="field icon-field" data-k="icon" value="${esc(item.icon)}" aria-label="아이콘">
-      <input class="field" data-k="label" value="${esc(item.label)}" placeholder="채널명">
-      <input class="field" data-k="url" value="${esc(item.url)}" placeholder="채널 주소">
-      <div class="mini">
-        <button type="button" class="soft" data-up ${index===0?'disabled':''}>↑</button>
-        <button type="button" class="soft" data-down ${index===homeLinksDraft.length-1?'disabled':''}>↓</button>
-        <button type="button" class="danger" data-remove>삭제</button>
-      </div>
-    </div>`).join('');
+  homeLinksManager.innerHTML=homeLinksDraft.map((item,index)=>`<div class="home-link-edit-row" data-link-id="${item.id}"><input class="field icon-field" data-k="icon" value="${esc(item.icon)}" aria-label="아이콘"><input class="field" data-k="label" value="${esc(item.label)}" placeholder="채널명"><input class="field" data-k="url" value="${esc(item.url)}" placeholder="채널 주소"><div class="mini"><button type="button" class="soft" data-up ${index===0?'disabled':''}>↑</button><button type="button" class="soft" data-down ${index===homeLinksDraft.length-1?'disabled':''}>↓</button><button type="button" class="danger" data-remove>삭제</button></div></div>`).join('');
 }
 onSnapshot(doc(db,'home','main'),snap=>{
-  if(!snap.exists())return;
-  if(!homeLinksInitialized){
-    const saved=snap.data().links;
-    homeLinksDraft=Array.isArray(saved)?saved.map(normalizeHomeLink):defaultHomeLinks.map(normalizeHomeLink);
-    homeLinksInitialized=true;
-    renderHomeLinks();
-  }
-});
-document.querySelector('[data-add-home-link]')?.addEventListener('click',()=>{
-  homeLinksDraft.push(normalizeHomeLink());
-  homeLinksDirty=true;
-  renderHomeLinks();
-  homeLinksManager?.querySelector('.home-link-edit-row:last-child [data-k="label"]')?.focus();
-});
-homeLinksManager?.addEventListener('input',e=>{
-  const row=e.target.closest('[data-link-id]');
-  const item=homeLinksDraft.find(v=>v.id===row?.dataset.linkId);
-  const key=e.target.dataset.k;
-  if(item&&key){item[key]=e.target.value;homeLinksDirty=true;}
-});
-homeLinksManager?.addEventListener('click',e=>{
-  const row=e.target.closest('[data-link-id]');
-  if(!row)return;
-  const index=homeLinksDraft.findIndex(v=>v.id===row.dataset.linkId);
-  if(index<0)return;
-  if(e.target.closest('[data-remove]'))homeLinksDraft.splice(index,1);
-  else if(e.target.closest('[data-up]')&&index>0)[homeLinksDraft[index-1],homeLinksDraft[index]]=[homeLinksDraft[index],homeLinksDraft[index-1]];
-  else if(e.target.closest('[data-down]')&&index<homeLinksDraft.length-1)[homeLinksDraft[index+1],homeLinksDraft[index]]=[homeLinksDraft[index],homeLinksDraft[index+1]];
-  else return;
-  homeLinksDirty=true;
+  if(!snap.exists()||homeLinksInitialized)return;
+  const saved=snap.data().links;
+  homeLinksDraft=Array.isArray(saved)?saved.map(normalizeHomeLink):defaultHomeLinks.map(normalizeHomeLink);
+  homeLinksInitialized=true;
   renderHomeLinks();
 });
-document.querySelector('[data-save-home-links]')?.addEventListener('click',async()=>{
-  if(homeLinksSaving)return;
-  homeLinksSaving=true;
-  if(homeLinksStatus)homeLinksStatus.textContent='저장 중...';
-  try{
-    const clean=homeLinksDraft.map(normalizeHomeLink);
-    await setDoc(doc(db,'home','main'),{links:clean},{merge:true});
-    homeLinksDraft=clean;
-    homeLinksDirty=false;
-    if(homeLinksStatus)homeLinksStatus.textContent='바로가기를 저장했어요.';
-  }catch(err){
-    console.error(err);
-    if(homeLinksStatus)homeLinksStatus.textContent='저장 실패: '+(err?.message||'알 수 없는 오류');
-  }finally{homeLinksSaving=false;}
-});
+document.querySelector('[data-add-home-link]')?.addEventListener('click',()=>{homeLinksDraft.push(normalizeHomeLink());renderHomeLinks();homeLinksManager?.querySelector('.home-link-edit-row:last-child [data-k="label"]')?.focus()});
+homeLinksManager?.addEventListener('input',e=>{const row=e.target.closest('[data-link-id]'),item=homeLinksDraft.find(v=>v.id===row?.dataset.linkId),key=e.target.dataset.k;if(item&&key)item[key]=e.target.value});
+homeLinksManager?.addEventListener('click',e=>{const row=e.target.closest('[data-link-id]');if(!row)return;const i=homeLinksDraft.findIndex(v=>v.id===row.dataset.linkId);if(i<0)return;if(e.target.closest('[data-remove]'))homeLinksDraft.splice(i,1);else if(e.target.closest('[data-up]')&&i>0)[homeLinksDraft[i-1],homeLinksDraft[i]]=[homeLinksDraft[i],homeLinksDraft[i-1]];else if(e.target.closest('[data-down]')&&i<homeLinksDraft.length-1)[homeLinksDraft[i+1],homeLinksDraft[i]]=[homeLinksDraft[i],homeLinksDraft[i+1]];else return;renderHomeLinks()});
+document.querySelector('[data-save-home-links]')?.addEventListener('click',async()=>{if(homeLinksSaving)return;homeLinksSaving=true;if(homeLinksStatus)homeLinksStatus.textContent='저장 중...';try{const clean=homeLinksDraft.map(normalizeHomeLink);await setDoc(doc(db,'home','main'),{links:clean},{merge:true});homeLinksDraft=clean;if(homeLinksStatus)homeLinksStatus.textContent='바로가기를 저장했어요.'}catch(err){console.error(err);if(homeLinksStatus)homeLinksStatus.textContent='저장 실패: '+(err?.message||'알 수 없는 오류')}finally{homeLinksSaving=false}});
 
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-debt-inline-edit]');if(!b)return;const ref=doc(db,'rouletteDebts',b.dataset.docId),snap=await getDoc(ref);if(!snap.exists())return;const items=debtItemsOf(snap.data()),item=items.find(x=>x.id===b.dataset.itemId);if(!item)return;const value=prompt('업보 내용을 수정해 주세요.',item.content||'');if(value===null||!value.trim())return;await updateDoc(ref,{items:items.map(x=>x.id===item.id?{...x,content:value.trim()}:x),updatedAt:serverTimestamp()})});
