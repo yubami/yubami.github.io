@@ -6,7 +6,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#080d28" name="theme-color"/>
 <title>유바미 관리자</title>
-<link href="../assets/style.css?v=7.27" rel="stylesheet"/>
+<link href="../assets/style.css?v=7.28" rel="stylesheet"/>
 </head>
 <body><div aria-hidden="true" id="ambientLights"></div><div aria-hidden="true" id="cursorStars"></div>
 <header><div class="shell nav"><a class="brand" href="../index.html"><span class="brand-word">YUBAMI</span></a><div aria-label="화면 테마" class="theme-switch" role="group"><button data-theme-choice="morning" type="button">☀ <span>아침</span></button><button data-theme-choice="night" type="button">🌙 <span>밤</span></button></div><a class="btn soft" href="../index.html">일반 사이트</a></div></header>
@@ -54,7 +54,7 @@
 </form>
 </div>
 <div class="panel" id="panel-embers"><h2>불씨도감 관리</h2><p class="image-help">불씨 사진과 소개를 여러 개 등록할 수 있어요.</p>
-<form class="form content-form" data-collection="embers"><input name="_id" type="hidden"/><label>제목<input class="field" name="title" placeholder="불씨 이름 또는 기록 제목" required=""/></label><label>소개<textarea class="field" name="content" placeholder="불씨에 대한 설명을 적어 주세요."></textarea></label><label>기록 번호<input class="field" name="number" placeholder="예: 1011-01"/></label><input name="imageUrl" type="hidden"/><label>불씨 사진<div class="upload-line"><button class="btn soft cloud-upload" data-folder="embers" type="button">사진 선택 및 업로드</button><button class="btn ghost clear-image" type="button">사진 제거</button></div></label><div class="image-preview"></div><div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div></form><div class="manage" data-list="embers"></div>
+<form class="form content-form" data-collection="embers"><input name="_id" type="hidden"/><label>제목<input class="field" name="title" placeholder="불씨 이름 또는 기록 제목" required=""/></label><label>소개<textarea class="field" name="content" placeholder="불씨에 대한 설명을 적어 주세요."></textarea></label><input name="imageUrl" type="hidden"/><label>불씨 사진<div class="upload-line"><button class="btn soft cloud-upload" data-folder="embers" type="button">사진 선택 및 업로드</button><button class="btn ghost clear-image" type="button">사진 제거</button></div></label><div class="image-preview"></div><div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div></form><div class="manage" data-list="embers"></div>
 </div>
 <div class="panel" id="panel-songs"><h2>노래 관리</h2>
 <form class="form content-form" data-collection="songs"><input name="_id" type="hidden"/>
@@ -70,7 +70,31 @@
 </form><div class="manage" data-list="songs"></div>
 </div>
 <div class="panel" id="panel-notices"><h2>공지 관리</h2><form class="form content-form" data-collection="notices"><input name="_id" type="hidden"/><label>제목<input class="field" name="title" required=""/></label><label>내용<textarea class="field" name="content"></textarea></label><div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div></form><div class="manage" data-list="notices"></div></div>
-<div class="panel" id="panel-schedules"><h2>일정 관리</h2><form class="form content-form" data-collection="schedules"><input name="_id" type="hidden"/><label>제목<input class="field" name="title" required=""/></label><label>날짜<input class="field" name="date" type="date"/></label><label>시간<input class="field" name="time" type="time"/></label><label>내용<textarea class="field" name="content"></textarea></label><div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div></form><div class="manage" data-list="schedules"></div></div>
+<div class="panel" id="panel-schedules"><h2>일정 관리</h2><form class="form content-form" data-collection="schedules"><input name="_id" type="hidden"/><label>제목<input class="field" name="title" required=""/></label>
+<div class="schedule-range-picker" data-schedule-range>
+  <div class="form-grid schedule-date-grid">
+    <label>시작 연도
+      <select class="field" name="startYear" data-date-part="startYear"></select>
+    </label>
+    <label>시작 월
+      <select class="field" name="startMonth" data-date-part="startMonth"></select>
+    </label>
+    <label>시작 일
+      <select class="field scroll-select" name="startDay" data-date-part="startDay" size="6"></select>
+    </label>
+    <label>종료 연도
+      <select class="field" name="endYear" data-date-part="endYear"></select>
+    </label>
+    <label>종료 월
+      <select class="field" name="endMonth" data-date-part="endMonth"></select>
+    </label>
+    <label>종료 일
+      <select class="field scroll-select" name="endDay" data-date-part="endDay" size="6"></select>
+    </label>
+  </div>
+  <p class="image-help">하루 일정은 시작일과 종료일을 같게 선택하세요. 여러 날 일정은 시작일과 종료일을 다르게 선택하면 달력에 이어서 표시돼요.</p>
+</div>
+<div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div></form><div class="manage" data-list="schedules"></div></div>
 <div class="panel" id="panel-wardrobe-categories"><h2>옷장 카테고리 관리</h2><p class="image-help">예: 2026년 7월 의상, 여름 휴가 컬렉션. 만든 카테고리 안에서 헤어와 의상이 따로 정리돼요.</p><form class="form content-form" data-collection="wardrobeCollections"><input name="_id" type="hidden"/><div class="form-grid"><label>카테고리 이름<input class="field" name="title" placeholder="예: 2026년 7월 의상" required=""/></label><label>정렬 순서<input class="field" name="sortOrder" placeholder="숫자가 작을수록 먼저 표시" type="number" value="0"/></label></div><label>설명<input class="field" name="content" placeholder="선택 사항"/></label><div class="actions"><button class="btn primary" data-submit="">카테고리 저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div></form><div class="manage" data-list="wardrobeCollections"></div></div>
 <div class="panel" id="panel-wardrobe"><h2>옷장 관리</h2><p class="image-help">먼저 만든 월별·테마별 카테고리를 선택하고, 헤어 또는 의상으로 분류해 주세요.</p><form class="form content-form" data-collection="wardrobe"><input name="_id" type="hidden"/><div class="form-grid"><label>카테고리<select class="field" data-wardrobe-category-select="" name="category" required=""><option value="">카테고리를 먼저 만들어 주세요</option></select></label><label>종류<select class="field" name="subcategory" required=""><option value="의상">의상</option><option value="헤어">헤어</option></select></label></div><label>제목<input class="field" name="title" required=""/></label><label>내용<textarea class="field" name="content"></textarea></label><input name="imageUrl" type="hidden"/><label>사진<div class="upload-line"><button class="btn soft cloud-upload" data-folder="wardrobe" type="button">의상 사진 업로드</button><button class="btn ghost clear-image" type="button">사진 제거</button></div></label><div class="image-preview"></div><div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div></form><div class="manage" data-list="wardrobe"></div></div>
 <div class="panel" id="panel-instagram"><h2>바미스타그램 관리</h2>
@@ -116,5 +140,5 @@
 </div>
 </section>
 </div></main>
-<script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script><script src="admin.js?v=7.27" type="module"></script>
+<script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script><script src="admin.js?v=7.28" type="module"></script>
 <script src="../assets/effects.js?v=7.9"></script></body></html>

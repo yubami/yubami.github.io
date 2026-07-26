@@ -34,7 +34,15 @@ function reset(form){
   previewAll(form);
   renderTagPreview(form);
 }
-function formData(form){const out={};for(const[k,v]of new FormData(form)){if(k!=="_id")out[k]=typeof v==="string"?v.trim():v}if(form.dataset.document==="home/main"){const image=form.querySelector('input[name="imageUrl"]');out.imageUrl=image?.value?.trim()||"";delete out.imageUrl2;delete out.imageUrl3;delete out.imageUrl4;}if(form.dataset.collection==="instagram")out.downloadAllowed=!!form.elements.downloadAllowed?.checked;if(out.difficulty)out.difficulty=Number(out.difficulty);if(out.debtCount!==undefined&&out.debtCount!=="")out.debtCount=Number(out.debtCount);if(out.sortOrder!==undefined&&out.sortOrder!=="")out.sortOrder=Number(out.sortOrder);if("tags" in out)out.tags=parseTags(out.tags);out.updatedAt=serverTimestamp();return out}
+function formData(form){const out={};for(const[k,v]of new FormData(form)){if(k!=="_id")out[k]=typeof v==="string"?v.trim():v}if(form.dataset.document==="home/main"){const image=form.querySelector('input[name="imageUrl"]');out.imageUrl=image?.value?.trim()||"";delete out.imageUrl2;delete out.imageUrl3;delete out.imageUrl4;}if(form.dataset.collection==="schedules"){
+    const pad=v=>String(v).padStart(2,'0');
+    const sy=form.elements.startYear?.value,sm=form.elements.startMonth?.value,sd=form.elements.startDay?.value;
+    const ey=form.elements.endYear?.value,em=form.elements.endMonth?.value,ed=form.elements.endDay?.value;
+    if(sy&&sm&&sd)out.startDate=`${sy}-${pad(sm)}-${pad(sd)}`;
+    if(ey&&em&&ed)out.endDate=`${ey}-${pad(em)}-${pad(ed)}`;
+    delete out.date;delete out.time;delete out.content;
+  }
+  if(form.dataset.collection==="instagram")out.downloadAllowed=!!form.elements.downloadAllowed?.checked;if(out.difficulty)out.difficulty=Number(out.difficulty);if(out.debtCount!==undefined&&out.debtCount!=="")out.debtCount=Number(out.debtCount);if(out.sortOrder!==undefined&&out.sortOrder!=="")out.sortOrder=Number(out.sortOrder);if("tags" in out)out.tags=parseTags(out.tags);out.updatedAt=serverTimestamp();return out}
 
 function syncChoiceButtons(form){
   form.querySelectorAll('[data-choice-for]').forEach(group=>{
@@ -202,3 +210,71 @@ homeLinksManager?.addEventListener('click',e=>{const row=e.target.closest('[data
 document.querySelector('[data-save-home-links]')?.addEventListener('click',async()=>{if(homeLinksSaving)return;homeLinksSaving=true;if(homeLinksStatus)homeLinksStatus.textContent='저장 중...';try{const clean=homeLinksDraft.map(normalizeHomeLink);await setDoc(doc(db,'home','main'),{links:clean},{merge:true});homeLinksDraft=clean;if(homeLinksStatus)homeLinksStatus.textContent='바로가기를 저장했어요.'}catch(err){console.error(err);if(homeLinksStatus)homeLinksStatus.textContent='저장 실패: '+(err?.message||'알 수 없는 오류')}finally{homeLinksSaving=false}});
 
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-debt-inline-edit]');if(!b)return;const ref=doc(db,'rouletteDebts',b.dataset.docId),snap=await getDoc(ref);if(!snap.exists())return;const items=debtItemsOf(snap.data()),item=items.find(x=>x.id===b.dataset.itemId);if(!item)return;const value=prompt('업보 내용을 수정해 주세요.',item.content||'');if(value===null||!value.trim())return;await updateDoc(ref,{items:items.map(x=>x.id===item.id?{...x,content:value.trim()}:x),updatedAt:serverTimestamp()})});
+
+
+// V7.28 일정 날짜 범위 선택기
+function daysInMonth(year,month){return new Date(year,month,0).getDate()}
+function fillSelect(select,values,labeler=v=>String(v)){
+  if(!select)return;
+  const current=select.value;
+  select.innerHTML=values.map(v=>`<option value="${v}">${labeler(v)}</option>`).join('');
+  if(values.map(String).includes(String(current)))select.value=current;
+}
+function initScheduleRange(form){
+  const now=new Date(),year=now.getFullYear();
+  const years=Array.from({length:7},(_,i)=>year-1+i);
+  const months=Array.from({length:12},(_,i)=>i+1);
+  fillSelect(form.elements.startYear,years,v=>v+'년');
+  fillSelect(form.elements.endYear,years,v=>v+'년');
+  fillSelect(form.elements.startMonth,months,v=>v+'월');
+  fillSelect(form.elements.endMonth,months,v=>v+'월');
+
+  const refreshDays=prefix=>{
+    const y=Number(form.elements[prefix+'Year']?.value)||year;
+    const m=Number(form.elements[prefix+'Month']?.value)||(now.getMonth()+1);
+    const max=daysInMonth(y,m);
+    fillSelect(form.elements[prefix+'Day'],Array.from({length:max},(_,i)=>i+1),v=>v+'일');
+  };
+  ['start','end'].forEach(prefix=>{
+    form.elements[prefix+'Year']?.addEventListener('change',()=>refreshDays(prefix));
+    form.elements[prefix+'Month']?.addEventListener('change',()=>refreshDays(prefix));
+  });
+
+  if(!form.elements.startYear.value)form.elements.startYear.value=year;
+  if(!form.elements.startMonth.value)form.elements.startMonth.value=now.getMonth()+1;
+  refreshDays('start');
+  if(!form.elements.startDay.value)form.elements.startDay.value=now.getDate();
+
+  if(!form.elements.endYear.value)form.elements.endYear.value=form.elements.startYear.value;
+  if(!form.elements.endMonth.value)form.elements.endMonth.value=form.elements.startMonth.value;
+  refreshDays('end');
+  if(!form.elements.endDay.value)form.elements.endDay.value=form.elements.startDay.value;
+
+  form.addEventListener('change',e=>{
+    if(e.target===form.elements.startYear||e.target===form.elements.startMonth||e.target===form.elements.startDay){
+      const endEmpty=!form.elements.endYear.value||!form.elements.endMonth.value||!form.elements.endDay.value;
+      if(endEmpty){
+        form.elements.endYear.value=form.elements.startYear.value;
+        form.elements.endMonth.value=form.elements.startMonth.value;
+        refreshDays('end');
+        form.elements.endDay.value=form.elements.startDay.value;
+      }
+    }
+  });
+}
+document.querySelectorAll('form[data-collection="schedules"]').forEach(initScheduleRange);
+
+
+function applyScheduleRangeToForm(form,data={}){
+  const start=data.startDate||data.date||'';
+  const end=data.endDate||start;
+  const setDate=(prefix,value)=>{
+    if(!value)return;
+    const [y,m,d]=value.split('-');
+    if(form.elements[prefix+'Year'])form.elements[prefix+'Year'].value=String(Number(y));
+    if(form.elements[prefix+'Month'])form.elements[prefix+'Month'].value=String(Number(m));
+    form.elements[prefix+'Month']?.dispatchEvent(new Event('change'));
+    if(form.elements[prefix+'Day'])form.elements[prefix+'Day'].value=String(Number(d));
+  };
+  setDate('start',start);setDate('end',end);
+}

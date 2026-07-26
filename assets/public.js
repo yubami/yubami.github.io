@@ -25,7 +25,7 @@ listen("schedules",(el,a)=>el.innerHTML=a.map(x=>`<article class="row" data-sear
 listen("instagram",(el,a)=>{
   el.innerHTML=a.map(x=>`<article class="card photo bami-card" tabindex="0" role="button" data-bami-id="${esc(x.id)}" data-searchable="${esc((x.title||"")+" "+(x.content||""))}">${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="${esc(x.title||'바미스타그램')}">`:""}<div class="copy"><h3>${esc(x.title||"제목 없음")}</h3><p>${br(x.content||"")}</p>${x.downloadAllowed?'<span class="download-ok">⬇ 다운로드 가능</span>':''}</div></article>`).join("");
   const map=new Map(a.map(x=>[x.id,x]));
-  const openCard=card=>{const x=map.get(card.dataset.bamiId);if(!x)return;let dialog=document.querySelector('[data-bami-dialog]');if(!dialog){dialog=document.createElement('dialog');dialog.className='bami-dialog';dialog.dataset.bamiDialog='';dialog.innerHTML='<button class="bami-dialog-close" type="button" aria-label="닫기">×</button><div data-bami-detail></div>';document.body.appendChild(dialog);dialog.querySelector('.bami-dialog-close').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()})}const detail=dialog.querySelector('[data-bami-detail]');detail.innerHTML=`${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="${esc(x.title||'바미스타그램')}">`:''}<div class="bami-dialog-copy"><h2>${esc(x.title||'제목 없음')}</h2><p>${br(x.content||'')}</p>${x.downloadAllowed&&x.imageUrl?`<a class="btn primary" href="${esc(cloudinaryDownload(x.imageUrl))}" download target="_blank" rel="noopener">사진 다운로드</a>`:''}</div>`;dialog.showModal()};
+  const openCard=card=>{const x=map.get(card.dataset.bamiId);if(!x)return;let dialog=document.querySelector('[data-bami-dialog]');if(!dialog){dialog=document.createElement('dialog');dialog.className='bami-dialog';dialog.dataset.bamiDialog='';dialog.innerHTML='<button class="bami-dialog-close" type="button" aria-label="닫기">×</button><div data-bami-detail></div>';document.body.appendChild(dialog);dialog.querySelector('.bami-dialog-close').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()})}const detail=dialog.querySelector('[data-bami-detail]');detail.innerHTML=`${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="${esc(x.title||'바미스타그램')}">`:''}<div class="bami-dialog-copy"><h2>${esc(x.title||'제목 없음')}</h2><p></p>${x.downloadAllowed&&x.imageUrl?`<a class="btn primary" href="${esc(cloudinaryDownload(x.imageUrl))}" download target="_blank" rel="noopener">사진 다운로드</a>`:''}</div>`;dialog.showModal()};
   el.querySelectorAll('[data-bami-id]').forEach(card=>{card.addEventListener('click',()=>openCard(card));card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openCard(card)}})});
 });
 function cloudinaryDownload(url){return String(url||'').includes('/upload/')?String(url).replace('/upload/','/upload/fl_attachment/'):url}
@@ -51,7 +51,7 @@ listen("schedules",(el,a)=>el.innerHTML=a.map(x=>`<article class="row"><div><h3>
 
 listen("siteRules",(el,a)=>{
   const sorted=[...a].sort((x,y)=>(Number(x.sortOrder)||0)-(Number(y.sortOrder)||0));
-  el.innerHTML=sorted.map((x,i)=>`<article class="rule-card card"><div class="rule-number">${String(i+1).padStart(2,'0')}</div><div><h2>${esc(x.title||'규칙')}</h2><div class="rule-content">${br(x.content||'')}</div></div></article>`).join('');
+  el.innerHTML=sorted.map((x,i)=>`<article class="rule-card card"><div class="rule-number">${String(i+1).padStart(2,'0')}</div><div><h2>${esc(x.title||'규칙')}</h2><div class="rule-content"></div></div></article>`).join('');
 });
 listen("rouletteDebts",(el,a)=>{
   const normalized=a.map(x=>({...x,items:Array.isArray(x.items)?x.items:(x.content?[{id:'legacy',content:x.content,completed:false}]:[])}));
@@ -197,3 +197,69 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 const bs=document.querySelector('[data-bulssinyang]'),bubble=document.querySelector('[data-bulssinyang-bubble]');const lines=['모닥불 앞에서 쉬다 가냥!','불씨단 안녕!','오늘도 방송 보러 가냥!','10시에 다시 만나냥!','유바미 기다리고 있었냥!'];bs?.addEventListener('click',e=>{e.stopPropagation();bubble.textContent=lines[Math.floor(Math.random()*lines.length)];bubble.hidden=false;clearTimeout(window.bsTimer);window.bsTimer=setTimeout(()=>bubble.hidden=true,2500)});document.addEventListener('pointerdown',e=>{if(e.button!==0)return;const p=document.createElement('span');p.className='click-paw';p.textContent='🐾';p.style.left=e.clientX+'px';p.style.top=e.clientY+'px';p.style.setProperty('--r',(Math.random()*40-20)+'deg');document.body.appendChild(p);p.addEventListener('animationend',()=>p.remove())});
+
+
+// V7.28 월간 캘린더 범위 일정
+const calendarGrid=document.querySelector('[data-calendar-grid]');
+const calendarTitle=document.querySelector('[data-calendar-title]');
+const calendarPrev=document.querySelector('[data-calendar-prev]');
+const calendarNext=document.querySelector('[data-calendar-next]');
+let calendarCursor=new Date();
+calendarCursor.setDate(1);
+let calendarSchedules=[];
+
+function parseLocalDate(value){
+  if(!value)return null;
+  const [y,m,d]=String(value).split('-').map(Number);
+  return new Date(y,m-1,d);
+}
+function dateKey(date){
+  const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,'0'),d=String(date.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
+function datesBetween(start,end){
+  const out=[],cursor=new Date(start);
+  while(cursor<=end){out.push(new Date(cursor));cursor.setDate(cursor.getDate()+1)}
+  return out;
+}
+function renderRangeCalendar(){
+  if(!calendarGrid)return;
+  const year=calendarCursor.getFullYear(),month=calendarCursor.getMonth();
+  if(calendarTitle)calendarTitle.textContent=`${year}년 ${month+1}월`;
+
+  const first=new Date(year,month,1);
+  const last=new Date(year,month+1,0);
+  const start=new Date(first);start.setDate(first.getDate()-first.getDay());
+  const end=new Date(last);end.setDate(last.getDate()+(6-last.getDay()));
+
+  const cells=datesBetween(start,end);
+  calendarGrid.innerHTML=cells.map(day=>{
+    const key=dateKey(day);
+    const isOther=day.getMonth()!==month;
+    const isToday=key===dateKey(new Date());
+    const events=calendarSchedules.filter(item=>{
+      const s=parseLocalDate(item.startDate||item.date);
+      const e=parseLocalDate(item.endDate||item.startDate||item.date);
+      return s&&e&&day>=s&&day<=e;
+    });
+    const eventHtml=events.map(item=>{
+      const s=parseLocalDate(item.startDate||item.date),e=parseLocalDate(item.endDate||item.startDate||item.date);
+      const startHere=dateKey(day)===dateKey(s);
+      const endHere=dateKey(day)===dateKey(e);
+      const cls=['calendar-range-event',startHere?'is-start':'',endHere?'is-end':'',(!startHere&&!endHere)?'is-middle':''].filter(Boolean).join(' ');
+      return `<div class="${cls}" title="${esc(item.title||'방송 일정')}"><span>${startHere?esc(item.title||'방송 일정'):''}</span></div>`;
+    }).join('');
+    return `<div class="calendar-day ${isOther?'is-other':''} ${isToday?'is-today':''}" data-date="${key}">
+      <div class="calendar-day-number">${day.getDate()}</div>
+      <div class="calendar-events">${eventHtml}</div>
+    </div>`;
+  }).join('');
+}
+calendarPrev?.addEventListener('click',()=>{calendarCursor.setMonth(calendarCursor.getMonth()-1);renderRangeCalendar()});
+calendarNext?.addEventListener('click',()=>{calendarCursor.setMonth(calendarCursor.getMonth()+1);renderRangeCalendar()});
+if(calendarGrid){
+  onSnapshot(collection(db,'schedules'),snap=>{
+    calendarSchedules=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderRangeCalendar();
+  });
+}

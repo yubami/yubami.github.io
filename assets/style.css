@@ -2478,3 +2478,121 @@ html[data-theme="morning"] .cat-cd-shell{
     grid-column:1 / -1 !important;
   }
 }
+
+
+/* V7.28 월간 캘린더 보기 버튼 */
+html[data-theme="morning"] .calendar-link,
+html[data-theme="morning"] [href="calendar.html"],
+html[data-theme="morning"] .monthly-calendar-link{
+  color:#173f70 !important;
+  font-weight:900 !important;
+  text-shadow:none !important;
+}
+
+/* 월간 달력 모든 칸 테두리 유지 */
+.calendar-grid{
+  display:grid !important;
+  grid-template-columns:repeat(7,minmax(0,1fr)) !important;
+  border-top:1px solid var(--line) !important;
+  border-left:1px solid var(--line) !important;
+  overflow:visible !important;
+}
+.calendar-day{
+  position:relative !important;
+  min-height:118px !important;
+  border-right:1px solid var(--line) !important;
+  border-bottom:1px solid var(--line) !important;
+  padding:8px 5px !important;
+  overflow:visible !important;
+  background:rgba(255,255,255,.035);
+  box-sizing:border-box !important;
+}
+.calendar-day.is-other{
+  opacity:.52;
+}
+.calendar-day-number{
+  padding:0 4px 7px;
+  font-weight:900;
+}
+.calendar-events{
+  display:grid;
+  gap:4px;
+  overflow:visible;
+}
+
+/* 구글 캘린더처럼 이어지는 일정 막대 */
+.calendar-range-event{
+  position:relative;
+  height:24px;
+  margin-left:-6px;
+  margin-right:-6px;
+  background:linear-gradient(90deg,#7c5ce0,#f05a9d);
+  color:white;
+  font-size:12px;
+  line-height:24px;
+  font-weight:900;
+  z-index:4;
+  overflow:hidden;
+  white-space:nowrap;
+}
+.calendar-range-event.is-start{
+  margin-left:0;
+  border-radius:9px 0 0 9px;
+  padding-left:8px;
+}
+.calendar-range-event.is-end{
+  margin-right:0;
+  border-radius:0 9px 9px 0;
+}
+.calendar-range-event.is-start.is-end{
+  margin:0;
+  border-radius:9px;
+}
+.calendar-range-event.is-middle span{
+  display:none;
+}
+html[data-theme="morning"] .calendar-range-event{
+  background:linear-gradient(90deg,#5479c5,#d56f9d);
+}
+
+/* 방송 일정은 제목만 */
+.schedule-card .schedule-content,
+.schedule-card .schedule-time,
+.schedule-item .schedule-content,
+.schedule-item .schedule-time{
+  display:none !important;
+}
+
+/* 관리자 날짜 선택 */
+.schedule-date-grid{
+  grid-template-columns:repeat(3,minmax(120px,1fr)) !important;
+  align-items:start;
+}
+.scroll-select{
+  min-height:156px;
+  overflow-y:auto;
+}
+.schedule-range-picker{
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(255,255,255,.035);
+}
+
+/* 불씨 기록번호 숨김 혹시 남아있을 경우 */
+[data-ember-number],
+.ember-number{
+  display:none !important;
+}
+
+@media(max-width:760px){
+  .schedule-date-grid{
+    grid-template-columns:1fr 1fr !important;
+  }
+  .calendar-day{
+    min-height:92px !important;
+  }
+  .calendar-range-event{
+    font-size:10px;
+  }
+}
