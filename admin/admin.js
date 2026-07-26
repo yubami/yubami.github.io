@@ -83,19 +83,21 @@ function resetAvatarGalleryForm(){
   avatarGalleryForm.reset();
   avatarGalleryForm.elements.editIndex.value='-1';
   avatarGalleryForm.elements.imageUrl.value='';
+  if(avatarGalleryForm.elements.order)avatarGalleryForm.elements.order.value='';
   preview(avatarGalleryForm,'');
   avatarGalleryForm.querySelector('[data-avatar-gallery-submit]').textContent='갤러리 추가';
   avatarGalleryForm.querySelector('[data-avatar-gallery-cancel]').classList.add('hidden');
 }
 function renderAvatarGalleryAdmin(){
   if(!avatarGalleryList)return;
-  avatarGalleryList.innerHTML=avatarGalleryItems.length?avatarGalleryItems.map((item,index)=>`<div class="manage-row"><div class="manage-copy">${item.imageUrl?`<img src="${esc(item.imageUrl)}" alt="">`:''}<div><h3>${esc(item.title||'아바타')}</h3><p>${esc(item.content||'')}</p></div></div><div class="mini"><button class="soft" type="button" data-avatar-edit="${index}">수정</button><button class="danger" type="button" data-avatar-delete="${index}">삭제</button></div></div>`).join(''):'<div class="empty">등록된 아바타가 없어요.</div>';
+  avatarGalleryList.innerHTML=avatarGalleryItems.length?avatarGalleryItems.map((item,index)=>`<div class="manage-row"><div class="manage-copy">${item.imageUrl?`<img src="${esc(item.imageUrl)}" alt="">`:''}<div><h3>${esc(item.title||'아바타')}</h3><p class="avatar-order-label">표시 순서 ${Number(item.order)||index+1}</p><p>${esc(item.content||'')}</p></div></div><div class="mini"><button class="soft" type="button" data-avatar-edit="${index}">수정</button><button class="danger" type="button" data-avatar-delete="${index}">삭제</button></div></div>`).join(''):'<div class="empty">등록된 아바타가 없어요.</div>';
   avatarGalleryList.querySelectorAll('[data-avatar-edit]').forEach(button=>button.addEventListener('click',()=>{
     const index=Number(button.dataset.avatarEdit),item=avatarGalleryItems[index];
     if(!item||!avatarGalleryForm)return;
     avatarGalleryForm.elements.editIndex.value=String(index);
     avatarGalleryForm.elements.title.value=item.title||'';
     avatarGalleryForm.elements.content.value=item.content||'';
+    if(avatarGalleryForm.elements.order)avatarGalleryForm.elements.order.value=String(Number(item.order)||index+1);
     avatarGalleryForm.elements.imageUrl.value=item.imageUrl||'';
     preview(avatarGalleryForm,item.imageUrl||'');
     avatarGalleryForm.querySelector('[data-avatar-gallery-submit]').textContent='수정 저장';
@@ -114,7 +116,9 @@ function initAvatarGalleryAdmin(){
   if(!avatarGalleryForm||!avatarGalleryList)return;
   onSnapshot(doc(db,'profile','main'),snap=>{
     const data=snap.exists()?snap.data():{};
-    avatarGalleryItems=Array.isArray(data.avatarGallery)?data.avatarGallery:[];
+    avatarGalleryItems=(Array.isArray(data.avatarGallery)?data.avatarGallery:[])
+      .map((item,index)=>({...item,order:Number(item.order)||index+1}))
+      .sort((a,b)=>(Number(a.order)||9999)-(Number(b.order)||9999));
     renderAvatarGalleryAdmin();
   },err=>{console.error(err);avatarGalleryList.innerHTML='<div class="empty">아바타 갤러리를 불러오지 못했어요.</div>'});
   avatarGalleryForm.addEventListener('submit',async event=>{
@@ -123,12 +127,14 @@ function initAvatarGalleryAdmin(){
     const title=avatarGalleryForm.elements.title.value.trim();
     const content=avatarGalleryForm.elements.content.value.trim();
     const imageUrl=avatarGalleryForm.elements.imageUrl.value.trim();
+    const order=Math.max(1,Number(avatarGalleryForm.elements.order?.value)||avatarGalleryItems.length+1);
     const editIndex=Number(avatarGalleryForm.elements.editIndex.value);
     if(!title){alert('아바타 제목을 입력해 주세요.');return}
     if(!imageUrl){alert('아바타 사진을 업로드해 주세요.');return}
-    const item={title,content,imageUrl};
+    const item={title,content,imageUrl,order};
     const next=[...avatarGalleryItems];
-    if(editIndex>=0&&editIndex<next.length)next[editIndex]=item;else next.unshift(item);
+    if(editIndex>=0&&editIndex<next.length)next[editIndex]=item;else next.push(item);
+    next.sort((a,b)=>(Number(a.order)||9999)-(Number(b.order)||9999));
     button.disabled=true;
     try{await setDoc(doc(db,'profile','main'),{avatarGallery:next,updatedAt:serverTimestamp()},{merge:true});resetAvatarGalleryForm()}
     catch(err){console.error(err);alert('저장 중 오류: '+(err?.message||'알 수 없는 오류'))}

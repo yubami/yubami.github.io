@@ -20,7 +20,9 @@ if(homeImg||homeGallery||homePortrait||homeTitle||homeDesc||homeMessage||homeMus
 
 const profileRoot=document.querySelector('[data-profile-root]');const profileAchievements=document.querySelector('[data-profile-achievements]');const profileGalleryRoot=document.querySelector('[data-profile-gallery]');if(profileRoot){onSnapshot(doc(db,'profile','main'),snap=>{if(!snap.exists())return;const x=snap.data();const set=(sel,val,html=false)=>{const el=document.querySelector(sel);if(el&&val!==undefined)html?el.innerHTML=br(val||''):el.textContent=val||''};set('[data-profile-title]',x.title);set('[data-profile-subtitle]',x.subtitle);set('[data-profile-content]',x.content,true);set('[data-profile-birthday]',x.birthday);set('[data-profile-mbti]',x.mbti);const img=document.querySelector('[data-profile-image]');if(img)img.innerHTML=x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="유바미 프로필 사진">`:''
 if(profileGalleryRoot){
-  const gallery=Array.isArray(x.avatarGallery)?x.avatarGallery:[];
+  const gallery=(Array.isArray(x.avatarGallery)?x.avatarGallery:[])
+    .map((item,index)=>({...item,order:Number(item.order)||index+1}))
+    .sort((a,b)=>(Number(a.order)||9999)-(Number(b.order)||9999));
   if(!gallery.length){
     empty(profileGalleryRoot,profileGalleryRoot.dataset.empty||'아직 등록된 아바타가 없어요.');
   }else{
