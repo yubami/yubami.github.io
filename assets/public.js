@@ -63,9 +63,118 @@ listen("embers",(el,a)=>el.innerHTML=a.map(x=>`<article class="card photo ember-
 
 function getYoutubeId(raw){try{const u=new URL(raw);if(u.hostname==='youtu.be')return u.pathname.slice(1).split('/')[0];if(u.pathname.startsWith('/shorts/'))return u.pathname.split('/')[2];if(u.pathname.startsWith('/embed/'))return u.pathname.split('/')[2];return u.searchParams.get('v')||''}catch{return ''}}
 const homeMusicPlay=document.querySelector('[data-home-music-play]');
-homeMusicPlay?.addEventListener('click',()=>{const section=document.querySelector('[data-home-music-section]'),id=getYoutubeId(section?.dataset.musicUrl||''),player=document.querySelector('[data-home-music-player]'),embed=document.querySelector('[data-home-music-embed]');if(!id||!player||!embed)return;embed.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1" title="${esc(section.dataset.musicTitle||'음악 재생')}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;player.classList.remove('hidden');homeMusicPlay.classList.add('hidden')});
-document.querySelector('[data-home-music-close]')?.addEventListener('click',()=>{document.querySelector('[data-home-music-player]')?.classList.add('hidden');homeMusicPlay?.classList.remove('hidden');const embed=document.querySelector('[data-home-music-embed]');if(embed)embed.innerHTML=''});
+homeMusicPlay?.addEventListener('click',()=>{const section=document.querySelector('[data-home-music-section]'),id=getYoutubeId(section?.dataset.musicUrl||''),player=document.querySelector('[data-home-music-player]'),embed=document.querySelector('[data-home-music-embed]');if(!id||!player||!embed)return;embed.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}" title="${esc(section.dataset.musicTitle||'음악 재생')}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;player.classList.remove('hidden');homeMusicPlay.classList.add('hidden')});
+document.querySelector('[data-home-music-close]')?.addEventListener('click',()=>{document.querySelector('[data-home-music-player]')?.classList.add('hidden');homeMusicPlay?.classList.remove('hidden');try{yubamiYTPlayer?.destroy?.()}catch(_){}yubamiYTPlayer=null;const embed=document.querySelector('[data-home-music-embed]');if(embed)embed.innerHTML=''});
 
 const debtSubtitle=document.querySelector('[data-debt-subtitle]');if(debtSubtitle){onSnapshot(doc(db,'debtPage','main'),s=>{if(s.exists())debtSubtitle.innerHTML=br(s.data().subtitle||'')})}
 
 const weeklyRoot=document.querySelector('[data-weekly-calendar]');const monthRoot=document.querySelector('[data-month-calendar]');if(weeklyRoot||monthRoot){let allSchedules=[],viewDate=new Date();const dateKey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;const renderWeek=()=>{if(!weeklyRoot)return;const today=new Date(),day=today.getDay(),monday=new Date(today);monday.setDate(today.getDate()-((day+6)%7));monday.setHours(0,0,0,0);weeklyRoot.innerHTML=Array.from({length:7},(_,i)=>{const d=new Date(monday);d.setDate(monday.getDate()+i);const key=dateKey(d),items=allSchedules.filter(x=>x.date===key);return `<article class="week-day ${key===dateKey(today)?'today':''}"><div class="week-date"><span>${['월','화','수','목','금','토','일'][i]}</span><b>${d.getDate()}</b></div><div class="week-events">${items.length?items.map(x=>`<div class="week-event"><strong>${esc(x.title||'방송')}</strong>${x.time?`<small>${esc(x.time)}</small>`:''}</div>`).join(''):'<span class="week-empty">휴식 또는 미정</span>'}</div></article>`}).join('')};const renderMonth=()=>{if(!monthRoot)return;const y=viewDate.getFullYear(),m=viewDate.getMonth();document.querySelector('[data-calendar-label]').textContent=`${y}년 ${m+1}월`;const first=new Date(y,m,1),last=new Date(y,m+1,0),start=(first.getDay()+6)%7;let html=['월','화','수','목','금','토','일'].map(x=>`<div class="calendar-weekday">${x}</div>`).join('');for(let i=0;i<start;i++)html+='<div class="calendar-cell muted"></div>';for(let d=1;d<=last.getDate();d++){const date=new Date(y,m,d),key=dateKey(date),items=allSchedules.filter(x=>x.date===key);html+=`<div class="calendar-cell ${key===dateKey(new Date())?'today':''}"><div class="calendar-day">${d}</div><div class="calendar-events">${items.map(x=>`<div class="calendar-event"><b>${esc(x.title||'방송')}</b>${x.time?`<small>${esc(x.time)}</small>`:''}${x.content?`<span>${esc(x.content)}</span>`:''}</div>`).join('')}</div></div>`}monthRoot.innerHTML=html};onSnapshot(query(collection(db,'schedules'),orderBy('createdAt','desc')),s=>{allSchedules=s.docs.map(d=>({id:d.id,...d.data()}));renderWeek();renderMonth()});document.querySelector('[data-calendar-prev]')?.addEventListener('click',()=>{viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()-1,1);renderMonth()});document.querySelector('[data-calendar-next]')?.addEventListener('click',()=>{viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,1);renderMonth()});document.querySelector('[data-calendar-today]')?.addEventListener('click',()=>{viewDate=new Date();renderMonth()})}
+
+
+// V7.11 favorite music custom volume control
+let yubamiYTPlayer = null;
+let yubamiYTReadyPromise = null;
+
+function loadYouTubeIframeAPI(){
+  if(window.YT && window.YT.Player) return Promise.resolve();
+  if(yubamiYTReadyPromise) return yubamiYTReadyPromise;
+  yubamiYTReadyPromise = new Promise(resolve=>{
+    const previous = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = ()=>{
+      if(typeof previous === 'function') previous();
+      resolve();
+    };
+    if(!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')){
+      const script=document.createElement('script');
+      script.src='https://www.youtube.com/iframe_api';
+      document.head.appendChild(script);
+    }
+  });
+  return yubamiYTReadyPromise;
+}
+
+function savedMusicVolume(){
+  const value=Number(localStorage.getItem('yubamiMusicVolume'));
+  return Number.isFinite(value) ? Math.min(100,Math.max(0,value)) : 50;
+}
+
+function syncMusicVolumeUI(value){
+  document.querySelectorAll('[data-music-volume]').forEach(input=>input.value=String(value));
+  document.querySelectorAll('[data-music-volume-value]').forEach(el=>el.textContent=`${value}%`);
+  document.querySelectorAll('[data-music-mute]').forEach(button=>{
+    button.textContent=value===0?'🔇':'🔊';
+    button.setAttribute('aria-label',value===0?'소리 켜기':'음소거');
+  });
+}
+
+function setMusicVolume(value){
+  const normalized=Math.min(100,Math.max(0,Number(value)||0));
+  localStorage.setItem('yubamiMusicVolume',String(normalized));
+  syncMusicVolumeUI(normalized);
+  if(yubamiYTPlayer && typeof yubamiYTPlayer.setVolume==='function'){
+    yubamiYTPlayer.setVolume(normalized);
+    if(normalized===0) yubamiYTPlayer.mute();
+    else yubamiYTPlayer.unMute();
+  }
+}
+
+async function attachMusicPlayer(iframe){
+  if(!iframe) return;
+  await loadYouTubeIframeAPI();
+  try{
+    if(yubamiYTPlayer && typeof yubamiYTPlayer.destroy==='function') yubamiYTPlayer.destroy();
+  }catch(_){}
+  yubamiYTPlayer=new YT.Player(iframe,{
+    events:{
+      onReady:event=>{
+        const volume=savedMusicVolume();
+        event.target.setVolume(volume);
+        if(volume===0) event.target.mute();
+        else event.target.unMute();
+        syncMusicVolumeUI(volume);
+      }
+    }
+  });
+}
+
+document.addEventListener('input',e=>{
+  const input=e.target.closest('[data-music-volume]');
+  if(input) setMusicVolume(input.value);
+});
+document.addEventListener('click',e=>{
+  const mute=e.target.closest('[data-music-mute]');
+  if(!mute) return;
+  const current=savedMusicVolume();
+  if(current===0){
+    const previous=Number(localStorage.getItem('yubamiMusicPreviousVolume'))||50;
+    setMusicVolume(previous);
+  }else{
+    localStorage.setItem('yubamiMusicPreviousVolume',String(current));
+    setMusicVolume(0);
+  }
+});
+document.addEventListener('DOMContentLoaded',()=>syncMusicVolumeUI(savedMusicVolume()));
+
+
+function ensureMusicVolumeControl(){
+  const card=document.querySelector('.home-music-section, [data-home-music], .favorite-music-card');
+  if(!card || card.querySelector('[data-music-volume]')) return;
+  const controls=document.createElement('div');
+  controls.className='music-volume-control';
+  controls.setAttribute('aria-label','음악 볼륨');
+  controls.innerHTML='<button type="button" class="music-mute-btn" data-music-mute aria-label="음소거">🔊</button><input type="range" min="0" max="100" step="1" value="50" data-music-volume aria-label="음악 볼륨 조절"><span data-music-volume-value>50%</span>';
+  card.appendChild(controls);
+  syncMusicVolumeUI(savedMusicVolume());
+}
+const musicVolumeObserver=new MutationObserver(()=>{
+  ensureMusicVolumeControl();
+  const iframe=document.querySelector('[data-home-music-embed] iframe, .music-audio-host iframe');
+  if(iframe && !iframe.dataset.ytVolumeAttached){
+    iframe.dataset.ytVolumeAttached='true';
+    attachMusicPlayer(iframe);
+  }
+});
+document.addEventListener('DOMContentLoaded',()=>{
+  ensureMusicVolumeControl();
+  musicVolumeObserver.observe(document.body,{childList:true,subtree:true});
+});
