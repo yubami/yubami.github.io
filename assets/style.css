@@ -2964,3 +2964,96 @@ html[data-theme="morning"] .portrait-pop-bubble::after{
 .calendar-range-event.is-start.is-end,
 .calendar-range-event.is-start.is-end::before{border-radius:9px!important}
 .calendar-cell{overflow:visible!important}
+
+
+/* V8.1 요청 기능 전용 */
+.avatar-gallery-admin{
+  margin-top:26px;
+  padding-top:22px;
+  border-top:1px solid var(--line);
+}
+.avatar-history-section{
+  margin-top:42px;
+}
+.avatar-history-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:16px;
+  margin-top:20px;
+}
+.avatar-history-card{
+  overflow:hidden;
+  cursor:pointer;
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.avatar-history-card:hover{
+  transform:translateY(-4px);
+  box-shadow:var(--shadow);
+}
+.avatar-history-card>img{
+  width:100%;
+  aspect-ratio:3/4;
+  object-fit:cover;
+  background:rgba(255,255,255,.04);
+}
+.avatar-history-copy{
+  padding:16px;
+}
+.avatar-history-copy h3,
+.avatar-history-copy p{
+  margin:0;
+}
+.avatar-history-copy p{
+  margin-top:7px;
+  color:var(--muted);
+  line-height:1.6;
+}
+.notice-card{
+  overflow:hidden;
+  cursor:pointer;
+  display:grid;
+  grid-template-columns:180px 1fr;
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.notice-card:hover{
+  transform:translateY(-3px);
+  box-shadow:var(--shadow);
+}
+.notice-card>img{
+  width:100%;
+  height:100%;
+  min-height:150px;
+  object-fit:cover;
+}
+.notice-card-copy{
+  padding:18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+}
+.notice-card-copy h3,
+.notice-card-copy p{
+  margin:0;
+}
+.notice-card-copy p{
+  margin-top:8px;
+  color:var(--muted);
+  line-height:1.65;
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.notice-dialog img,
+.avatar-dialog img{
+  width:100%;
+  max-height:68vh;
+  object-fit:contain;
+  background:#080b18;
+}
+@media(max-width:680px){
+  .notice-card{grid-template-columns:1fr}
+  .notice-card>img{height:auto;aspect-ratio:16/10}
+  .notice-card-copy{align-items:flex-start}
+}

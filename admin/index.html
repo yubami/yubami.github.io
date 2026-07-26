@@ -6,7 +6,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#080d28" name="theme-color"/>
 <title>유바미 관리자</title>
-<link href="../assets/style.css?v=8.0" rel="stylesheet"/>
+<link href="../assets/style.css?v=8.1" rel="stylesheet"/>
 </head>
 <body><div aria-hidden="true" id="ambientLights"></div><div aria-hidden="true" id="cursorStars"></div>
 <header><div class="shell nav"><a class="brand" href="../index.html"><span class="brand-word">YUBAMI</span></a><div aria-label="화면 테마" class="theme-switch" role="group"><button data-theme-choice="morning" type="button">☀ <span>아침</span></button><button data-theme-choice="night" type="button">🌙 <span>밤</span></button></div><a class="btn soft" href="../index.html">일반 사이트</a></div></header>
@@ -33,10 +33,10 @@
 </div>
 </label>
 <div class="form-grid">
-<label>자동으로 가져온 제목<input class="field" data-music-title="" name="musicTitle" placeholder="영상 제목" readonly=""/></label>
-<label>자동으로 가져온 채널명<input class="field" data-music-author="" name="musicAuthor" placeholder="채널명" readonly=""/></label>
+<label>곡 제목 · 직접 수정 가능<input class="field" data-music-title="" name="musicTitle" placeholder="영상 제목"/></label>
+<label>채널명 · 직접 수정 가능<input class="field" data-music-author="" name="musicAuthor" placeholder="채널명"/></label>
 </div>
-<p class="image-help">링크를 붙여넣으면 영상 제목과 채널명을 자동으로 가져와요. 저장하면 고양이 CD 안의 영상만 바뀝니다.</p>
+<p class="image-help">정보 불러오기로 제목과 채널명을 자동 입력한 뒤, 원하는 문구로 직접 수정할 수 있어요.</p>
 <p aria-live="polite" class="save-status" data-music-fetch-status=""></p>
 </div>
 <div class="home-image-admin"><h3>홈 메인 사진</h3><p class="image-help">홈 오른쪽 세로형 프레임에 표시할 사진 한 장만 등록해 주세요.</p><div class="home-image-slots single"><div class="home-image-slot"><input name="imageUrl" type="hidden"/><b>메인 프로필 사진</b><div class="upload-line"><button class="btn soft cloud-upload" data-folder="home" data-target="imageUrl" type="button">업로드</button><button class="btn ghost clear-image" data-target="imageUrl" type="button">제거</button></div><div class="image-preview" data-preview-for="imageUrl"></div></div></div></div><p aria-live="polite" class="save-status"></p>
@@ -56,7 +56,7 @@
 <label>페이지 제목<input class="field" name="title" placeholder="유바미 도감"/></label>
 <label>한 줄 소개<input class="field" name="subtitle" placeholder="유바미의 프로필과 취향을 기록한 페이지예요."/></label>
 <label>자기소개<textarea class="field" name="content" placeholder="자유롭게 자기소개를 작성해 주세요."></textarea></label>
-<div class="form-grid"><label>주요 콘텐츠<input class="field" name="mainContent" placeholder="소통 · 노래 · 게임"/></label></div>
+
 <input name="imageUrl" type="hidden"/><label>프로필 사진<div class="upload-line"><button class="btn soft cloud-upload" data-folder="profile" type="button">사진 선택 및 업로드</button><button class="btn ghost clear-image" type="button">사진 제거</button></div></label>
 <div class="image-preview"></div><p aria-live="polite" class="save-status"></p>
 <div class="admin-subsection">
@@ -68,6 +68,33 @@
 </div>
 <div class="actions"><button class="btn primary" data-submit="">자기소개 저장</button></div>
 </form>
+</div>
+
+<div class="admin-subsection avatar-gallery-admin">
+  <h3>아바타 갤러리</h3>
+  <p class="image-help">아바타가 변경될 때마다 사진과 간단한 제목을 추가해 주세요.</p>
+  <form class="form content-form" data-collection="profileGallery">
+    <input name="_id" type="hidden"/>
+    <label>아바타 제목
+      <input class="field" name="title" placeholder="예: 2026 여름 아바타" required/>
+    </label>
+    <label>간단한 설명
+      <textarea class="field" name="content" placeholder="의상이나 아바타에 대한 설명을 적어 주세요."></textarea>
+    </label>
+    <input name="imageUrl" type="hidden"/>
+    <label>아바타 사진
+      <div class="upload-line">
+        <button class="btn soft cloud-upload" data-folder="profile-gallery" type="button">사진 선택 및 업로드</button>
+        <button class="btn ghost clear-image" type="button">사진 제거</button>
+      </div>
+    </label>
+    <div class="image-preview"></div>
+    <div class="actions">
+      <button class="btn primary" data-submit="">갤러리 추가</button>
+      <button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button>
+    </div>
+  </form>
+  <div class="manage" data-list="profileGallery"></div>
 </div>
 <div class="panel" id="panel-embers"><h2>불씨도감 관리</h2><p class="image-help">불씨 사진과 소개를 여러 개 등록할 수 있어요.</p>
 <form class="form content-form" data-collection="embers"><input name="_id" type="hidden"/><label>제목<input class="field" name="title" placeholder="불씨 이름 또는 기록 제목" required=""/></label><label>소개<textarea class="field" name="content" placeholder="불씨에 대한 설명을 적어 주세요."></textarea></label><input name="imageUrl" type="hidden"/><label>불씨 사진<div class="upload-line"><button class="btn soft cloud-upload" data-folder="embers" type="button">사진 선택 및 업로드</button><button class="btn ghost clear-image" type="button">사진 제거</button></div></label><div class="image-preview"></div><div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div></form><div class="manage" data-list="embers"></div>
@@ -85,7 +112,37 @@
 <div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div>
 </form><div class="manage" data-list="songs"></div>
 </div>
-<div class="panel" id="panel-notices"><h2>공지 관리</h2><form class="form content-form" data-collection="notices"><input name="_id" type="hidden"/><label>제목<input class="field" name="title" required=""/></label><label>내용<textarea class="field" name="content"></textarea></label><div class="actions"><button class="btn primary" data-submit="">저장</button><button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button></div></form><div class="manage" data-list="notices"></div></div>
+
+<div class="panel" id="panel-notices">
+  <h2>공지 관리</h2>
+  <form class="form content-form" data-collection="notices">
+    <input name="_id" type="hidden"/>
+    <label>제목
+      <input class="field" name="title" required/>
+    </label>
+    <label>내용
+      <textarea class="field" name="content"></textarea>
+    </label>
+    <input name="imageUrl" type="hidden"/>
+    <label>공지 사진
+      <div class="upload-line">
+        <button class="btn soft cloud-upload" data-folder="notices" type="button">사진 업로드</button>
+        <button class="btn ghost clear-image" type="button">사진 제거</button>
+      </div>
+    </label>
+    <div class="image-preview"></div>
+    <label class="check-row">
+      <input name="downloadAllowed" type="checkbox"/>
+      일반 사이트에서 이 사진 다운로드 허용
+    </label>
+    <div class="actions">
+      <button class="btn primary" data-submit="">저장</button>
+      <button class="btn ghost hidden" data-cancel="" type="button">수정 취소</button>
+    </div>
+  </form>
+  <div class="manage" data-list="notices"></div>
+</div>
+
 <div class="panel" id="panel-schedules"><h2>일정 관리</h2><form class="form content-form" data-collection="schedules"><input name="_id" type="hidden"/><label>제목<input class="field" name="title" required=""/></label>
 <label>일정 색상
   <input class="field schedule-color-input" type="color" name="color" value="#8b5cf6">
@@ -160,5 +217,5 @@
 </div>
 </section>
 </div></main>
-<script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script><script src="admin.js?v=8.0" type="module"></script>
+<script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script><script src="admin.js?v=8.1" type="module"></script>
 <script src="../assets/effects.js?v=7.9"></script></body></html>
