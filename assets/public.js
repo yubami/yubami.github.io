@@ -63,7 +63,7 @@ listen("embers",(el,a)=>el.innerHTML=a.map(x=>`<article class="card photo ember-
 
 function getYoutubeId(raw){try{const u=new URL(raw);if(u.hostname==='youtu.be')return u.pathname.slice(1).split('/')[0];if(u.pathname.startsWith('/shorts/'))return u.pathname.split('/')[2];if(u.pathname.startsWith('/embed/'))return u.pathname.split('/')[2];return u.searchParams.get('v')||''}catch{return ''}}
 const homeMusicPlay=document.querySelector('[data-home-music-play]');
-homeMusicPlay?.addEventListener('click',()=>{const section=document.querySelector('[data-home-music-section]'),id=getYoutubeId(section?.dataset.musicUrl||''),player=document.querySelector('[data-home-music-player]'),embed=document.querySelector('[data-home-music-embed]');if(!id||!player||!embed)return;embed.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}" title="${esc(section.dataset.musicTitle||'음악 재생')}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;player.classList.remove('hidden');homeMusicPlay.classList.add('hidden')});
+homeMusicPlay?.addEventListener('click',()=>{const section=document.querySelector('[data-home-music-section]'),id=getYoutubeId(section?.dataset.musicUrl||''),player=document.querySelector('[data-home-music-player]'),embed=document.querySelector('[data-home-music-embed]');if(!id||!player||!embed)return;embed.innerHTML=`<div class="music-cd-player"><div class="music-cd-disc"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1&controls=0&disablekb=1&fs=0&iv_load_policy=3&modestbranding=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}" title="${esc(section.dataset.musicTitle||'음악 재생')}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe><span class="music-cd-shine" aria-hidden="true"></span></div></div>`;player.classList.remove('hidden');homeMusicPlay.classList.add('hidden')});
 document.querySelector('[data-home-music-close]')?.addEventListener('click',()=>{document.querySelector('[data-home-music-player]')?.classList.add('hidden');homeMusicPlay?.classList.remove('hidden');try{yubamiYTPlayer?.destroy?.()}catch(_){}yubamiYTPlayer=null;const embed=document.querySelector('[data-home-music-embed]');if(embed)embed.innerHTML=''});
 
 const debtSubtitle=document.querySelector('[data-debt-subtitle]');if(debtSubtitle){onSnapshot(doc(db,'debtPage','main'),s=>{if(s.exists())debtSubtitle.innerHTML=br(s.data().subtitle||'')})}
@@ -132,6 +132,11 @@ async function attachMusicPlayer(iframe){
         if(volume===0) event.target.mute();
         else event.target.unMute();
         syncMusicVolumeUI(volume);
+        syncMusicPlayButton('playing');
+      },
+      onStateChange:event=>{
+        if(window.YT && event.data===YT.PlayerState.PLAYING) syncMusicPlayButton('playing');
+        else if(window.YT && (event.data===YT.PlayerState.PAUSED || event.data===YT.PlayerState.ENDED)) syncMusicPlayButton('paused');
       }
     }
   });
@@ -162,7 +167,7 @@ function ensureMusicVolumeControl(){
   const controls=document.createElement('div');
   controls.className='music-volume-control';
   controls.setAttribute('aria-label','음악 볼륨');
-  controls.innerHTML='<button type="button" class="music-mute-btn" data-music-mute aria-label="음소거">🔊</button><input type="range" min="0" max="100" step="1" value="50" data-music-volume aria-label="음악 볼륨 조절"><span data-music-volume-value>50%</span>';
+  controls.innerHTML='<button type="button" class="music-play-toggle" data-music-play-toggle aria-label="재생 또는 일시정지">⏸</button><button type="button" class="music-mute-btn" data-music-mute aria-label="음소거">🔊</button><input type="range" min="0" max="100" step="1" value="50" data-music-volume aria-label="음악 볼륨 조절"><span data-music-volume-value>50%</span>';
   card.appendChild(controls);
   syncMusicVolumeUI(savedMusicVolume());
 }
@@ -177,4 +182,28 @@ const musicVolumeObserver=new MutationObserver(()=>{
 document.addEventListener('DOMContentLoaded',()=>{
   ensureMusicVolumeControl();
   musicVolumeObserver.observe(document.body,{childList:true,subtree:true});
+});
+
+
+// V7.13 external playback controls
+function syncMusicPlayButton(state){
+  document.querySelectorAll('[data-music-play-toggle]').forEach(button=>{
+    const playing = state === 'playing';
+    button.textContent = playing ? '⏸' : '▶';
+    button.setAttribute('aria-label', playing ? '일시정지' : '재생');
+    button.dataset.state = playing ? 'playing' : 'paused';
+  });
+}
+
+document.addEventListener('click',e=>{
+  const button=e.target.closest('[data-music-play-toggle]');
+  if(!button || !yubamiYTPlayer) return;
+  const state=button.dataset.state;
+  if(state==='playing'){
+    yubamiYTPlayer.pauseVideo?.();
+    syncMusicPlayButton('paused');
+  }else{
+    yubamiYTPlayer.playVideo?.();
+    syncMusicPlayButton('playing');
+  }
 });
