@@ -114,7 +114,7 @@ if(debtAdminList)onSnapshot(query(collection(db,'rouletteDebts'),orderBy('create
     const x=d.data(),items=debtItemsOf(x),done=items.filter(i=>i.completed).length;
     return `<article class="manage-row debt-manage-card">
       <div class="debt-manage-main"><div class="debt-manage-head"><div><h3>${esc(x.viewerName||'이름 없음')}</h3><p>${esc(x.viewerId||'아이디 미등록')}</p></div><div class="debt-count-badges"><span>🔥 전체 ${items.length}</span><span>⏳ 남음 ${items.length-done}</span><span>✅ 완료 ${done}</span></div></div>
-      <div class="debt-admin-items">${items.map(i=>`<div class="debt-admin-row ${i.completed?'is-complete':''}"><span>${esc(i.content||'')}</span><div class="mini"><button class="soft" data-debt-toggle="${d.id}" data-item="${i.id}">${i.completed?'되돌리기':'완료'}</button><button class="danger" data-debt-item-delete="${d.id}" data-item="${i.id}">삭제</button></div></div>`).join('')||'<div class="empty">내용이 없어요.</div>'}</div></div>
+      <div class="debt-admin-items">${items.map(i=>`<div class="debt-admin-row ${i.completed?'is-complete':''}"><span>${esc(i.content||'')}</span><div class="mini"><button class="soft" data-debt-inline-edit data-doc-id="${d.id}" data-item-id="${i.id}">수정</button><button class="soft" data-debt-toggle="${d.id}" data-item="${i.id}">${i.completed?'되돌리기':'완료'}</button><button class="danger" data-debt-item-delete="${d.id}" data-item="${i.id}">삭제</button></div></div>`).join('')||'<div class="empty">내용이 없어요.</div>'}</div></div>
       <button class="danger" data-debt-card-delete="${d.id}">카드 전체 삭제</button>
     </article>`;
   }).join('');
@@ -165,3 +165,16 @@ async function fetchMusicMetadata(){
 musicFetchButton?.addEventListener('click',fetchMusicMetadata);
 musicUrlInput?.addEventListener('change',fetchMusicMetadata);
 musicUrlInput?.addEventListener('paste',()=>setTimeout(fetchMusicMetadata,80));
+
+// V7.15 바로가기 버튼 관리
+const homeLinksManager=document.querySelector('[data-home-links-manager]');
+let homeLinksDraft=[];
+const defaultHomeLinks=[{id:'soop',icon:'🐱',label:'SOOP 바로가기',url:'#'},{id:'live',icon:'▶',label:'방송 보러가기',url:'#'}];
+const linkId=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());
+function renderHomeLinks(){if(!homeLinksManager)return;homeLinksManager.innerHTML=homeLinksDraft.map(x=>`<div class="home-link-edit-row" data-link-id="${x.id}"><input class="field icon-field" data-k="icon" value="${esc(x.icon||'🐾')}"><input class="field" data-k="label" value="${esc(x.label||'')}"><input class="field" data-k="url" value="${esc(x.url||'')}"><div class="mini"><button type="button" class="soft" data-up>↑</button><button type="button" class="soft" data-down>↓</button><button type="button" class="danger" data-remove>삭제</button></div></div>`).join('')}
+onSnapshot(doc(db,'home','main'),s=>{if(!s.exists())return;homeLinksDraft=Array.isArray(s.data().links)?s.data().links:defaultHomeLinks;renderHomeLinks()});
+document.querySelector('[data-add-home-link]')?.addEventListener('click',()=>{homeLinksDraft.push({id:linkId(),icon:'🐾',label:'새 바로가기',url:'https://'});renderHomeLinks()});
+homeLinksManager?.addEventListener('input',e=>{const row=e.target.closest('[data-link-id]'),x=homeLinksDraft.find(v=>v.id===row?.dataset.linkId);if(x&&e.target.dataset.k)x[e.target.dataset.k]=e.target.value});
+homeLinksManager?.addEventListener('click',e=>{const row=e.target.closest('[data-link-id]');if(!row)return;const i=homeLinksDraft.findIndex(v=>v.id===row.dataset.linkId);if(i<0)return;if(e.target.closest('[data-remove]'))homeLinksDraft.splice(i,1);if(e.target.closest('[data-up]')&&i>0)[homeLinksDraft[i-1],homeLinksDraft[i]]=[homeLinksDraft[i],homeLinksDraft[i-1]];if(e.target.closest('[data-down]')&&i<homeLinksDraft.length-1)[homeLinksDraft[i+1],homeLinksDraft[i]]=[homeLinksDraft[i],homeLinksDraft[i+1]];renderHomeLinks()});
+document.querySelector('[data-save-home-links]')?.addEventListener('click',async()=>{const st=document.querySelector('[data-home-links-status]');try{await setDoc(doc(db,'home','main'),{links:homeLinksDraft},{merge:true});st.textContent='바로가기를 저장했어요.'}catch(err){st.textContent='저장 실패: '+err.message}});
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-debt-inline-edit]');if(!b)return;const ref=doc(db,'rouletteDebts',b.dataset.docId),snap=await getDoc(ref);if(!snap.exists())return;const items=debtItemsOf(snap.data()),item=items.find(x=>x.id===b.dataset.itemId);if(!item)return;const value=prompt('업보 내용을 수정해 주세요.',item.content||'');if(value===null||!value.trim())return;await updateDoc(ref,{items:items.map(x=>x.id===item.id?{...x,content:value.trim()}:x),updatedAt:serverTimestamp()})});
