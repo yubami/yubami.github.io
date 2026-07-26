@@ -1,6 +1,6 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-import {getFirestore,collection,addDoc,updateDoc,deleteDoc,doc,getDoc,setDoc,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import {getFirestore,collection,addDoc,updateDoc,deleteDoc,doc,getDoc,getDocs,setDoc,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 import {firebaseConfig,ADMIN_EMAIL} from "../assets/config.js";
 
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=s=>document.querySelector(s);
@@ -34,7 +34,7 @@ function reset(form){
   previewAll(form);
   renderTagPreview(form);
 }
-function formData(form){const out={};for(const[k,v]of new FormData(form)){if(k!=="_id")out[k]=typeof v==="string"?v.trim():v}if(out.difficulty)out.difficulty=Number(out.difficulty);if(out.debtCount!==undefined&&out.debtCount!=="")out.debtCount=Number(out.debtCount);if(out.sortOrder!==undefined&&out.sortOrder!=="")out.sortOrder=Number(out.sortOrder);if("tags" in out)out.tags=parseTags(out.tags);out.updatedAt=serverTimestamp();return out}
+function formData(form){const out={};for(const[k,v]of new FormData(form)){if(k!=="_id")out[k]=typeof v==="string"?v.trim():v}if(form.dataset.collection==="instagram")out.downloadAllowed=!!form.elements.downloadAllowed?.checkedif(out.difficulty)out.difficulty=Number(out.difficulty);if(out.debtCount!==undefined&&out.debtCount!=="")out.debtCount=Number(out.debtCount);if(out.sortOrder!==undefined&&out.sortOrder!=="")out.sortOrder=Number(out.sortOrder);if("tags" in out)out.tags=parseTags(out.tags);out.updatedAt=serverTimestamp();return out}
 
 function syncChoiceButtons(form){
   form.querySelectorAll('[data-choice-for]').forEach(group=>{
@@ -63,9 +63,73 @@ document.querySelectorAll('.cloud-upload').forEach(b=>b.addEventListener('click'
 document.querySelectorAll('.clear-image').forEach(b=>b.addEventListener('click',()=>{const target=b.dataset.target||'imageUrl';if(b.form.elements[target])b.form.elements[target].value='';preview(b.form,'',target)}));
 document.querySelectorAll('.tag-input').forEach(i=>i.addEventListener('input',()=>renderTagPreview(i.form)));
 
-async function loadSingleton(form){const [collectionName,documentName]=form.dataset.document.split('/'),snap=await getDoc(doc(db,collectionName,documentName));if(snap.exists()){const x=snap.data();for(const e of form.elements)if(e.name&&x[e.name]!==undefined)e.value=x[e.name];previewAll(form);syncChoiceButtons(form)}}
+async function loadSingleton(form){const [collectionName,documentName]=form.dataset.document.split('/'),snap=await getDoc(doc(db,collectionName,documentName));if(snap.exists()){const x=snap.data();for(const e of form.elements)if(e.name&&x[e.name]!==undefined){if(e.type==="checkbox")e.checked=!!x[e.name];else e.value=x[e.name];}previewAll(form);syncChoiceButtons(form)}}
 let started=false;onAuthStateChanged(auth,user=>{const ok=user&&user.email===ADMIN_EMAIL;$("#loginView").classList.toggle("hidden",ok);$("#adminView").classList.toggle("hidden",!ok);if(ok){$("#adminEmail").textContent=user.email;if(!started){started=true;start()}}});
 
 function start(){onSnapshot(query(collection(db,'wardrobeCollections'),orderBy('createdAt','desc')),snap=>{const categories=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(Number(a.sortOrder)||0)-(Number(b.sortOrder)||0)||String(a.title||'').localeCompare(String(b.title||''),'ko'));document.querySelectorAll('[data-wardrobe-category-select]').forEach(select=>{const current=select.value;select.innerHTML='<option value="">카테고리 선택</option>'+categories.map(x=>`<option value="${esc(x.title||'')}">${esc(x.title||'이름 없음')}</option>`).join('');if(current)select.value=current})});document.querySelectorAll('.singleton-form').forEach(form=>{loadSingleton(form);form.addEventListener('submit',async e=>{e.preventDefault();const b=form.querySelector('[data-submit]'),status=form.querySelector('.save-status'),[collectionName,documentName]=form.dataset.document.split('/');b.disabled=true;if(status)status.textContent='저장 중...';try{await setDoc(doc(db,collectionName,documentName),formData(form),{merge:true});if(status)status.textContent='저장 완료! 일반 사이트에 실시간 반영돼요.'}catch(err){console.error(err);if(status)status.textContent='저장 실패: '+(err?.message||'알 수 없는 오류')}finally{b.disabled=false}})});
  document.querySelectorAll('.content-form').forEach(form=>{form.addEventListener('submit',async e=>{e.preventDefault();const b=form.querySelector('[data-submit]');b.disabled=true;try{const id=form.elements._id.value,data=formData(form);if(id)await updateDoc(doc(db,form.dataset.collection,id),data);else await addDoc(collection(db,form.dataset.collection),{...data,createdAt:serverTimestamp()});reset(form)}catch(err){console.error(err);alert('저장 중 오류: '+(err?.message||'알 수 없는 오류'))}finally{b.disabled=false}});form.querySelector('[data-cancel]')?.addEventListener('click',()=>reset(form))});
- ['songs','notices','schedules','wardrobeCollections','wardrobe','instagram','embers','rouletteDebts','siteRules'].forEach(name=>{const el=document.querySelector(`[data-list="${name}"]`);onSnapshot(query(collection(db,name),orderBy('createdAt','desc')),snap=>{el.innerHTML=snap.empty?'<div class="empty">등록된 내용이 없어요.</div>':snap.docs.map(d=>{const x=d.data(),heading=name==='rouletteDebts'?`${x.viewerName||'이름 없음'} · 업보 ${Number(x.debtCount)||0}개`:(x.title||'제목 없음')+(x.artist?' · '+x.artist:''),summary=name==='rouletteDebts'?`${x.viewerId||'아이디 미등록'} · ${x.content||''}`:(x.content||x.date||'');return `<div class="manage-row"><div class="manage-copy">${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="">`:''}<div><h3>${esc(heading)}</h3><p>${esc(summary)}</p>${(x.tags||[]).map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}</div></div><div class="mini"><button class="soft" data-edit="${d.id}">수정</button><button class="danger" data-delete="${d.id}">삭제</button></div></div>`}).join('');el.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',async()=>{if(confirm('정말 삭제할까요?'))await deleteDoc(doc(db,name,b.dataset.delete))}));el.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{const item=snap.docs.find(d=>d.id===b.dataset.edit),x=item.data(),form=document.querySelector(`form[data-collection="${name}"]`);form.elements._id.value=item.id;for(const e of form.elements){if(!e.name||e.name==='_id')continue;e.value=e.name==='tags'?(x.tags||[]).map(t=>'#'+t).join(' '):(x[e.name]??'')}if(form.elements.category&&!form.elements.category.value)form.elements.category.value='KPOP';previewAll(form);syncChoiceButtons(form);renderTagPreview(form);form.querySelector('[data-submit]').textContent='수정 저장';form.querySelector('[data-cancel]')?.classList.remove('hidden');form.scrollIntoView({behavior:'smooth',block:'start'})}))})})}
+ ['songs','notices','schedules','wardrobeCollections','wardrobe','instagram','embers','siteRules'].forEach(name=>{const el=document.querySelector(`[data-list="${name}"]`);onSnapshot(query(collection(db,name),orderBy('createdAt','desc')),snap=>{el.innerHTML=snap.empty?'<div class="empty">등록된 내용이 없어요.</div>':snap.docs.map(d=>{const x=d.data(),heading=name==='rouletteDebts'?`${x.viewerName||'이름 없음'} · 업보 ${Number(x.debtCount)||0}개`:(x.title||'제목 없음')+(x.artist?' · '+x.artist:''),summary=name==='rouletteDebts'?`${x.viewerId||'아이디 미등록'} · ${x.content||''}`:(x.content||x.date||'');return `<div class="manage-row"><div class="manage-copy">${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="">`:''}<div><h3>${esc(heading)}</h3><p>${esc(summary)}</p>${(x.tags||[]).map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}</div></div><div class="mini"><button class="soft" data-edit="${d.id}">수정</button><button class="danger" data-delete="${d.id}">삭제</button></div></div>`}).join('');el.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',async()=>{if(confirm('정말 삭제할까요?'))await deleteDoc(doc(db,name,b.dataset.delete))}));el.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{const item=snap.docs.find(d=>d.id===b.dataset.edit),x=item.data(),form=document.querySelector(`form[data-collection="${name}"]`);form.elements._id.value=item.id;for(const e of form.elements){if(!e.name||e.name==='_id')continue;e.type==='checkbox'?e.checked=!!x[e.name]:e.value=e.name==='tags'?(x.tags||[]).map(t=>'#'+t).join(' '):(x[e.name]??'')}if(form.elements.category&&!form.elements.category.value)form.elements.category.value='KPOP';previewAll(form);syncChoiceButtons(form);renderTagPreview(form);form.querySelector('[data-submit]').textContent='수정 저장';form.querySelector('[data-cancel]')?.classList.remove('hidden');form.scrollIntoView({behavior:'smooth',block:'start'})}))})})}
+
+
+function debtItemsOf(x){
+  if(Array.isArray(x.items))return x.items;
+  if(x.content)return [{id:'legacy-'+Date.now(),content:x.content,completed:false,createdAt:Date.now()}];
+  return [];
+}
+const debtViewerName=document.getElementById('debtViewerName');
+const debtViewerId=document.getElementById('debtViewerId');
+const debtContentInput=document.getElementById('debtContentInput');
+const debtQuickAdd=document.getElementById('debtQuickAdd');
+const debtQuickStatus=document.getElementById('debtQuickStatus');
+const debtAdminList=document.querySelector('[data-list="rouletteDebts"]');
+
+async function findDebtViewer(name,id){
+  const snap=await getDocs(collection(db,'rouletteDebts'));
+  return snap.docs.find(d=>{
+    const x=d.data();
+    return id ? String(x.viewerId||'').trim()===id : String(x.viewerName||'').trim()===name;
+  });
+}
+debtQuickAdd?.addEventListener('click',async()=>{
+  const viewerName=(debtViewerName.value||'').trim(),viewerId=(debtViewerId.value||'').trim(),content=(debtContentInput.value||'').trim();
+  if(!viewerName||!content){debtQuickStatus.textContent='시청자 이름과 업보 내용을 입력해 주세요.';return}
+  debtQuickAdd.disabled=true;debtQuickStatus.textContent='추가 중...';
+  try{
+    const found=await findDebtViewer(viewerName,viewerId);
+    const item={id:(crypto.randomUUID?crypto.randomUUID():String(Date.now())),content,completed:false,createdAt:Date.now()};
+    if(found){
+      const items=debtItemsOf(found.data());
+      await updateDoc(doc(db,'rouletteDebts',found.id),{viewerName,viewerId,items:[...items,item],updatedAt:serverTimestamp()});
+    }else{
+      await addDoc(collection(db,'rouletteDebts'),{viewerName,viewerId,items:[item],createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+    }
+    debtContentInput.value='';debtQuickStatus.textContent='업보가 추가됐어요.';
+  }catch(err){console.error(err);debtQuickStatus.textContent='추가하지 못했어요: '+(err.message||'오류')}
+  finally{debtQuickAdd.disabled=false}
+});
+debtContentInput?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();debtQuickAdd.click()}});
+
+if(debtAdminList)onSnapshot(query(collection(db,'rouletteDebts'),orderBy('createdAt','desc')),snap=>{
+  debtAdminList.innerHTML=snap.empty?'<div class="empty">등록된 업보가 없어요.</div>':snap.docs.map(d=>{
+    const x=d.data(),items=debtItemsOf(x),done=items.filter(i=>i.completed).length;
+    return `<article class="manage-row debt-manage-card">
+      <div class="debt-manage-main"><div class="debt-manage-head"><div><h3>${esc(x.viewerName||'이름 없음')}</h3><p>${esc(x.viewerId||'아이디 미등록')}</p></div><div class="debt-count-badges"><span>🔥 전체 ${items.length}</span><span>⏳ 남음 ${items.length-done}</span><span>✅ 완료 ${done}</span></div></div>
+      <div class="debt-admin-items">${items.map(i=>`<div class="debt-admin-row ${i.completed?'is-complete':''}"><span>${esc(i.content||'')}</span><div class="mini"><button class="soft" data-debt-toggle="${d.id}" data-item="${i.id}">${i.completed?'되돌리기':'완료'}</button><button class="danger" data-debt-item-delete="${d.id}" data-item="${i.id}">삭제</button></div></div>`).join('')||'<div class="empty">내용이 없어요.</div>'}</div></div>
+      <button class="danger" data-debt-card-delete="${d.id}">카드 전체 삭제</button>
+    </article>`;
+  }).join('');
+  debtAdminList.querySelectorAll('[data-debt-toggle]').forEach(b=>b.addEventListener('click',async()=>{
+    const ref=doc(db,'rouletteDebts',b.dataset.debtToggle),s=await getDoc(ref);if(!s.exists())return;
+    const items=debtItemsOf(s.data()).map(i=>i.id===b.dataset.item?{...i,completed:!i.completed}:i);
+    await updateDoc(ref,{items,updatedAt:serverTimestamp()});
+  }));
+  debtAdminList.querySelectorAll('[data-debt-item-delete]').forEach(b=>b.addEventListener('click',async()=>{
+    if(!confirm('이 업보 내용만 삭제할까요?'))return;
+    const ref=doc(db,'rouletteDebts',b.dataset.debtItemDelete),s=await getDoc(ref);if(!s.exists())return;
+    const items=debtItemsOf(s.data()).filter(i=>i.id!==b.dataset.item);
+    await updateDoc(ref,{items,updatedAt:serverTimestamp()});
+  }));
+  debtAdminList.querySelectorAll('[data-debt-card-delete]').forEach(b=>b.addEventListener('click',async()=>{
+    if(confirm('이 시청자의 업보 카드 전체를 삭제할까요?'))await deleteDoc(doc(db,'rouletteDebts',b.dataset.debtCardDelete));
+  }));
+});

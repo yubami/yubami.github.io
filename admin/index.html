@@ -68,21 +68,34 @@
       <div class="panel" id="panel-schedules"><h2>일정 관리</h2><form class="form content-form" data-collection="schedules"><input type="hidden" name="_id"><label>제목<input class="field" name="title" required></label><label>날짜<input class="field" type="date" name="date"></label><label>시간<input class="field" type="time" name="time"></label><label>내용<textarea class="field" name="content"></textarea></label><div class="actions"><button class="btn primary" data-submit>저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div></form><div class="manage" data-list="schedules"></div></div>
       <div class="panel" id="panel-wardrobe-categories"><h2>옷장 카테고리 관리</h2><p class="image-help">예: 2026년 7월 의상, 여름 휴가 컬렉션. 만든 카테고리 안에서 헤어와 의상이 따로 정리돼요.</p><form class="form content-form" data-collection="wardrobeCollections"><input type="hidden" name="_id"><div class="form-grid"><label>카테고리 이름<input class="field" name="title" required placeholder="예: 2026년 7월 의상"></label><label>정렬 순서<input class="field" type="number" name="sortOrder" value="0" placeholder="숫자가 작을수록 먼저 표시"></label></div><label>설명<input class="field" name="content" placeholder="선택 사항"></label><div class="actions"><button class="btn primary" data-submit>카테고리 저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div></form><div class="manage" data-list="wardrobeCollections"></div></div>
       <div class="panel" id="panel-wardrobe"><h2>옷장 관리</h2><p class="image-help">먼저 만든 월별·테마별 카테고리를 선택하고, 헤어 또는 의상으로 분류해 주세요.</p><form class="form content-form" data-collection="wardrobe"><input type="hidden" name="_id"><div class="form-grid"><label>카테고리<select class="field" name="category" required data-wardrobe-category-select><option value="">카테고리를 먼저 만들어 주세요</option></select></label><label>종류<select class="field" name="subcategory" required><option value="의상">의상</option><option value="헤어">헤어</option></select></label></div><label>제목<input class="field" name="title" required></label><label>내용<textarea class="field" name="content"></textarea></label><input type="hidden" name="imageUrl"><label>사진<div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="wardrobe">의상 사진 업로드</button><button type="button" class="btn ghost clear-image">사진 제거</button></div></label><div class="image-preview"></div><div class="actions"><button class="btn primary" data-submit>저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div></form><div class="manage" data-list="wardrobe"></div></div>
-      <div class="panel" id="panel-instagram"><h2>바미스타그램 관리</h2><form class="form content-form" data-collection="instagram"><input type="hidden" name="_id"><label>제목<input class="field" name="title" required></label><label>내용<textarea class="field" name="content"></textarea></label><input type="hidden" name="imageUrl"><label>사진<div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="instagram">사진 업로드</button><button type="button" class="btn ghost clear-image">사진 제거</button></div></label><div class="image-preview"></div><div class="actions"><button class="btn primary" data-submit>저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div></form><div class="manage" data-list="instagram"></div></div>
+      <div class="panel" id="panel-instagram"><h2>바미스타그램 관리</h2>
+<form class="form content-form" data-collection="instagram"><input type="hidden" name="_id">
+<label>제목<input class="field" name="title" required></label>
+<label>내용<textarea class="field" name="content"></textarea></label>
+<input type="hidden" name="imageUrl">
+<label>사진<div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="instagram">사진 업로드</button><button type="button" class="btn ghost clear-image">사진 제거</button></div></label>
+<div class="image-preview"></div>
+<label class="check-row"><input type="checkbox" name="downloadAllowed"> 일반 사이트에서 이 사진 다운로드 허용</label>
+<p class="image-help">성격 유형 검사지나 배포용 자료처럼 시청자가 저장해도 되는 게시물에만 체크해 주세요.</p>
+<div class="actions"><button class="btn primary" data-submit>저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div>
+</form><div class="manage" data-list="instagram"></div></div>
       
       <div class="panel" id="panel-debts"><h2>룰렛 업보 관리</h2>
-        <form class="form singleton-form debt-page-settings" data-singleton="debtPage/main"><label>페이지 안내 문구<input class="field" name="subtitle" placeholder="불씨단의 룰렛 기록을 확인해 보세요."></label><div class="actions"><button class="btn primary">안내 문구 저장</button></div><p class="save-status" aria-live="polite"></p></form>
-        <p class="image-help">시청자별 업보 카드를 만들 수 있어요. 카드에는 업보 개수가 보이고, 상세페이지에서 아이디와 내용을 확인할 수 있어요.</p>
-        <form class="form content-form" data-collection="rouletteDebts"><input type="hidden" name="_id">
-          <div class="form-grid">
-            <label>시청자 이름<input class="field" name="viewerName" required placeholder="닉네임"></label>
-            <label>시청자 아이디<input class="field" name="viewerId" placeholder="플랫폼 아이디"></label>
-            <label>업보 개수<input class="field" type="number" min="0" name="debtCount" required value="1"></label>
-          </div>
-          <label>업보 내용<textarea class="field" name="content" required placeholder="예: 공포게임 3회, 벌칙 방송 1회 등 상세 내용을 적어 주세요."></textarea></label>
-          <div class="actions"><button class="btn primary" data-submit>업보 저장</button><button type="button" class="btn ghost hidden" data-cancel>수정 취소</button></div>
-        </form><div class="manage" data-list="rouletteDebts"></div>
-      </div>
+<form class="form singleton-form debt-page-settings" data-document="debtPage/main">
+<label>페이지 안내 문구<input class="field" name="subtitle" placeholder="불씨단의 룰렛 기록을 확인해 보세요."></label>
+<div class="actions"><button class="btn primary" data-submit>안내 문구 저장</button></div><p class="save-status" aria-live="polite"></p>
+</form>
+<div class="debt-admin-box">
+<div class="form-grid">
+<label>시청자 이름<input class="field" id="debtViewerName" placeholder="닉네임"></label>
+<label>시청자 아이디<input class="field" id="debtViewerId" placeholder="플랫폼 아이디"></label>
+</div>
+<label>업보 내용<div class="inline-add"><input class="field" id="debtContentInput" placeholder="예: 공포게임 1회"><button type="button" class="btn primary" id="debtQuickAdd">+ 추가</button></div></label>
+<p class="image-help">내용 한 개를 추가하면 업보 개수가 자동으로 1개 올라가요. 같은 이름 또는 아이디로 추가하면 기존 카드에 누적돼요.</p>
+<p class="save-status" id="debtQuickStatus" aria-live="polite"></p>
+</div>
+<div class="manage debt-admin-list" data-list="rouletteDebts"></div>
+</div>
 
       <div class="panel" id="panel-rules"><h2>규칙 관리</h2>
         <p class="image-help">방송 규칙, 채팅 규칙, 팬카페 규칙처럼 여러 항목을 자유롭게 추가할 수 있어요.</p>
