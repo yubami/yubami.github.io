@@ -1304,3 +1304,221 @@ html:not([data-theme="morning"]) .hero-sky::before{
     max-width:320px !important;
   }
 }
+
+
+/* V7.19: 좌우 원형 크기 통일 + 음악 바깥 프레임 제거 */
+.hero-layout-v716{
+  grid-template-columns:minmax(300px,340px) minmax(420px,1fr) minmax(300px,340px) !important;
+  gap:clamp(34px,4vw,70px) !important;
+  align-items:center !important;
+  justify-items:center !important;
+}
+
+.hero-portrait-column,
+.hero-copy-v716,
+.hero-music-v716{
+  align-self:center !important;
+  justify-self:center !important;
+}
+
+/* 프로필과 CD를 같은 지름으로 */
+.hero-portrait-frame,
+.cat-cd-shell{
+  width:300px !important;
+  height:300px !important;
+  aspect-ratio:1 !important;
+}
+
+.hero-portrait-frame{
+  border-width:6px !important;
+}
+
+/* 음악 바깥 카드 제거 */
+.hero-music-v716{
+  max-width:340px !important;
+  background:transparent !important;
+}
+.hero-music-v716 .cat-music-player{
+  width:340px !important;
+  max-width:340px !important;
+  min-height:auto !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  overflow:visible !important;
+}
+
+/* 음악 제목 중앙 정렬 */
+.hero-music-v716 .cat-music-heading{
+  width:100% !important;
+  margin:0 0 16px !important;
+  text-align:center !important;
+}
+.hero-music-v716 .cat-music-heading strong{
+  font-size:25px !important;
+  line-height:1.2 !important;
+}
+.hero-music-v716 .cat-music-heading > span:last-child{
+  margin-top:4px !important;
+}
+
+/* 귀와 CD 크기 재배치 */
+.hero-music-v716 .cat-cd-stage{
+  width:340px !important;
+  height:330px !important;
+  display:grid !important;
+  place-items:end center !important;
+  margin:0 auto !important;
+}
+.hero-music-v716 .cat-cd{
+  width:300px !important;
+  height:300px !important;
+}
+.hero-music-v716 .cat-ear{
+  top:2px !important;
+  width:92px !important;
+  height:102px !important;
+}
+.hero-music-v716 .cat-ear-left{
+  left:25px !important;
+}
+.hero-music-v716 .cat-ear-right{
+  right:25px !important;
+}
+
+/* 컨트롤을 CD 아래 가운데 정렬 */
+.hero-music-v716 .cat-player-controls{
+  width:330px !important;
+  max-width:330px !important;
+  margin:18px auto 0 !important;
+  padding:0 !important;
+  display:grid !important;
+  grid-template-columns:48px 42px 24px minmax(110px,1fr) 42px !important;
+  gap:9px !important;
+  align-items:center !important;
+}
+.hero-music-v716 .cat-control{
+  flex:none !important;
+}
+.hero-music-v716 .cat-player-controls input[type="range"]{
+  min-width:0 !important;
+  width:100% !important;
+}
+.hero-music-v716 .cat-player-controls output{
+  min-width:40px !important;
+  text-align:right !important;
+}
+
+/* 중앙 소개를 정확히 가운데 */
+.hero-copy-v716{
+  width:100% !important;
+  max-width:640px !important;
+  padding:12px 0 !important;
+}
+.hero-copy-v716 h1{
+  margin:10px 0 14px !important;
+  font-size:clamp(62px,6vw,98px) !important;
+}
+.hero-copy-v716 [data-home-description]{
+  margin:18px 0 0 !important;
+}
+
+/* 5개 버튼: 3개 + 2개 형태로 안정적인 중앙 배치 */
+.hero-links-v716{
+  display:grid !important;
+  grid-template-columns:repeat(6,minmax(0,1fr)) !important;
+  gap:10px 12px !important;
+  width:min(100%,620px) !important;
+  max-width:620px !important;
+  margin:24px auto 0 !important;
+  justify-content:center !important;
+}
+.hero-links-v716 .cozy-link{
+  min-width:0 !important;
+  justify-content:center !important;
+  padding:12px 13px !important;
+  font-size:13px !important;
+  white-space:nowrap !important;
+}
+.hero-links-v716 .cozy-link:nth-child(1),
+.hero-links-v716 .cozy-link:nth-child(2),
+.hero-links-v716 .cozy-link:nth-child(3){
+  grid-column:span 2 !important;
+}
+.hero-links-v716 .cozy-link:nth-child(4){
+  grid-column:2 / span 2 !important;
+}
+.hero-links-v716 .cozy-link:nth-child(5){
+  grid-column:4 / span 2 !important;
+}
+
+/* 데스크톱에서 아래 카드와 여유 확보 */
+.hero-v716{
+  padding-bottom:24px !important;
+}
+.hero-v716 + .quick-strip{
+  margin-top:24px !important;
+}
+
+/* 중간 화면 */
+@media(max-width:1280px){
+  .hero-layout-v716{
+    grid-template-columns:300px minmax(360px,1fr) !important;
+    gap:32px !important;
+  }
+  .hero-music-v716{
+    grid-column:1 / -1 !important;
+    margin-top:18px !important;
+  }
+}
+
+/* 모바일 */
+@media(max-width:850px){
+  .hero-layout-v716{
+    grid-template-columns:1fr !important;
+    gap:30px !important;
+  }
+  .hero-portrait-frame,
+  .cat-cd-shell{
+    width:min(78vw,300px) !important;
+    height:min(78vw,300px) !important;
+  }
+  .hero-music-v716 .cat-cd{
+    width:100% !important;
+    height:100% !important;
+  }
+  .hero-music-v716 .cat-cd-stage{
+    width:min(86vw,340px) !important;
+  }
+  .hero-links-v716{
+    grid-template-columns:1fr 1fr !important;
+    width:min(100%,430px) !important;
+  }
+  .hero-links-v716 .cozy-link{
+    grid-column:auto !important;
+  }
+  .hero-links-v716 .cozy-link:last-child{
+    grid-column:1 / -1 !important;
+    justify-self:center !important;
+    width:calc(50% - 6px) !important;
+  }
+}
+
+@media(max-width:520px){
+  .hero-music-v716 .cat-player-controls{
+    width:min(92vw,320px) !important;
+    grid-template-columns:44px 40px 20px minmax(80px,1fr) 38px !important;
+    gap:7px !important;
+  }
+  .hero-links-v716{
+    grid-template-columns:1fr !important;
+  }
+  .hero-links-v716 .cozy-link,
+  .hero-links-v716 .cozy-link:last-child{
+    grid-column:1 !important;
+    width:100% !important;
+  }
+}
