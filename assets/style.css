@@ -2891,3 +2891,122 @@ html[data-theme="morning"] .portrait-pop-bubble::after{
   z-index:12 !important;
   pointer-events:none !important;
 }
+
+
+/* V7.33 통합 도감 */
+.encyclopedia-embers-section{
+  margin-top:54px;
+}
+.encyclopedia-ember-grid{
+  margin-top:20px;
+}
+.profile-achievements-section{
+  width:min(100%,1120px);
+  margin:46px auto 0;
+  padding:0 24px;
+}
+.achievement-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:14px;
+}
+.achievement-card{
+  display:grid;
+  grid-template-columns:46px 1fr;
+  gap:12px;
+  align-items:center;
+  min-height:78px;
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:rgba(255,255,255,.045);
+}
+.achievement-card span{
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:linear-gradient(135deg,#8b5cf6,#f05a9d);
+  color:#fff;
+  font-size:12px;
+  font-weight:950;
+}
+.achievement-card p{
+  margin:0;
+  font-weight:850;
+  line-height:1.5;
+}
+html[data-theme="morning"] .achievement-card{
+  background:rgba(255,255,255,.65);
+  border-color:rgba(50,92,145,.15);
+  box-shadow:0 10px 24px rgba(57,100,148,.09);
+}
+html[data-theme="morning"] .achievement-card p{
+  color:#183f6c;
+}
+
+/* 기록번호 표시 완전 제거 */
+.ember-number,
+[data-ember-number],
+.ember-card .pill{
+  display:none !important;
+}
+
+/* V7.33 일정 막대를 한 줄처럼 자연스럽게 연결 */
+.month-calendar{
+  --calendar-grid-line:rgba(164,126,205,.26);
+}
+.calendar-events{
+  position:relative !important;
+  z-index:5 !important;
+}
+.calendar-range-event{
+  background:var(--event-color,#8b5cf6) !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+  padding-left:8px !important;
+  padding-right:8px !important;
+  border-radius:0 !important;
+  overflow:visible !important;
+  isolation:isolate !important;
+}
+.calendar-range-event::before{
+  content:"";
+  position:absolute;
+  inset:0 -1px;
+  z-index:-1;
+  background:var(--event-color,#8b5cf6);
+}
+.calendar-range-event::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(90deg,rgba(255,255,255,.13),rgba(255,255,255,.03)) !important;
+}
+.calendar-range-event.is-start,
+.calendar-range-event.is-start::before{
+  border-radius:9px 0 0 9px !important;
+}
+.calendar-range-event.is-end,
+.calendar-range-event.is-end::before{
+  border-radius:0 9px 9px 0 !important;
+}
+.calendar-range-event.is-start.is-end,
+.calendar-range-event.is-start.is-end::before{
+  border-radius:9px !important;
+}
+.calendar-range-event.continues-before:not(.is-start){
+  padding-left:4px !important;
+}
+.calendar-range-event.continues-after:not(.is-end){
+  padding-right:4px !important;
+}
+/* 막대 위로 세로 칸선이 보이지 않게 */
+.calendar-cell{
+  overflow:visible !important;
+}
+.calendar-cell .calendar-range-event{
+  transform:translateZ(0);
+}

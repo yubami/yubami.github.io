@@ -1,4 +1,11 @@
 
+if(profileAchievements){
+  const achievements=String(x.achievements||'').split(/\n+/).map(v=>v.trim()).filter(Boolean);
+  profileAchievements.innerHTML=achievements.length
+    ? achievements.map((item,index)=>`<article class="achievement-card"><span>${String(index+1).padStart(2,'0')}</span><p>${esc(item)}</p></article>`).join('')
+    : '<p class="empty">아직 등록된 업적이 없어요.</p>';
+}
+
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 import {getFirestore,collection,doc,query,orderBy,limit,onSnapshot} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 import {firebaseConfig} from "./config.js";
@@ -62,7 +69,7 @@ listen("rouletteDebts",(el,a)=>{
 document.querySelector('[data-debt-close]')?.addEventListener('click',()=>document.querySelector('[data-debt-dialog]')?.close());
 document.querySelector('[data-debt-dialog]')?.addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close()});
 
-listen("embers",(el,a)=>el.innerHTML=a.map(x=>`<article class="card photo ember-card" data-searchable="${esc((x.title||"")+" "+(x.content||"")+" "+(x.number||""))}">${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="${esc(x.title||'불씨')} 사진">`:""}<div class="copy">${x.number?`<span class="pill">NO. ${esc(x.number)}</span>`:""}<h3>${esc(x.title||"불씨 기록")}</h3><p>${br(x.content||"")}</p></div></article>`).join(""));
+listen("embers",(el,a)=>el.innerHTML=a.map(x=>`<article class="card photo ember-card" data-searchable="${esc((x.title||"")+" "+(x.content||"")+" ")}">${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="${esc(x.title||'불씨')} 사진">`:""}<div class="copy"><h3>${esc(x.title||"불씨 기록")}</h3><p>${br(x.content||"")}</p></div></article>`).join(""));
 
 
 
