@@ -2152,3 +2152,177 @@ html:not([data-theme="morning"]) .hero-sky::before{
     transform-origin:center;
   }
 }
+
+
+/* V7.23: 홈 사진 업로드 한 장만 */
+#panel-home .home-photo-single{
+  width:100%;
+  max-width:560px;
+}
+#panel-home .home-photo-single .image-preview{
+  margin-top:12px;
+}
+#panel-home [name="imageUrl2"],
+#panel-home [name="imageUrl3"],
+#panel-home [name="imageUrl4"]{
+  display:none !important;
+}
+
+/* V7.23: CD 귀 완전 제거 */
+.cat-head-ear,
+.cat-head-ear-left,
+.cat-head-ear-right,
+.cat-head-disc .cat-head-ear,
+.hero-music-v720 .cat-ear,
+.hero-music-v720 .cat-ear-left,
+.hero-music-v720 .cat-ear-right{
+  display:none !important;
+}
+
+.hero-music-v720{
+  width:100% !important;
+  max-width:640px !important;
+  margin:0 auto !important;
+  display:grid !important;
+  justify-items:center !important;
+}
+
+.hero-music-v720 .cat-music-player{
+  width:100% !important;
+  max-width:620px !important;
+  display:grid !important;
+  justify-items:center !important;
+  align-items:center !important;
+  margin:0 auto !important;
+}
+
+.hero-music-v720 .cat-music-heading{
+  width:100% !important;
+  text-align:center !important;
+  display:grid !important;
+  justify-items:center !important;
+  margin:0 auto 16px !important;
+}
+
+/* CD 중앙축 */
+.hero-music-v720 .cat-cd-stage{
+  width:100% !important;
+  height:300px !important;
+  display:grid !important;
+  place-items:center !important;
+  margin:0 auto !important;
+  position:relative !important;
+}
+
+.cat-cd-centered{
+  width:276px !important;
+  height:276px !important;
+  display:grid !important;
+  place-items:center !important;
+  margin:0 auto !important;
+  position:relative !important;
+}
+
+.cat-cd-centered .cat-cd-shell{
+  width:276px !important;
+  height:276px !important;
+  margin:0 auto !important;
+  position:relative !important;
+  left:auto !important;
+  right:auto !important;
+  top:auto !important;
+  bottom:auto !important;
+  transform:none !important;
+  border-radius:50% !important;
+}
+
+/* 고양이 머리 연결용 가짜 배경 제거 */
+.cat-cd-shell::before,
+.cat-cd-shell::after,
+.cat-head-disc .cat-cd-shell::before,
+.cat-head-disc .cat-cd-shell::after{
+  display:none !important;
+  content:none !important;
+}
+
+/* CD 자체 중앙 */
+.cat-cd-centered .cat-cd,
+.cat-cd-centered [data-cat-cd]{
+  width:276px !important;
+  height:276px !important;
+  margin:0 auto !important;
+  border-radius:50% !important;
+}
+
+/* 위아래 구분선 동일 폭, 동일 중앙축 */
+.paw-divider,
+.paw-divider-bottom{
+  width:min(100%,620px) !important;
+  max-width:620px !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr) !important;
+  align-items:center !important;
+  justify-items:center !important;
+  gap:12px !important;
+  box-sizing:border-box !important;
+}
+.paw-divider span,
+.paw-divider-bottom span{
+  width:100% !important;
+  height:2px !important;
+}
+.paw-divider b,
+.paw-divider-bottom b{
+  width:40px !important;
+  height:40px !important;
+  display:grid !important;
+  place-items:center !important;
+  margin:0 !important;
+  line-height:1 !important;
+  transform:none !important;
+}
+
+/* 컨트롤도 같은 중앙축 */
+.hero-music-v720 .cat-player-controls{
+  width:min(100%,420px) !important;
+  max-width:420px !important;
+  margin:20px auto 0 !important;
+  display:grid !important;
+  grid-template-columns:54px 44px 24px minmax(120px,1fr) 44px !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:10px !important;
+}
+.hero-music-v720 .cat-player-controls > *{
+  align-self:center !important;
+}
+
+/* 재생 효과는 원형 CD만 */
+.cat-cd-stage.play-start .cat-cd-shell{
+  animation:plainCdPulse 1s ease-out !important;
+}
+@keyframes plainCdPulse{
+  0%{filter:brightness(1);transform:scale(1)}
+  45%{filter:brightness(1.18);transform:scale(1.025)}
+  100%{filter:brightness(1);transform:scale(1)}
+}
+
+/* 모바일에서도 중앙축 고정 */
+@media(max-width:500px){
+  .hero-music-v720 .cat-cd-stage{
+    width:100% !important;
+    height:280px !important;
+  }
+  .cat-cd-centered,
+  .cat-cd-centered .cat-cd-shell,
+  .cat-cd-centered .cat-cd{
+    width:250px !important;
+    height:250px !important;
+  }
+  .paw-divider,
+  .paw-divider-bottom{
+    width:min(100%,340px) !important;
+  }
+}

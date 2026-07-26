@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080d28">
   <title>유바미 관리자</title>
-  <link rel="stylesheet" href="../assets/style.css?v=7.22">
+  <link rel="stylesheet" href="../assets/style.css?v=7.23">
 </head>
 <body><div id="ambientLights" aria-hidden="true"></div><div id="cursorStars" aria-hidden="true"></div>
 <header><div class="shell nav"><a class="brand" href="../index.html"><span class="brand-word">YUBAMI</span></a><div class="theme-switch" role="group" aria-label="화면 테마"><button type="button" data-theme-choice="morning">☀ <span>아침</span></button><button type="button" data-theme-choice="night">🌙 <span>밤</span></button></div><a class="btn soft" href="../index.html">일반 사이트</a></div></header>
@@ -39,16 +39,18 @@
 </div>
           <div class="home-image-admin">
             <h3>홈 메인 사진</h3>
-            <p class="image-help">첫 화면의 문구 옆에 최대 4장이 콜라주로 표시돼요. 3장만 등록해도 자연스럽게 배치됩니다.</p>
-            <div class="home-image-slots">
-              <div class="home-image-slot"><input type="hidden" name="imageUrl"><b>사진 1</b><div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="home" data-target="imageUrl">업로드</button><button type="button" class="btn ghost clear-image" data-target="imageUrl">제거</button></div><div class="image-preview" data-preview-for="imageUrl"></div></div>
-              <div class="home-image-slot"><b>사진 2</b><div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="home" data-target="imageUrl2">업로드</button><button type="button" class="btn ghost clear-image" data-target="imageUrl2">제거</button></div><div class="image-preview" data-preview-for="imageUrl2"></div></div>
-              <div class="home-image-slot"><b>사진 3</b><div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="home" data-target="imageUrl3">업로드</button><button type="button" class="btn ghost clear-image" data-target="imageUrl3">제거</button></div><div class="image-preview" data-preview-for="imageUrl3"></div></div>
-              <div class="home-image-slot"><b>사진 4</b><div class="upload-line"><button type="button" class="btn soft cloud-upload" data-folder="home" data-target="imageUrl4">업로드</button><button type="button" class="btn ghost clear-image" data-target="imageUrl4">제거</button></div><div class="image-preview" data-preview-for="imageUrl4"></div></div>
-            </div>
-          </div><p class="save-status" aria-live="polite"></p>
-          <div class="actions"><button class="btn primary" data-submit>홈 화면 저장</button></div>
-        </form>
+<p class="image-help">홈 오른쪽 세로형 프레임에 표시할 사진 한 장만 등록해 주세요.</p>
+<div class="home-photo-single">
+  <input type="hidden" name="imageUrl">
+  <label>메인 프로필 사진
+    <div class="upload-line">
+      <button type="button" class="btn soft cloud-upload" data-folder="home">업로드</button>
+      <button type="button" class="btn ghost clear-image">제거</button>
+    </div>
+  </label>
+  <div class="image-preview"></div>
+</div>
+</form>
       <div class="admin-subsection"><h3>바로가기 버튼 관리</h3><p class="image-help">아이콘, 이름, 링크와 순서를 직접 바꿀 수 있어요.</p><div data-home-links-manager class="home-links-editor"></div><div class="actions"><button type="button" class="btn soft" data-add-home-link>+ 버튼 추가</button><button type="button" class="btn primary" data-save-home-links>바로가기 저장</button></div><p class="save-status" data-home-links-status></p></div></div>
 
       <div class="panel" id="panel-profile"><h2>자기소개 관리</h2>
@@ -127,5 +129,5 @@
   </div>
 </section>
 </div></main>
-<script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script><script type="module" src="admin.js?v=7.22"></script>
+<script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script><script type="module" src="admin.js?v=7.23"></script>
 <script src="../assets/effects.js?v=7.9"></script></body></html>
