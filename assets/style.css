@@ -2761,3 +2761,122 @@ html[data-theme="morning"] .calendar-range-event{
     padding:0 6px !important;
   }
 }
+
+
+/* V7.30 일정 색상 */
+.schedule-color-input{
+  width:100%;
+  height:48px;
+  padding:4px;
+  border-radius:12px;
+  cursor:pointer;
+}
+
+.week-event{
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb,var(--event-color,#8b5cf6) 88%,#ffffff 12%),
+      color-mix(in srgb,var(--event-color,#8b5cf6) 72%,#ffb0d2 28%)
+    ) !important;
+  color:white !important;
+}
+
+/* 여러 칸을 넘어도 색이 끊기지 않도록 같은 단색 기반 */
+.calendar-range-event{
+  background:var(--event-color,#8b5cf6) !important;
+  box-shadow:none !important;
+  border:0 !important;
+  margin-top:0 !important;
+  margin-bottom:0 !important;
+}
+.calendar-range-event::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(90deg,rgba(255,255,255,.16),transparent 42%,rgba(255,255,255,.08));
+}
+.calendar-range-event.continues-before:not(.is-start){
+  margin-left:-2px !important;
+  padding-left:2px !important;
+}
+.calendar-range-event.continues-after:not(.is-end){
+  margin-right:-2px !important;
+  padding-right:2px !important;
+}
+.calendar-range-event.is-start{
+  border-radius:9px 0 0 9px !important;
+}
+.calendar-range-event.is-end{
+  border-radius:0 9px 9px 0 !important;
+}
+.calendar-range-event.is-start.is-end{
+  border-radius:9px !important;
+}
+
+/* 카테고리 이름만 표시 */
+.song-category .kicker,
+.song-category-card .kicker,
+.song-category-header .kicker{
+  display:none !important;
+}
+
+/* 불씨냥 외곽선 흰색 */
+.bulssinyang img{
+  filter:
+    drop-shadow(2px 0 0 #ffffff)
+    drop-shadow(-2px 0 0 #ffffff)
+    drop-shadow(0 2px 0 #ffffff)
+    drop-shadow(0 -2px 0 #ffffff)
+    drop-shadow(0 10px 14px rgba(0,0,0,.32)) !important;
+}
+
+/* 메인 사진 랜덤 말풍선 */
+.hero-portrait-v720{
+  cursor:pointer;
+}
+.portrait-bubble-layer{
+  position:absolute;
+  inset:0;
+  z-index:5;
+  pointer-events:none;
+  overflow:hidden;
+}
+.portrait-pop-bubble{
+  position:absolute;
+  max-width:190px;
+  padding:11px 15px;
+  border-radius:18px 18px 18px 5px;
+  background:rgba(24,25,63,.93);
+  border:1px solid rgba(255,255,255,.25);
+  color:#fff;
+  font-size:13px;
+  font-weight:800;
+  line-height:1.45;
+  box-shadow:0 12px 28px rgba(0,0,0,.25);
+  animation:portraitBubblePop 2.5s ease-out forwards;
+}
+.portrait-pop-bubble::after{
+  content:"";
+  position:absolute;
+  left:13px;
+  bottom:-8px;
+  border:8px solid transparent;
+  border-top-color:rgba(24,25,63,.93);
+  border-left:0;
+}
+@keyframes portraitBubblePop{
+  0%{opacity:0;transform:translateY(12px) scale(.72)}
+  14%{opacity:1;transform:translateY(0) scale(1.04)}
+  24%,72%{opacity:1;transform:translateY(0) scale(1)}
+  100%{opacity:0;transform:translateY(-12px) scale(.92)}
+}
+html[data-theme="morning"] .portrait-pop-bubble{
+  background:rgba(255,255,255,.94);
+  border-color:rgba(74,112,160,.18);
+  color:#173f70;
+  box-shadow:0 12px 28px rgba(61,103,148,.18);
+}
+html[data-theme="morning"] .portrait-pop-bubble::after{
+  border-top-color:rgba(255,255,255,.94);
+}

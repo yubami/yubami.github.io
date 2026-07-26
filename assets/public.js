@@ -6,11 +6,11 @@ const db=getFirestore(initializeApp(firebaseConfig));
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 const br=s=>esc(s).replace(/\n/g,"<br>"), stars=n=>"★".repeat(Number(n)||0)+"☆".repeat(5-(Number(n)||0));
 const empty=(el,msg)=>el.innerHTML=`<div class="empty">${esc(msg)}</div>`;
-const homeImg=document.querySelector('[data-home-image]'),homeGallery=document.querySelector('[data-home-gallery]'),homePortrait=document.querySelector('[data-home-portrait]'),homeTitle=document.querySelector('[data-home-headline]'),homeDesc=document.querySelector('[data-home-description]'),homeMessage=document.querySelector('[data-home-message]'),homeMusicSection=document.querySelector('[data-home-music-section]'),homeMusicTitle=document.querySelector('[data-home-music-title]'),homeMusicAuthor=document.querySelector('[data-home-music-author]'),homeLinks=document.querySelector('[data-home-links]');
+const homeImg=document.querySelector('[data-home-image]'),homeGallery=document.querySelector('[data-home-gallery]'),homePortrait=document.querySelector('[data-home-portrait]'),homePortraitBubbles=document.querySelector('[data-portrait-bubbles]'),homeTitle=document.querySelector('[data-home-headline]'),homeDesc=document.querySelector('[data-home-description]'),homeMessage=document.querySelector('[data-home-message]'),homeMusicSection=document.querySelector('[data-home-music-section]'),homeMusicTitle=document.querySelector('[data-home-music-title]'),homeMusicAuthor=document.querySelector('[data-home-music-author]'),homeLinks=document.querySelector('[data-home-links]');
 if(homeImg||homeGallery||homePortrait||homeTitle||homeDesc||homeMessage||homeMusicSection){onSnapshot(doc(db,'home','main'),s=>{if(!s.exists())return;const x=s.data();
   if(homeImg){if(x.imageUrl){homeImg.innerHTML=`<img src="${esc(x.imageUrl)}" alt="유바미 메인 이미지">`;homeImg.classList.add('has-image')}else{homeImg.innerHTML='';homeImg.classList.remove('has-image')}}
-  if(homeGallery){const photos=(x.gallery||[]).slice(0,4);homeGallery.innerHTML=photos.map((url,i)=>`<figure class="hero-photo-card hero-photo-${i+1}"><img src="${esc(url)}" alt="유바미 사진 ${i+1}"></figure>`).join("")}if(homePortrait){
-    const portraitUrl=x.imageUrl||x.imageUrl2||x.imageUrl3||x.imageUrl4||'';
+  if(homeGallery){const photos=(x.gallery||[]).slice(0,4);homeGallery.innerHTML=photos.map((url,i)=>`<figure class="hero-photo-card hero-photo-${i+1}"><img src="${esc(url)}" alt="유바미 사진 ${i+1}"></figure>`).join("")}window.__yubamiPortraitBubbleLines=String(x.portraitBubbleText||'').split(/\n+/).map(v=>v.trim()).filter(Boolean);if(homePortrait){
+    const portraitUrl=x.imageUrl||x.imageUrl2||x.imageUrl3||'';
     homePortrait.innerHTML=portraitUrl
       ? `<img src="${esc(portraitUrl)}" alt="유바미 메인 사진">`
       : '<div class="hero-portrait-placeholder">사진을 등록해 주세요</div>';
@@ -39,7 +39,7 @@ listen("songs",(el,a)=>{
   const normalized=a.map(x=>({...x,category:x.category||"KPOP"}));
   el.innerHTML=categories.map(category=>{
     const songs=normalized.filter(x=>x.category===category);
-    return `<section class="card pad song-category-section" data-song-category="${esc(category)}"><div class="song-category-head"><span class="kicker">CATEGORY</span><h2>${esc(category)}</h2><span class="song-count">${songs.length}</span></div><div class="list">${songs.length?songs.map(x=>`<article class="row song-row" data-searchable="${esc((x.artist||"")+" "+(x.title||"")+" "+(x.tags||[]).join(" ")+" "+category)}">${x.imageUrl?`<img class="song-cover" src="${esc(x.imageUrl)}" alt="${esc(x.title||'노래')} 커버">`:''}<div class="song-copy"><div class="song-meta"><span class="tag">${esc(category)}</span><span class="song-artist">${esc(x.artist||"가수 미등록")}</span></div><h3>${esc(x.title||"제목 없음")}</h3><div>${(x.tags||[]).map(t=>`<span class="tag">#${esc(t)}</span>`).join("")}</div></div><span class="stars">${stars(x.difficulty)}</span></article>`).join(""):`<div class="empty">아직 등록된 ${esc(category)} 노래가 없어요.</div>`}</div></section>`;
+    return `<section class="card pad song-category-section" data-song-category="${esc(category)}"><div class="song-category-head"><h2>${esc(category)}</h2><span class="song-count">${songs.length}</span></div><div class="list">${songs.length?songs.map(x=>`<article class="row song-row" data-searchable="${esc((x.artist||"")+" "+(x.title||"")+" "+(x.tags||[]).join(" ")+" "+category)}">${x.imageUrl?`<img class="song-cover" src="${esc(x.imageUrl)}" alt="${esc(x.title||'노래')} 커버">`:''}<div class="song-copy"><div class="song-meta"><span class="tag">${esc(category)}</span><span class="song-artist">${esc(x.artist||"가수 미등록")}</span></div><h3>${esc(x.title||"제목 없음")}</h3><div>${(x.tags||[]).map(t=>`<span class="tag">#${esc(t)}</span>`).join("")}</div></div><span class="stars">${stars(x.difficulty)}</span></article>`).join(""):`<div class="empty">아직 등록된 ${esc(category)} 노래가 없어요.</div>`}</div></section>`;
   }).join("");
   const buttons=[...document.querySelectorAll('[data-song-filter]')];
   const apply=value=>{document.querySelectorAll('[data-song-category]').forEach(section=>section.style.display=value==='all'||section.dataset.songCategory===value?'':'none');buttons.forEach(b=>b.classList.toggle('active',b.dataset.songFilter===value))};
@@ -126,7 +126,7 @@ if(weeklyRoot||monthRoot){
         </div>
         <div class="week-events">
           ${items.length
-            ?items.map(item=>`<div class="week-event"><strong>${esc(item.title||'방송')}</strong></div>`).join('')
+            ?items.map(item=>`<div class="week-event" style="--event-color:${esc(item.color||'#8b5cf6')}"><strong>${esc(item.title||'방송')}</strong></div>`).join('')
             :'<span class="week-empty">휴식 또는 미정</span>'}
         </div>
       </article>`;
@@ -181,7 +181,8 @@ if(weeklyRoot||monthRoot){
         const column=index%7;
         const showTitle=startsHere||column===0||index===0;
 
-        return `<div class="${classes}" title="${esc(item.title||'방송 일정')}">
+        const eventColor=item.color||'#8b5cf6';
+        return `<div class="${classes}" style="--event-color:${esc(eventColor)}" title="${esc(item.title||'방송 일정')}">
           <span>${showTitle?esc(item.title||'방송 일정'):''}</span>
         </div>`;
       }).join('');
@@ -344,3 +345,24 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 const bs=document.querySelector('[data-bulssinyang]'),bubble=document.querySelector('[data-bulssinyang-bubble]');const lines=['모닥불 앞에서 쉬다 가냥!','불씨단 안녕!','오늘도 방송 보러 가냥!','10시에 다시 만나냥!','유바미 기다리고 있었냥!'];bs?.addEventListener('click',e=>{e.stopPropagation();bubble.textContent=lines[Math.floor(Math.random()*lines.length)];bubble.hidden=false;clearTimeout(window.bsTimer);window.bsTimer=setTimeout(()=>bubble.hidden=true,2500)});document.addEventListener('pointerdown',e=>{if(e.button!==0)return;const p=document.createElement('span');p.className='click-paw';p.textContent='🐾';p.style.left=e.clientX+'px';p.style.top=e.clientY+'px';p.style.setProperty('--r',(Math.random()*40-20)+'deg');document.body.appendChild(p);p.addEventListener('animationend',()=>p.remove())});
+
+
+// V7.30 메인 사진 랜덤 말풍선
+const portraitBubbleHost=document.querySelector('[data-portrait-bubbles]');
+document.querySelector('[data-home-portrait]')?.addEventListener('click',event=>{
+  const lines=Array.isArray(window.__yubamiPortraitBubbleLines)?window.__yubamiPortraitBubbleLines:[];
+  if(!portraitBubbleHost||!lines.length)return;
+
+  const bubble=document.createElement('div');
+  bubble.className='portrait-pop-bubble';
+  bubble.textContent=lines[Math.floor(Math.random()*lines.length)];
+
+  const rect=portraitBubbleHost.getBoundingClientRect();
+  const maxX=Math.max(20,rect.width-190);
+  const maxY=Math.max(20,rect.height-90);
+  bubble.style.left=Math.round(12+Math.random()*maxX)+'px';
+  bubble.style.top=Math.round(12+Math.random()*maxY)+'px';
+
+  portraitBubbleHost.appendChild(bubble);
+  bubble.addEventListener('animationend',()=>bubble.remove());
+});
