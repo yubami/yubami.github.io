@@ -1,11 +1,3 @@
-
-if(profileAchievements){
-  const achievements=String(x.achievements||'').split(/\n+/).map(v=>v.trim()).filter(Boolean);
-  profileAchievements.innerHTML=achievements.length
-    ? achievements.map((item,index)=>`<article class="achievement-card"><span>${String(index+1).padStart(2,'0')}</span><p>${esc(item)}</p></article>`).join('')
-    : '<p class="empty">아직 등록된 업적이 없어요.</p>';
-}
-
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 import {getFirestore,collection,doc,query,orderBy,limit,onSnapshot} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 import {firebaseConfig} from "./config.js";
@@ -25,7 +17,54 @@ if(homeImg||homeGallery||homePortrait||homeTitle||homeDesc||homeMessage||homeMus
   if(homeTitle&&x.headline!==undefined)homeTitle.innerHTML=br(x.headline||'YUBAMI');if(homeLinks){const a=Array.isArray(x.links)?x.links:[{icon:'📺',label:'유바미 본채널',url:'#'},{icon:'🎬',label:'유바미 서브채널',url:'#'},{icon:'▶',label:'다시보기 채널',url:'#'},{icon:'𝕏',label:'X 트위터',url:'#'},{icon:'☕',label:'팬카페',url:'#'}];homeLinks.innerHTML=a.map((l,i)=>`<a class="cozy-link cozy-link-${i%3}" style="--link-color:${esc(l.color||'#8b5cf6')}" href="${esc(l.url||'#')}" target="_blank" rel="noopener"><span>${esc(l.icon||'🐾')}</span>${esc(l.label||'바로가기')}<b>↗</b></a>`).join('')}if(homeDesc&&x.description!==undefined)homeDesc.innerHTML=br(x.description||'');if(homeMessage&&x.message!==undefined)homeMessage.innerHTML=br(x.message||'');if(homeMusicSection){homeMusicSection.hidden=!x.musicUrl;homeMusicSection.dataset.musicUrl=x.musicUrl||'';homeMusicSection.dataset.musicTitle=x.musicTitle||'오늘의 추천곡';homeMusicSection.dataset.musicAuthor=x.musicAuthor||'유바미가 좋아하는 음악';if(homeMusicTitle)homeMusicTitle.textContent=x.musicTitle||'오늘의 추천곡';if(homeMusicAuthor)homeMusicAuthor.textContent=x.musicAuthor||'유바미가 좋아하는 음악';window.dispatchEvent(new CustomEvent('yubami-music-change',{detail:{url:x.musicUrl||''}}))}
 })}
 
-const profileRoot=document.querySelector('[data-profile-root]');if(profileRoot){onSnapshot(doc(db,'profile','main'),snap=>{if(!snap.exists())return;const x=snap.data();const set=(sel,val,html=false)=>{const el=document.querySelector(sel);if(el&&val!==undefined)html?el.innerHTML=br(val||''):el.textContent=val||''};set('[data-profile-title]',x.title);set('[data-profile-subtitle]',x.subtitle);set('[data-profile-content]',x.content,true);set('[data-profile-birthday]',x.birthday);set('[data-profile-mbti]',x.mbti);set('[data-profile-main-content]',x.mainContent);const img=document.querySelector('[data-profile-image]');if(img)img.innerHTML=x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="유바미 프로필 사진">`:''})}
+const profileRoot=document.querySelector('[data-profile-root]');
+const profileAchievements=document.querySelector('[data-profile-achievements]');
+if(profileRoot){
+  onSnapshot(doc(db,'profile','main'),snap=>{
+    if(!snap.exists())return;
+
+    const x=snap.data();
+    const set=(selector,value,html=false)=>{
+      const element=document.querySelector(selector);
+      if(element&&value!==undefined){
+        if(html)element.innerHTML=br(value||'');
+        else element.textContent=value||'';
+      }
+    };
+
+    set('[data-profile-title]',x.title);
+    set('[data-profile-subtitle]',x.subtitle);
+    set('[data-profile-content]',x.content,true);
+    set('[data-profile-birthday]',x.birthday);
+    set('[data-profile-mbti]',x.mbti);
+    set('[data-profile-main-content]',x.mainContent);
+
+    const image=document.querySelector('[data-profile-image]');
+    if(image){
+      image.innerHTML=x.imageUrl
+        ? `<img src="${esc(x.imageUrl)}" alt="유바미 프로필 사진">`
+        : '';
+    }
+
+    if(profileAchievements){
+      const achievements=String(x.achievements||'')
+        .split(/
++/)
+        .map(value=>value.trim())
+        .filter(Boolean);
+
+      profileAchievements.innerHTML=achievements.length
+        ? achievements.map((item,index)=>`
+            <article class="achievement-card">
+              <span>${String(index+1).padStart(2,'0')}</span>
+              <p>${esc(item)}</p>
+            </article>`).join('')
+        : '<p class="empty">아직 등록된 업적이 없어요.</p>';
+    }
+  },error=>{
+    console.error('프로필 데이터를 불러오지 못했습니다.',error);
+  });
+}
 function listen(name,render,max){const el=document.querySelector(`[data-collection="${name}"]`);if(!el)return;let q=query(collection(db,name),orderBy("createdAt","desc"));if(max)q=query(collection(db,name),orderBy("createdAt","desc"),limit(max));onSnapshot(q,s=>s.empty?empty(el,el.dataset.empty||"아직 등록된 내용이 없어요."):render(el,s.docs.map(d=>({id:d.id,...d.data()}))),()=>empty(el,"데이터를 불러오지 못했어요."))}
 listen("notices",(el,a)=>el.innerHTML=a.map(x=>`<article class="row" data-searchable="${esc((x.title||"")+" "+(x.content||""))}"><div><h3>${esc(x.title||"제목 없음")}</h3><p>${br(x.content||"")}</p></div><span class="pill">${esc(x.date||"공지")}</span></article>`).join(""));
 listen("schedules",(el,a)=>el.innerHTML=a.map(x=>`<article class="row" data-searchable="${esc((x.title||"")+" "+(x.content||"")+" "+(x.date||""))}"><div><h3>${esc(x.title||"방송")}</h3><p>${br(x.content||"")}</p></div><span class="pill">${esc(x.date||"일정")}${x.time?" · "+esc(x.time):""}</span></article>`).join(""));
