@@ -2326,3 +2326,155 @@ html:not([data-theme="morning"]) .hero-sky::before{
     width:min(100%,340px) !important;
   }
 }
+
+
+/* V7.27: 관리자 바로가기 버튼 색상 */
+.home-link-edit-row{
+  grid-template-columns:65px minmax(140px,.8fr) minmax(220px,1.25fr) 94px auto !important;
+}
+.link-color-field{
+  display:grid;
+  grid-template-columns:auto 42px;
+  align-items:center;
+  gap:7px;
+  font-size:12px;
+  color:var(--muted);
+}
+.link-color-field input[type="color"]{
+  width:42px;
+  height:36px;
+  padding:2px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:transparent;
+  cursor:pointer;
+}
+
+/* 저장된 색상을 실제 바로가기 버튼에 사용 */
+.cozy-link{
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb,var(--link-color,#8b5cf6) 92%,#ffffff 8%),
+      color-mix(in srgb,var(--link-color,#8b5cf6) 72%,#ffad91 28%)
+    ) !important;
+  border-color:color-mix(in srgb,var(--link-color,#8b5cf6) 62%,#ffffff 38%) !important;
+  box-shadow:
+    0 10px 24px color-mix(in srgb,var(--link-color,#8b5cf6) 28%,transparent),
+    inset 0 0 0 2px rgba(255,255,255,.08) !important;
+}
+
+/* V7.27: 아침 테마 전체 대비와 깊이 개선 */
+html[data-theme="morning"] body{
+  background:
+    radial-gradient(circle at 14% 16%,rgba(255,255,255,.9),transparent 25%),
+    radial-gradient(circle at 82% 22%,rgba(255,218,234,.62),transparent 28%),
+    linear-gradient(180deg,#ccecff 0%,#bde3ff 38%,#f4d4eb 100%) !important;
+  color:#17345f !important;
+}
+html[data-theme="morning"] header{
+  background:rgba(247,253,255,.86) !important;
+  border-bottom:1px solid rgba(74,129,181,.18) !important;
+  box-shadow:0 8px 24px rgba(62,111,156,.08) !important;
+}
+html[data-theme="morning"] .brand-word,
+html[data-theme="morning"] .hero-copy-v720 h1{
+  background:linear-gradient(90deg,#244f8f,#4d70b2,#9c5fa7) !important;
+  -webkit-background-clip:text !important;
+  color:transparent !important;
+  text-shadow:none !important;
+}
+html[data-theme="morning"] .hero-copy-v720 [data-home-description],
+html[data-theme="morning"] .korean-name-v720,
+html[data-theme="morning"] .cat-music-heading strong{
+  color:#1d3f6d !important;
+}
+html[data-theme="morning"] .cat-music-heading .kicker{
+  color:#b26a17 !important;
+}
+html[data-theme="morning"] .cat-music-heading > span:last-child,
+html[data-theme="morning"] .hero-copy-v720 [data-home-description]{
+  opacity:.9 !important;
+}
+html[data-theme="morning"] .quick-card,
+html[data-theme="morning"] .card{
+  background:rgba(255,255,255,.68) !important;
+  border-color:rgba(70,116,166,.16) !important;
+  box-shadow:0 16px 34px rgba(67,112,155,.12) !important;
+  color:#18395f !important;
+}
+
+/* 프로필 프레임: 아침과 밤 각각 조화로운 색 */
+html[data-theme="morning"] .hero-portrait-v720{
+  border-color:#e7a9cb !important;
+  background:linear-gradient(145deg,#ffe9f4,#cdeaff) !important;
+  box-shadow:
+    0 24px 48px rgba(65,112,158,.2),
+    0 0 0 4px rgba(255,255,255,.72),
+    0 0 32px rgba(229,145,194,.25) !important;
+}
+html:not([data-theme="morning"]) .hero-portrait-v720{
+  border-color:#a98be3 !important;
+  background:linear-gradient(145deg,#2c265e,#5c356e) !important;
+  box-shadow:
+    0 28px 60px rgba(3,5,25,.42),
+    0 0 0 4px rgba(203,171,255,.12),
+    0 0 34px rgba(159,125,255,.24) !important;
+}
+
+/* 음악 제목, 구분선, CD, 컨트롤을 같은 중심축으로 */
+.hero-content-v720,
+.hero-music-v720,
+.hero-music-v720 .cat-music-player,
+.hero-music-v720 .cat-music-heading,
+.hero-music-v720 .cat-cd-stage,
+.hero-music-v720 .cat-player-controls,
+.paw-divider,
+.paw-divider-bottom{
+  justify-self:center !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+.hero-music-v720 .cat-music-heading{
+  width:min(100%,520px) !important;
+  text-align:center !important;
+}
+.hero-music-v720 .cat-cd-stage{
+  width:min(100%,420px) !important;
+}
+.hero-music-v720 .cat-player-controls{
+  width:min(100%,420px) !important;
+}
+.paw-divider,
+.paw-divider-bottom{
+  width:min(100%,520px) !important;
+}
+
+/* 아침 테마 CD/구분선 가시성 */
+html[data-theme="morning"] .paw-divider span,
+html[data-theme="morning"] .paw-divider-bottom span{
+  background:linear-gradient(90deg,transparent,#d48aaa,#d2a329,#d48aaa,transparent) !important;
+}
+html[data-theme="morning"] .paw-divider b,
+html[data-theme="morning"] .paw-divider-bottom b{
+  background:rgba(255,255,255,.62) !important;
+  border-color:rgba(182,117,157,.28) !important;
+}
+html[data-theme="morning"] .cat-cd-shell{
+  box-shadow:
+    0 16px 34px rgba(62,101,145,.2),
+    0 0 0 6px #a999c9,
+    0 0 0 10px rgba(255,255,255,.68),
+    0 0 26px rgba(154,125,193,.24) !important;
+}
+
+/* 관리자 모바일 */
+@media(max-width:900px){
+  .home-link-edit-row{
+    grid-template-columns:58px 1fr !important;
+  }
+  .home-link-edit-row input[data-k="url"],
+  .home-link-edit-row .link-color-field,
+  .home-link-edit-row .mini{
+    grid-column:1 / -1 !important;
+  }
+}

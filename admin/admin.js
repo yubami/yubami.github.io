@@ -173,17 +173,21 @@ let homeLinksDraft=[];
 let homeLinksInitialized=false;
 let homeLinksSaving=false;
 const defaultHomeLinks=[
-  {id:'main',icon:'📺',label:'유바미 본채널',url:'#'},
-  {id:'sub',icon:'🎬',label:'유바미 서브채널',url:'#'},
-  {id:'vod',icon:'▶',label:'다시보기 채널',url:'#'},
-  {id:'x',icon:'𝕏',label:'X 트위터',url:'#'},
-  {id:'cafe',icon:'☕',label:'팬카페',url:'#'}
+  {id:'main',icon:'📺',label:'유바미 본채널',url:'#',color:'#8b5cf6'},
+  {id:'sub',icon:'🎬',label:'유바미 서브채널',url:'#',color:'#ec4899'},
+  {id:'vod',icon:'▶',label:'다시보기 채널',url:'#',color:'#f97360'},
+  {id:'x',icon:'𝕏',label:'X 트위터',url:'#',color:'#38bdf8'},
+  {id:'cafe',icon:'☕',label:'팬카페',url:'#',color:'#a855f7'}
 ];
 const linkId=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());
 function normalizeHomeLink(v={}){return{id:v.id||linkId(),icon:v.icon||'🐾',label:v.label||'새 바로가기',url:v.url||'https://'}}
 function renderHomeLinks(){
   if(!homeLinksManager)return;
-  homeLinksManager.innerHTML=homeLinksDraft.map((item,index)=>`<div class="home-link-edit-row" data-link-id="${item.id}"><input class="field icon-field" data-k="icon" value="${esc(item.icon)}" aria-label="아이콘"><input class="field" data-k="label" value="${esc(item.label)}" placeholder="채널명"><input class="field" data-k="url" value="${esc(item.url)}" placeholder="채널 주소"><div class="mini"><button type="button" class="soft" data-up ${index===0?'disabled':''}>↑</button><button type="button" class="soft" data-down ${index===homeLinksDraft.length-1?'disabled':''}>↓</button><button type="button" class="danger" data-remove>삭제</button></div></div>`).join('');
+  homeLinksManager.innerHTML=homeLinksDraft.map((item,index)=>`<div class="home-link-edit-row" data-link-id="${item.id}"><input class="field icon-field" data-k="icon" value="${esc(item.icon)}" aria-label="아이콘"><input class="field" data-k="label" value="${esc(item.label)}" placeholder="채널명"><input class="field" data-k="url" value="${esc(item.url)}" placeholder="채널 주소">
+      <label class="link-color-field" title="버튼 색상">
+        <span>색상</span>
+        <input type="color" data-k="color" value="${esc(item.color||'#8b5cf6')}" aria-label="버튼 색상">
+      </label><div class="mini"><button type="button" class="soft" data-up ${index===0?'disabled':''}>↑</button><button type="button" class="soft" data-down ${index===homeLinksDraft.length-1?'disabled':''}>↓</button><button type="button" class="danger" data-remove>삭제</button></div></div>`).join('');
 }
 onSnapshot(doc(db,'home','main'),snap=>{
   if(!snap.exists()||homeLinksInitialized)return;
