@@ -10,7 +10,7 @@ const homeImg=document.querySelector('[data-home-image]'),homeGallery=document.q
 if(homeImg||homeGallery||homeTitle||homeDesc||homeMessage||homeMusicSection){onSnapshot(doc(db,'home','main'),s=>{if(!s.exists())return;const x=s.data();
   if(homeImg){if(x.imageUrl){homeImg.innerHTML=`<img src="${esc(x.imageUrl)}" alt="유바미 메인 이미지">`;homeImg.classList.add('has-image')}else{homeImg.innerHTML='';homeImg.classList.remove('has-image')}}
   if(homeGallery){const images=[x.imageUrl,x.imageUrl2,x.imageUrl3,x.imageUrl4].filter(Boolean);homeGallery.dataset.count=String(images.length);homeGallery.innerHTML=images.map((url,i)=>`<figure class="hero-gallery-item item-${i+1}"><img src="${esc(url)}" alt="유바미 메인 사진 ${i+1}"></figure>`).join('');homeGallery.classList.toggle('empty',images.length===0)}
-  if(homeTitle&&x.headline!==undefined)homeTitle.innerHTML=br(x.headline||'YUBAMI');if(homeLinks){const a=Array.isArray(x.links)?x.links:[{icon:'🐱',label:'SOOP 바로가기',url:'#'},{icon:'▶',label:'방송 보러가기',url:'#'}];homeLinks.innerHTML=a.map((l,i)=>`<a class="cozy-link cozy-link-${i%3}" href="${esc(l.url||'#')}" target="_blank" rel="noopener"><span>${esc(l.icon||'🐾')}</span>${esc(l.label||'바로가기')}<b>↗</b></a>`).join('')}if(homeDesc&&x.description!==undefined)homeDesc.innerHTML=br(x.description||'');if(homeMessage&&x.message!==undefined)homeMessage.innerHTML=br(x.message||'');if(homeMusicSection){homeMusicSection.hidden=!x.musicUrl;homeMusicSection.dataset.musicUrl=x.musicUrl||'';homeMusicSection.dataset.musicTitle=x.musicTitle||'오늘의 추천곡';homeMusicSection.dataset.musicAuthor=x.musicAuthor||'유바미가 좋아하는 음악';if(homeMusicTitle)homeMusicTitle.textContent=x.musicTitle||'오늘의 추천곡';if(homeMusicAuthor)homeMusicAuthor.textContent=x.musicAuthor||'유바미가 좋아하는 음악';window.dispatchEvent(new CustomEvent('yubami-music-change',{detail:{url:x.musicUrl||''}}))}
+  if(homeTitle&&x.headline!==undefined)homeTitle.innerHTML=br(x.headline||'YUBAMI');if(homeLinks){const a=Array.isArray(x.links)?x.links:[{icon:'📺',label:'유바미 본채널',url:'#'},{icon:'🎬',label:'유바미 서브채널',url:'#'},{icon:'▶',label:'다시보기 채널',url:'#'},{icon:'𝕏',label:'X 트위터',url:'#'},{icon:'☕',label:'팬카페',url:'#'}];homeLinks.innerHTML=a.map((l,i)=>`<a class="cozy-link cozy-link-${i%3}" href="${esc(l.url||'#')}" target="_blank" rel="noopener"><span>${esc(l.icon||'🐾')}</span>${esc(l.label||'바로가기')}<b>↗</b></a>`).join('')}if(homeDesc&&x.description!==undefined)homeDesc.innerHTML=br(x.description||'');if(homeMessage&&x.message!==undefined)homeMessage.innerHTML=br(x.message||'');if(homeMusicSection){homeMusicSection.hidden=!x.musicUrl;homeMusicSection.dataset.musicUrl=x.musicUrl||'';homeMusicSection.dataset.musicTitle=x.musicTitle||'오늘의 추천곡';homeMusicSection.dataset.musicAuthor=x.musicAuthor||'유바미가 좋아하는 음악';if(homeMusicTitle)homeMusicTitle.textContent=x.musicTitle||'오늘의 추천곡';if(homeMusicAuthor)homeMusicAuthor.textContent=x.musicAuthor||'유바미가 좋아하는 음악';window.dispatchEvent(new CustomEvent('yubami-music-change',{detail:{url:x.musicUrl||''}}))}
 })}
 
 const profileRoot=document.querySelector('[data-profile-root]');if(profileRoot){onSnapshot(doc(db,'profile','main'),snap=>{if(!snap.exists())return;const x=snap.data();const set=(sel,val,html=false)=>{const el=document.querySelector(sel);if(el&&val!==undefined)html?el.innerHTML=br(val||''):el.textContent=val||''};set('[data-profile-title]',x.title);set('[data-profile-subtitle]',x.subtitle);set('[data-profile-content]',x.content,true);set('[data-profile-birthday]',x.birthday);set('[data-profile-mbti]',x.mbti);set('[data-profile-main-content]',x.mainContent);const img=document.querySelector('[data-profile-image]');if(img)img.innerHTML=x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="유바미 프로필 사진">`:''})}
@@ -134,6 +134,11 @@ async function createMusicPlayer(){
     },
     events:{
       onReady:event=>{
+        const iframe=event.target.getIframe?.();
+        if(iframe){
+          iframe.classList.add('cat-cd-iframe');
+          iframe.setAttribute('tabindex','-1');
+        }
         const volume=storedVolume();
         event.target.setVolume(volume);
         if(volume===0)event.target.mute();else event.target.unMute();

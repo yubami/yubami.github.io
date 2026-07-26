@@ -169,7 +169,7 @@ musicUrlInput?.addEventListener('paste',()=>setTimeout(fetchMusicMetadata,80));
 // V7.15 바로가기 버튼 관리
 const homeLinksManager=document.querySelector('[data-home-links-manager]');
 let homeLinksDraft=[];
-const defaultHomeLinks=[{id:'soop',icon:'🐱',label:'SOOP 바로가기',url:'#'},{id:'live',icon:'▶',label:'방송 보러가기',url:'#'}];
+const defaultHomeLinks=[{id:'main',icon:'📺',label:'유바미 본채널',url:'#'},{id:'sub',icon:'🎬',label:'유바미 서브채널',url:'#'},{id:'vod',icon:'▶',label:'다시보기 채널',url:'#'},{id:'x',icon:'𝕏',label:'X 트위터',url:'#'},{id:'cafe',icon:'☕',label:'팬카페',url:'#'}];
 const linkId=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());
 function renderHomeLinks(){if(!homeLinksManager)return;homeLinksManager.innerHTML=homeLinksDraft.map(x=>`<div class="home-link-edit-row" data-link-id="${x.id}"><input class="field icon-field" data-k="icon" value="${esc(x.icon||'🐾')}"><input class="field" data-k="label" value="${esc(x.label||'')}"><input class="field" data-k="url" value="${esc(x.url||'')}"><div class="mini"><button type="button" class="soft" data-up>↑</button><button type="button" class="soft" data-down>↓</button><button type="button" class="danger" data-remove>삭제</button></div></div>`).join('')}
 onSnapshot(doc(db,'home','main'),s=>{if(!s.exists())return;homeLinksDraft=Array.isArray(s.data().links)?s.data().links:defaultHomeLinks;renderHomeLinks()});

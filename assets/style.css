@@ -751,3 +751,235 @@ html:not([data-theme="morning"]) .hero-sky::before{
 .hero-music-v715{margin:0}.cat-cd-stage{height:250px}.cat-cd{width:214px}.cat-cd-video,.cat-cd-video iframe{inset:-24%!important;width:148%!important;height:148%!important}.cat-whiskers{display:none!important}.cat-ear{top:18px;width:76px;height:88px;border-radius:58% 58% 35% 35%;background:linear-gradient(145deg,#efc0ff,#aab8ff)}.cat-ear::after{display:none}.cat-ear i{position:absolute;inset:17px 17px 26px;border-radius:58%;background:linear-gradient(145deg,#ffd2df,#ff9fc8)}.cat-ear-left{left:23px;transform:rotate(-23deg)}.cat-ear-right{right:23px;transform:rotate(23deg)}.cat-cd-ring{position:absolute;inset:-5px;border-radius:50%;z-index:8;border:4px solid transparent;background:conic-gradient(#ff9edf,#8edfff,#ffe08a,#cfa1ff,#ff9edf) border-box;mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0);mask-composite:exclude;animation:holo 8s linear infinite}@keyframes holo{to{transform:rotate(360deg)}}.cat-cd-stage.play-start .cat-ear i{filter:brightness(1.4);box-shadow:0 0 20px #ffb0df}.cat-cd-stage.play-start .cat-cd:after{content:"";position:absolute;inset:-18px;border:3px solid #ffc0ec;border-radius:50%;z-index:10;animation:pulse 1s ease-out forwards}@keyframes pulse{to{opacity:0;transform:scale(1.18)}}
 .home-links-editor{display:grid;gap:8px;margin:12px 0}.home-link-edit-row{display:grid;grid-template-columns:65px .7fr 1.3fr auto;gap:8px;align-items:center}.icon-field{text-align:center;font-size:18px}.bulssinyang-wrap{position:fixed;left:14px;bottom:10px;z-index:50}.bulssinyang{width:112px;border:0;padding:0;background:transparent;cursor:pointer;filter:drop-shadow(0 10px 12px rgba(0,0,0,.32));animation:catidle 3s ease-in-out infinite}.bulssinyang img{width:100%;display:block}@keyframes catidle{50%{transform:translateY(-3px) rotate(1deg)}}.bulssinyang-bubble{position:absolute;left:88px;bottom:82px;width:max-content;max-width:220px;padding:10px 14px;border-radius:17px 17px 17px 5px;background:#17152f;color:#fff;border:1px solid rgba(255,255,255,.2)}.click-paw{position:fixed;z-index:9999;pointer-events:none;font-size:27px;transform:translate(-50%,-50%) rotate(var(--r));animation:paw .85s ease-out forwards}@keyframes paw{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(var(--r))}25%{opacity:1;transform:translate(-50%,-50%) scale(1.1) rotate(var(--r))}100%{opacity:0;transform:translate(-50%,-80%) scale(.8) rotate(var(--r))}}.bami-dialog-copy,.bami-dialog-copy h2,.bami-dialog-copy p,.bami-dialog-copy time{color:#fff!important}.bami-dialog-copy{background:#17172f!important}html:not([data-theme="morning"]) .hero-sky::before{display:none!important}
 @media(max-width:1100px){.hero-layout-v715{grid-template-columns:1fr 1fr}.hero-music-v715{grid-column:1/-1;width:410px;justify-self:center}}@media(max-width:720px){.hero-layout-v715{grid-template-columns:1fr}.hero-gallery-v715,.hero-copy-v715,.hero-music-v715{grid-column:1}.hero-gallery-v715{height:440px}.hero-copy-v715 h1{font-size:60px}.home-link-edit-row{grid-template-columns:56px 1fr}.home-link-edit-row input:nth-child(3),.home-link-edit-row .mini{grid-column:1/-1}.bulssinyang{width:82px}}
+
+
+/* V7.16: 메인 3단 레이아웃 안정화 */
+.hero-v716{
+  min-height:calc(100vh - 76px);
+}
+.hero-layout-v716{
+  min-height:calc(100vh - 96px);
+  display:grid;
+  grid-template-columns:minmax(320px,1.1fr) minmax(300px,.9fr) minmax(280px,.78fr);
+  gap:clamp(22px,2.8vw,44px);
+  align-items:center;
+  padding:28px 0 38px;
+}
+.hero-gallery-v716{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:8px;
+  height:min(66vh,520px);
+}
+.hero-gallery-v716>*{
+  min-width:0;
+  min-height:0;
+  height:100%;
+}
+.hero-gallery-v716 img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:22px;
+}
+.hero-copy-v716{
+  display:grid;
+  justify-items:center;
+  align-content:center;
+  text-align:center;
+  min-width:0;
+}
+.hero-copy-v716 h1{
+  font-family:Georgia,serif;
+  font-size:clamp(58px,6.4vw,104px);
+  line-height:.92;
+  margin:12px 0;
+  background:linear-gradient(90deg,#ffe2a3,#ffb2d6,#c7a8ff);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+.korean-name-v716{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.korean-name-v716 i{
+  width:60px;
+  height:1px;
+  background:#ffd36c;
+}
+.hero-links-v716{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+  margin-top:20px;
+}
+.hero-links-v716 .cozy-link{
+  padding:13px 17px;
+  font-size:14px;
+}
+
+/* V7.16: 음악 카드 내부 절대 안 넘치게 */
+.hero-music-v716{
+  width:100%;
+  max-width:360px;
+  justify-self:end;
+  margin:0;
+}
+.hero-music-v716 .cat-music-player{
+  width:100%;
+  box-sizing:border-box;
+  padding:16px 14px 18px;
+  overflow:hidden;
+}
+.cat-music-heading{
+  max-width:100%;
+}
+.cat-music-heading strong,
+.cat-music-heading span{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  max-width:100%;
+}
+.cat-cd-stage{
+  width:100%;
+  height:228px;
+  display:grid;
+  place-items:end center;
+  overflow:visible;
+}
+.cat-cd-shell{
+  position:relative;
+  z-index:3;
+  width:194px;
+  aspect-ratio:1;
+  border-radius:50%;
+  overflow:hidden;
+}
+.cat-cd{
+  width:100%!important;
+  height:100%!important;
+  aspect-ratio:1;
+  border-radius:50%;
+  overflow:hidden!important;
+  position:relative;
+}
+.cat-cd-video{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  overflow:hidden!important;
+  border-radius:50%!important;
+}
+.cat-cd-video > div,
+.cat-cd-video iframe,
+.cat-cd-iframe{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:178%!important;
+  height:178%!important;
+  transform:translate(-50%,-50%)!important;
+  border:0!important;
+  border-radius:0!important;
+  pointer-events:none!important;
+}
+.cat-cd-gloss,
+.cat-cd-ring,
+.cat-cd-center{
+  pointer-events:none;
+}
+.cat-ear{
+  top:17px!important;
+  width:70px!important;
+  height:80px!important;
+}
+.cat-ear-left{left:42px!important}
+.cat-ear-right{right:42px!important}
+.cat-player-controls{
+  width:100%!important;
+  max-width:100%!important;
+  display:grid!important;
+  grid-template-columns:42px 42px 24px minmax(70px,1fr) 42px!important;
+  gap:7px!important;
+  padding:0 2px;
+  box-sizing:border-box;
+}
+.cat-player-controls input[type="range"]{
+  min-width:0!important;
+  width:100%!important;
+}
+.cat-player-controls output{
+  min-width:38px!important;
+  text-align:right;
+}
+
+/* V7.16: 업보 상세 모달은 아침/밤 모두 잘 보이게 */
+.debt-dialog,
+.debt-dialog [data-debt-detail],
+.debt-dialog h2,
+.debt-dialog p,
+.debt-dialog span,
+.debt-dialog b,
+.debt-dialog em,
+.debt-detail-meta,
+.debt-detail-item{
+  color:#fff!important;
+}
+.debt-dialog{
+  background:#16182d!important;
+  border:1px solid rgba(255,255,255,.16)!important;
+}
+.debt-detail-meta,
+.debt-detail-item{
+  background:rgba(255,255,255,.08)!important;
+}
+.debt-dialog .dialog-close,
+.debt-dialog button[aria-label="닫기"]{
+  color:#fff!important;
+}
+
+/* V7.16: 불씨냥 이미지 하이라이트/귀 흰색 보존 */
+.bulssinyang img{
+  filter:none!important;
+  image-rendering:auto;
+}
+
+/* V7.16: 자기소개 카드 삭제 후 여백 정리 */
+.profile-facts:empty,
+.profile-meta:empty{
+  display:none!important;
+}
+
+@media(max-width:1200px){
+  .hero-layout-v716{
+    grid-template-columns:minmax(300px,1fr) minmax(300px,1fr);
+  }
+  .hero-music-v716{
+    grid-column:1 / -1;
+    justify-self:center;
+  }
+}
+@media(max-width:760px){
+  .hero-layout-v716{
+    grid-template-columns:1fr;
+    min-height:auto;
+  }
+  .hero-gallery-v716,
+  .hero-copy-v716,
+  .hero-music-v716{
+    grid-column:1;
+  }
+  .hero-gallery-v716{
+    height:440px;
+  }
+  .hero-music-v716{
+    max-width:360px;
+    justify-self:center;
+  }
+}
