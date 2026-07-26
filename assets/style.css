@@ -318,3 +318,25 @@ html[data-theme="morning"] .hero-gallery-item{border-color:rgba(255,255,255,.75)
 .music-close{width:34px;height:34px;border:1px solid rgba(255,255,255,.16);border-radius:11px;background:rgba(255,255,255,.08);color:#fff;font-size:22px;line-height:1;cursor:pointer}
 @media(min-width:900px){.hero-visual-column{width:min(100%,620px)}.hero-music-card{min-height:78px}.hero-music-player{grid-template-columns:minmax(0,360px) auto}.hero-music .music-embed{max-width:360px}}
 @media(max-width:720px){.hero-music-card{grid-template-columns:1fr}.hero-music .home-music-play{width:100%}.hero-music-player{grid-template-columns:1fr}.music-close{position:absolute;right:8px;top:10px;z-index:2;background:rgba(0,0,0,.72)}}
+
+
+/* V7.10: audio-only appearance for favorite music */
+.music-audio-host{
+  position:fixed !important;
+  left:-9999px !important;
+  top:-9999px !important;
+  width:200px !important;
+  height:200px !important;
+  overflow:hidden !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+.music-audio-host iframe{
+  width:200px !important;
+  height:200px !important;
+  border:0 !important;
+}
+.home-music-section .music-player-shell,
+.home-music-section .favorite-music-card{
+  max-width:none;
+}
