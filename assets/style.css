@@ -2880,3 +2880,14 @@ html[data-theme="morning"] .portrait-pop-bubble{
 html[data-theme="morning"] .portrait-pop-bubble::after{
   border-top-color:rgba(255,255,255,.94);
 }
+
+
+/* V7.32 공개 사이트 실행 복구 및 말풍선 안정화 */
+.hero-portrait-v720{
+  position:relative !important;
+  overflow:hidden !important;
+}
+.hero-portrait-v720 .portrait-pop-bubble{
+  z-index:12 !important;
+  pointer-events:none !important;
+}

@@ -6,20 +6,14 @@ const db=getFirestore(initializeApp(firebaseConfig));
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 const br=s=>esc(s).replace(/\n/g,"<br>"), stars=n=>"★".repeat(Number(n)||0)+"☆".repeat(5-(Number(n)||0));
 const empty=(el,msg)=>el.innerHTML=`<div class="empty">${esc(msg)}</div>`;
-const homeImg=document.querySelector('[data-home-image]'),homeGallery=document.querySelector('[data-home-gallery]'),homePortrait=document.querySelector('[data-home-portrait]'),homePortraitBubbles=document.querySelector('[data-portrait-bubbles]'),homeTitle=document.querySelector('[data-home-headline]'),homeDesc=document.querySelector('[data-home-description]'),homeMessage=document.querySelector('[data-home-message]'),homeMusicSection=document.querySelector('[data-home-music-section]'),homeMusicTitle=document.querySelector('[data-home-music-title]'),homeMusicAuthor=document.querySelector('[data-home-music-author]'),homeLinks=document.querySelector('[data-home-links]');
+const homeImg=document.querySelector('[data-home-image]'),homeGallery=document.querySelector('[data-home-gallery]'),homePortrait=document.querySelector('[data-home-portrait]'),homeTitle=document.querySelector('[data-home-headline]'),homeDesc=document.querySelector('[data-home-description]'),homeMessage=document.querySelector('[data-home-message]'),homeMusicSection=document.querySelector('[data-home-music-section]'),homeMusicTitle=document.querySelector('[data-home-music-title]'),homeMusicAuthor=document.querySelector('[data-home-music-author]'),homeLinks=document.querySelector('[data-home-links]');
 if(homeImg||homeGallery||homePortrait||homeTitle||homeDesc||homeMessage||homeMusicSection){onSnapshot(doc(db,'home','main'),s=>{if(!s.exists())return;const x=s.data();
   if(homeImg){if(x.imageUrl){homeImg.innerHTML=`<img src="${esc(x.imageUrl)}" alt="유바미 메인 이미지">`;homeImg.classList.add('has-image')}else{homeImg.innerHTML='';homeImg.classList.remove('has-image')}}
-  if(homeGallery){const photos=(x.gallery||[]).slice(0,4);homeGallery.innerHTML=photos.map((url,i)=>`<figure class="hero-photo-card hero-photo-${i+1}"><img src="${esc(url)}" alt="유바미 사진 ${i+1}"></figure>`).join("")}window.__yubamiPortraitBubbleLines=String(x.portraitBubbleText||'')
-      .split(/
-+/)
-      .map(value=>value.trim())
-      .filter(Boolean);if(homePortrait){
-    const portraitUrl=x.imageUrl||'';
-    homePortrait.innerHTML=`
-      ${portraitUrl
-        ? `<img src="${esc(portraitUrl)}" alt="유바미 메인 사진">`
-        : '<div class="hero-portrait-placeholder">사진을 등록해 주세요</div>'}
-      <div class="portrait-bubble-layer" data-portrait-bubbles aria-live="polite"></div>`;
+  if(homeGallery){const photos=(x.gallery||[]).slice(0,4);homeGallery.innerHTML=photos.map((url,i)=>`<figure class="hero-photo-card hero-photo-${i+1}"><img src="${esc(url)}" alt="유바미 사진 ${i+1}"></figure>`).join("")}window.__yubamiPortraitBubbleLines=String(x.portraitBubbleText||'').split(/\n+/).map(v=>v.trim()).filter(Boolean);if(homePortrait){
+    const portraitUrl=x.imageUrl||x.imageUrl2||x.imageUrl3||'';
+    homePortrait.innerHTML=portraitUrl
+      ? `<img src="${esc(portraitUrl)}" alt="유바미 메인 사진">`
+      : '<div class="hero-portrait-placeholder">사진을 등록해 주세요</div>';
   }
   if(homeTitle&&x.headline!==undefined)homeTitle.innerHTML=br(x.headline||'YUBAMI');if(homeLinks){const a=Array.isArray(x.links)?x.links:[{icon:'📺',label:'유바미 본채널',url:'#'},{icon:'🎬',label:'유바미 서브채널',url:'#'},{icon:'▶',label:'다시보기 채널',url:'#'},{icon:'𝕏',label:'X 트위터',url:'#'},{icon:'☕',label:'팬카페',url:'#'}];homeLinks.innerHTML=a.map((l,i)=>`<a class="cozy-link cozy-link-${i%3}" style="--link-color:${esc(l.color||'#8b5cf6')}" href="${esc(l.url||'#')}" target="_blank" rel="noopener"><span>${esc(l.icon||'🐾')}</span>${esc(l.label||'바로가기')}<b>↗</b></a>`).join('')}if(homeDesc&&x.description!==undefined)homeDesc.innerHTML=br(x.description||'');if(homeMessage&&x.message!==undefined)homeMessage.innerHTML=br(x.message||'');if(homeMusicSection){homeMusicSection.hidden=!x.musicUrl;homeMusicSection.dataset.musicUrl=x.musicUrl||'';homeMusicSection.dataset.musicTitle=x.musicTitle||'오늘의 추천곡';homeMusicSection.dataset.musicAuthor=x.musicAuthor||'유바미가 좋아하는 음악';if(homeMusicTitle)homeMusicTitle.textContent=x.musicTitle||'오늘의 추천곡';if(homeMusicAuthor)homeMusicAuthor.textContent=x.musicAuthor||'유바미가 좋아하는 음악';window.dispatchEvent(new CustomEvent('yubami-music-change',{detail:{url:x.musicUrl||''}}))}
 })}
@@ -352,23 +346,24 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 const bs=document.querySelector('[data-bulssinyang]'),bubble=document.querySelector('[data-bulssinyang-bubble]');const lines=['모닥불 앞에서 쉬다 가냥!','불씨단 안녕!','오늘도 방송 보러 가냥!','10시에 다시 만나냥!','유바미 기다리고 있었냥!'];bs?.addEventListener('click',e=>{e.stopPropagation();bubble.textContent=lines[Math.floor(Math.random()*lines.length)];bubble.hidden=false;clearTimeout(window.bsTimer);window.bsTimer=setTimeout(()=>bubble.hidden=true,2500)});document.addEventListener('pointerdown',e=>{if(e.button!==0)return;const p=document.createElement('span');p.className='click-paw';p.textContent='🐾';p.style.left=e.clientX+'px';p.style.top=e.clientY+'px';p.style.setProperty('--r',(Math.random()*40-20)+'deg');document.body.appendChild(p);p.addEventListener('animationend',()=>p.remove())});
 
+// V7.32 메인 사진 랜덤 말풍선
+const portraitHost=document.querySelector('[data-home-portrait]');
+portraitHost?.addEventListener('click',()=>{
+  const bubbleLines=Array.isArray(window.__yubamiPortraitBubbleLines)
+    ? window.__yubamiPortraitBubbleLines
+    : [];
 
-// V7.30 메인 사진 랜덤 말풍선
-document.querySelector('[data-home-portrait]')?.addEventListener('click',event=>{
-  const portraitBubbleHost=document.querySelector('[data-portrait-bubbles]');
-  const lines=Array.isArray(window.__yubamiPortraitBubbleLines)?window.__yubamiPortraitBubbleLines:[];
-  if(!portraitBubbleHost||!lines.length)return;
+  if(!bubbleLines.length)return;
 
-  const bubble=document.createElement('div');
-  bubble.className='portrait-pop-bubble';
-  bubble.textContent=lines[Math.floor(Math.random()*lines.length)];
+  const pop=document.createElement('div');
+  pop.className='portrait-pop-bubble';
+  pop.textContent=bubbleLines[Math.floor(Math.random()*bubbleLines.length)];
 
-  const rect=portraitBubbleHost.getBoundingClientRect();
-  const maxX=Math.max(20,rect.width-190);
-  const maxY=Math.max(20,rect.height-90);
-  bubble.style.left=Math.round(12+Math.random()*maxX)+'px';
-  bubble.style.top=Math.round(12+Math.random()*maxY)+'px';
+  const width=Math.max(220,portraitHost.clientWidth);
+  const height=Math.max(300,portraitHost.clientHeight);
+  pop.style.left=Math.round(12+Math.random()*Math.max(10,width-214))+'px';
+  pop.style.top=Math.round(12+Math.random()*Math.max(10,height-104))+'px';
 
-  portraitBubbleHost.appendChild(bubble);
-  bubble.addEventListener('animationend',()=>bubble.remove());
+  portraitHost.appendChild(pop);
+  pop.addEventListener('animationend',()=>pop.remove(),{once:true});
 });
