@@ -242,3 +242,35 @@ html[data-theme="morning"] .hero-gallery-item{border-color:rgba(255,255,255,.75)
 /* V7.5 calendars */
 .weekly-section{margin-top:34px}.section-heading{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:14px}.section-heading h2{margin:3px 0 0}.weekly-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;padding:12px;border:1px solid var(--line);border-radius:24px;background:var(--card);box-shadow:var(--shadow)}.week-day{min-height:126px;padding:12px;border:1px solid var(--line);border-radius:17px;background:rgba(255,255,255,.035)}.week-day.today{border-color:#ff9a58;box-shadow:inset 0 0 0 1px rgba(255,154,88,.25)}.week-date{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:12px}.week-date b{font-size:22px;color:var(--text)}.week-events{margin-top:12px;display:grid;gap:7px}.week-event{padding:7px 8px;border-radius:11px;background:rgba(233,67,137,.14)}.week-event strong,.week-event small{display:block}.week-event strong{font-size:12px}.week-event small{font-size:10px;color:var(--muted)}.week-empty{font-size:11px;color:var(--muted)}.calendar-title-row{display:flex;align-items:end;justify-content:space-between;gap:20px}.calendar-controls{display:flex;align-items:center;gap:9px}.calendar-controls strong{min-width:110px;text-align:center}.month-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));margin-top:20px;overflow:hidden;padding:10px}.calendar-weekday{text-align:center;font-weight:900;color:var(--muted);padding:12px}.calendar-cell{min-height:145px;padding:10px;border-top:1px solid var(--line);border-left:1px solid var(--line)}.calendar-cell:nth-child(7n+1){border-left:0}.calendar-cell.muted{opacity:.25}.calendar-cell.today{background:rgba(255,152,88,.08)}.calendar-day{font-weight:900}.calendar-events{display:grid;gap:6px;margin-top:8px}.calendar-event{display:grid;gap:2px;padding:7px;border-radius:10px;background:linear-gradient(135deg,rgba(227,69,139,.19),rgba(255,151,83,.15));font-size:11px}.calendar-event small,.calendar-event span{color:var(--muted);font-size:10px}
 @media(max-width:900px){.wardrobe-mini-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.weekly-calendar{overflow-x:auto;grid-template-columns:repeat(7,minmax(145px,1fr))}.month-calendar{overflow-x:auto;grid-template-columns:repeat(7,minmax(135px,1fr))}}@media(max-width:560px){.wardrobe-mini-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.calendar-title-row,.section-heading{align-items:flex-start;flex-direction:column}.calendar-controls{width:100%;justify-content:space-between}}
+
+
+/* V7.6 — music player */
+.music-player-shell{margin:18px 0 24px;padding:16px;border:1px solid var(--line);border-radius:22px;background:var(--card);box-shadow:var(--shadow)}
+.music-player-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.music-embed{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:16px;background:#050714}
+.music-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.song-actions{display:flex;align-items:center;gap:12px;margin-left:auto}
+.music-play{border:0;border-radius:999px;padding:9px 13px;background:linear-gradient(135deg,#e94389,#ff9858);color:#fff;font-weight:900;cursor:pointer;white-space:nowrap}
+
+/* V7.6 — rules */
+.rules-list{display:grid;gap:16px;margin-top:22px}
+.rule-card{display:grid;grid-template-columns:70px 1fr;gap:18px;padding:24px}
+.rule-number{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,rgba(233,67,137,.22),rgba(255,152,88,.2));font-size:18px;font-weight:1000;color:var(--accent)}
+.rule-card h2{margin:2px 0 12px}.rule-content{line-height:1.9;color:var(--muted)}
+
+/* V7.6 — roulette debts */
+.page-intro{color:var(--muted);margin-top:-8px}
+.debt-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:24px}
+.debt-card{width:100%;display:grid;grid-template-columns:86px 1fr auto;align-items:center;gap:16px;padding:19px;text-align:left;color:var(--text);cursor:pointer}
+.debt-card:hover{transform:translateY(-5px);border-color:rgba(255,152,88,.55)}
+.debt-count{display:grid;place-items:center;align-content:center;width:78px;height:78px;border-radius:22px;background:linear-gradient(135deg,#e94389,#ff9858);color:#fff}
+.debt-count strong{font-size:30px;line-height:1}.debt-count span{font-size:11px;font-weight:900;margin-top:5px}
+.debt-card-copy h2{font-size:19px;margin:3px 0 5px}.debt-card-copy p{color:var(--muted);font-size:12px;margin:0}.debt-arrow{font-size:34px;color:var(--muted)}
+.debt-dialog{width:min(620px,calc(100% - 28px));border:1px solid var(--line);border-radius:26px;padding:30px;background:var(--card-solid);color:var(--text);box-shadow:0 35px 100px rgba(0,0,0,.55)}
+.debt-dialog::backdrop{background:rgba(2,5,20,.76);backdrop-filter:blur(8px)}
+.debt-close{position:absolute;right:15px;top:12px;border:0;background:transparent;color:var(--text);font-size:30px;cursor:pointer}
+.debt-detail-meta{display:grid;grid-template-columns:auto 1fr;gap:9px 18px;margin:20px 0;padding:16px;border:1px solid var(--line);border-radius:17px}
+.debt-detail-meta span{color:var(--muted)}.debt-detail-content{line-height:1.9;color:var(--muted);white-space:normal}
+
+@media(max-width:900px){.debt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.debt-grid{grid-template-columns:1fr}.rule-card{grid-template-columns:1fr}.song-row{align-items:flex-start}.song-actions{flex-direction:column;align-items:flex-end}}

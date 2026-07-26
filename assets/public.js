@@ -21,20 +21,51 @@ listen("instagram",(el,a)=>el.innerHTML=a.map(x=>`<article class="card photo" da
 
 const wardrobeRoot=document.querySelector('[data-collection="wardrobe"]');
 if(wardrobeRoot){let wardrobeItems=[],wardrobeCollections=[];const renderWardrobe=()=>{const collectionNames=[...new Set([...wardrobeCollections.map(x=>x.title).filter(Boolean),...wardrobeItems.map(x=>x.category).filter(Boolean)])];const sorted=collectionNames.sort((a,b)=>{const aa=wardrobeCollections.find(x=>x.title===a),bb=wardrobeCollections.find(x=>x.title===b);return (Number(aa?.sortOrder)||0)-(Number(bb?.sortOrder)||0)||a.localeCompare(b,'ko')});const filters=document.querySelector('[data-wardrobe-dynamic-filters]');if(filters)filters.innerHTML='<button class="wardrobe-filter active" type="button" data-wardrobe-filter="all">전체</button>'+sorted.map(name=>`<button class="wardrobe-filter" type="button" data-wardrobe-filter="${esc(name)}">${esc(name)}</button>`).join('');wardrobeRoot.innerHTML=sorted.map(category=>{const items=wardrobeItems.filter(x=>(x.category||'미분류')===category);return `<section class="wardrobe-month" data-wardrobe-group="${esc(category)}"><div class="wardrobe-month-head"><div><span class="kicker">COLLECTION</span><h2>${esc(category)}</h2></div><span class="wardrobe-count">${items.length}</span></div>${['의상','헤어'].map(type=>{const group=items.filter(x=>(x.subcategory||'의상')===type);return `<div class="wardrobe-type"><h3>${esc(type)} <small>${group.length}</small></h3><div class="wardrobe-mini-grid">${group.length?group.map(x=>`<article class="wardrobe-mini-card" data-searchable="${esc((x.title||'')+' '+(x.content||'')+' '+category+' '+type)}">${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="${esc(x.title||type)}">`:''}<div class="wardrobe-mini-copy"><b>${esc(x.title||'제목 없음')}</b>${x.content?`<p>${br(x.content)}</p>`:''}</div></article>`).join(''):`<div class="empty wardrobe-mini-empty">등록된 ${esc(type)}가 없어요.</div>`}</div></div>`}).join('')}</section>`}).join('')||'<div class="empty">아직 만든 옷장 카테고리가 없어요.</div>';const buttons=[...document.querySelectorAll('[data-wardrobe-filter]')];buttons.forEach(button=>button.addEventListener('click',()=>{const value=button.dataset.wardrobeFilter;document.querySelectorAll('[data-wardrobe-group]').forEach(section=>section.style.display=value==='all'||section.dataset.wardrobeGroup===value?'':'none');buttons.forEach(b=>b.classList.toggle('active',b===button))}))};onSnapshot(query(collection(db,'wardrobe'),orderBy('createdAt','desc')),s=>{wardrobeItems=s.docs.map(d=>({id:d.id,...d.data()}));renderWardrobe()});onSnapshot(query(collection(db,'wardrobeCollections'),orderBy('createdAt','desc')),s=>{wardrobeCollections=s.docs.map(d=>({id:d.id,...d.data()}));renderWardrobe()})}
-listen("curiosity",(el,a)=>el.innerHTML=a.map(x=>`<article class="card tile" data-searchable="${esc((x.title||"")+" "+(x.content||""))}"><div class="icon">📚</div><h3>${esc(x.title||"호기심 노트")}</h3><p>${br(x.content||"")}</p></article>`).join(""));
+
+function youtubeVideoId(raw){
+  try{
+    const u=new URL(raw);
+    if(u.hostname==='youtu.be')return u.pathname.slice(1).split('/')[0];
+    if(u.pathname.startsWith('/shorts/'))return u.pathname.split('/')[2];
+    if(u.pathname.startsWith('/embed/'))return u.pathname.split('/')[2];
+    return u.searchParams.get('v')||'';
+  }catch{return ''}
+}
+function openMusic(url,title){
+  const id=youtubeVideoId(url),shell=document.querySelector('[data-music-player]'),embed=document.querySelector('[data-music-embed]');
+  if(!id||!shell||!embed)return;
+  document.querySelector('[data-music-title]').textContent=title||'음악 재생';
+  embed.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0" title="${esc(title||'음악 재생')}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+  shell.classList.remove('hidden');shell.scrollIntoView({behavior:'smooth',block:'center'});
+}
+document.querySelector('[data-music-close]')?.addEventListener('click',()=>{document.querySelector('[data-music-player]')?.classList.add('hidden');const e=document.querySelector('[data-music-embed]');if(e)e.innerHTML=''});
+
 listen("songs",(el,a)=>{
   const categories=["KPOP","JPOP","JPOP(한국어 ver)","POP"];
   const normalized=a.map(x=>({...x,category:x.category||"KPOP"}));
   el.innerHTML=categories.map(category=>{
     const songs=normalized.filter(x=>x.category===category);
-    return `<section class="card pad song-category-section" data-song-category="${esc(category)}"><div class="song-category-head"><span class="kicker">CATEGORY</span><h2>${esc(category)}</h2><span class="song-count">${songs.length}</span></div><div class="list">${songs.length?songs.map(x=>`<article class="row song-row" data-searchable="${esc((x.artist||"")+" "+(x.title||"")+" "+(x.tags||[]).join(" ")+" "+category)}">${x.imageUrl?`<img class="song-cover" src="${esc(x.imageUrl)}" alt="${esc(x.title||'노래')} 커버">`:''}<div class="song-copy"><div class="song-meta"><span class="tag">${esc(category)}</span><span class="song-artist">${esc(x.artist||"가수 미등록")}</span></div><h3>${esc(x.title||"제목 없음")}</h3><div>${(x.tags||[]).map(t=>`<span class="tag">#${esc(t)}</span>`).join("")}</div></div><span class="stars">${stars(x.difficulty)}</span></article>`).join(""):`<div class="empty">아직 등록된 ${esc(category)} 노래가 없어요.</div>`}</div></section>`;
+    return `<section class="card pad song-category-section" data-song-category="${esc(category)}"><div class="song-category-head"><span class="kicker">CATEGORY</span><h2>${esc(category)}</h2><span class="song-count">${songs.length}</span></div><div class="list">${songs.length?songs.map(x=>`<article class="row song-row" data-searchable="${esc((x.artist||"")+" "+(x.title||"")+" "+(x.tags||[]).join(" ")+" "+category)}">${x.imageUrl?`<img class="song-cover" src="${esc(x.imageUrl)}" alt="${esc(x.title||'노래')} 커버">`:''}<div class="song-copy"><div class="song-meta"><span class="tag">${esc(category)}</span><span class="song-artist">${esc(x.artist||"가수 미등록")}</span></div><h3>${esc(x.title||"제목 없음")}</h3><div>${(x.tags||[]).map(t=>`<span class="tag">#${esc(t)}</span>`).join("")}</div></div><div class="song-actions">${x.youtubeUrl?`<button type="button" class="music-play" data-music-url="${esc(x.youtubeUrl)}" data-music-name="${esc((x.artist||'')+' - '+(x.title||''))}">▶ 재생</button>`:''}<span class="stars">${stars(x.difficulty)}</span></div></article>`).join(""):`<div class="empty">아직 등록된 ${esc(category)} 노래가 없어요.</div>`}</div></section>`;
   }).join("");
   const buttons=[...document.querySelectorAll('[data-song-filter]')];
   const apply=value=>{document.querySelectorAll('[data-song-category]').forEach(section=>section.style.display=value==='all'||section.dataset.songCategory===value?'':'none');buttons.forEach(b=>b.classList.toggle('active',b.dataset.songFilter===value))};
-  buttons.forEach(button=>button.addEventListener('click',()=>apply(button.dataset.songFilter)));
+  buttons.forEach(button=>button.addEventListener('click',()=>apply(button.dataset.songFilter)));el.querySelectorAll('[data-music-url]').forEach(button=>button.addEventListener('click',()=>openMusic(button.dataset.musicUrl,button.dataset.musicName)));
 });
 listen("notices",(el,a)=>el.innerHTML=a.map(x=>`<article class="row"><div><h3>${esc(x.title||"제목 없음")}</h3><p>${br(x.content||"")}</p></div><span class="pill">${esc(x.date||"공지")}</span></article>`).join(""),3);
 listen("schedules",(el,a)=>el.innerHTML=a.map(x=>`<article class="row"><div><h3>${esc(x.title||"방송")}</h3><p>${br(x.content||"")}</p></div><span class="pill">${esc(x.date||"일정")}</span></article>`).join(""),1);
+
+
+listen("siteRules",(el,a)=>{
+  const sorted=[...a].sort((x,y)=>(Number(x.sortOrder)||0)-(Number(y.sortOrder)||0));
+  el.innerHTML=sorted.map((x,i)=>`<article class="rule-card card"><div class="rule-number">${String(i+1).padStart(2,'0')}</div><div><h2>${esc(x.title||'규칙')}</h2><div class="rule-content">${br(x.content||'')}</div></div></article>`).join('');
+});
+listen("rouletteDebts",(el,a)=>{
+  el.innerHTML=a.map(x=>`<button type="button" class="debt-card card" data-debt-id="${esc(x.id)}"><div class="debt-count"><strong>${Number(x.debtCount)||0}</strong><span>업보</span></div><div class="debt-card-copy"><span class="kicker">VIEWER</span><h2>${esc(x.viewerName||'이름 없음')}</h2><p>${esc(x.title||'상세내용 보기')}</p></div><span class="debt-arrow">›</span></button>`).join('');
+  const map=new Map(a.map(x=>[x.id,x])),dialog=document.querySelector('[data-debt-dialog]'),detail=document.querySelector('[data-debt-detail]');
+  el.querySelectorAll('[data-debt-id]').forEach(button=>button.addEventListener('click',()=>{const x=map.get(button.dataset.debtId);if(!x||!dialog||!detail)return;detail.innerHTML=`<div class="kicker">ROULETTE DEBT</div><h2>${esc(x.viewerName||'이름 없음')}</h2><div class="debt-detail-meta"><span>아이디</span><b>${esc(x.viewerId||'미등록')}</b><span>업보 개수</span><b>${Number(x.debtCount)||0}개</b></div><h3>${esc(x.title||'업보 상세')}</h3><div class="debt-detail-content">${br(x.content||'상세내용이 없어요.')}</div>`;dialog.showModal()}));
+});
+document.querySelector('[data-debt-close]')?.addEventListener('click',()=>document.querySelector('[data-debt-dialog]')?.close());
+document.querySelector('[data-debt-dialog]')?.addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close()});
 
 listen("embers",(el,a)=>el.innerHTML=a.map(x=>`<article class="card photo ember-card" data-searchable="${esc((x.title||"")+" "+(x.content||"")+" "+(x.number||""))}">${x.imageUrl?`<img src="${esc(x.imageUrl)}" alt="${esc(x.title||'불씨')} 사진">`:""}<div class="copy">${x.number?`<span class="pill">NO. ${esc(x.number)}</span>`:""}<h3>${esc(x.title||"불씨 기록")}</h3><p>${br(x.content||"")}</p></div></article>`).join(""));
 
