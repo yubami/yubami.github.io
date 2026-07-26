@@ -1985,3 +1985,170 @@ html:not([data-theme="morning"]) .hero-sky::before{
 #panel-home label:empty{
   display:none !important;
 }
+
+
+/* V7.22: 정상 관리자 복구 후 고양이 머리형 CD */
+.hero-music-v720 .cat-cd-stage{
+  position:relative !important;
+  width:360px !important;
+  height:350px !important;
+  margin:0 auto !important;
+  display:grid !important;
+  place-items:center !important;
+  overflow:visible !important;
+}
+
+.cat-head-disc{
+  position:relative;
+  width:300px;
+  height:318px;
+  display:grid;
+  place-items:end center;
+  isolation:isolate;
+}
+
+/* 귀가 얼굴 뒤에서 자연스럽게 이어지는 실루엣 */
+.cat-head-ear{
+  position:absolute;
+  top:4px;
+  z-index:0;
+  width:112px;
+  height:128px;
+  overflow:hidden;
+  border:6px solid #d8c8ff;
+  background:linear-gradient(145deg,#8e7de2 0%,#c29cff 55%,#ecb8ff 100%);
+  box-shadow:
+    0 0 22px rgba(196,158,255,.55),
+    inset 0 0 14px rgba(255,255,255,.18);
+  clip-path:polygon(50% 0%, 100% 100%, 0% 100%);
+}
+.cat-head-ear i{
+  position:absolute;
+  left:50%;
+  bottom:18px;
+  width:57px;
+  height:73px;
+  transform:translateX(-50%);
+  background:linear-gradient(145deg,#ffd4df,#ff91c4);
+  clip-path:polygon(50% 0%, 100% 100%, 0% 100%);
+}
+.cat-head-ear-left{
+  left:7px;
+  transform:rotate(-13deg);
+}
+.cat-head-ear-right{
+  right:7px;
+  transform:rotate(13deg);
+}
+
+.cat-head-disc .cat-cd-shell{
+  position:relative !important;
+  z-index:2 !important;
+  width:276px !important;
+  height:276px !important;
+  border-radius:50% !important;
+  background:#14162f;
+  box-shadow:
+    0 18px 36px rgba(2,4,20,.38),
+    0 0 0 7px #d8c8ff,
+    0 0 0 11px rgba(255,160,220,.24),
+    0 0 30px rgba(171,148,255,.42);
+}
+
+/* 귀와 얼굴 사이 빈틈을 메워 한 덩어리처럼 */
+.cat-head-disc .cat-cd-shell::before,
+.cat-head-disc .cat-cd-shell::after{
+  content:"";
+  position:absolute;
+  top:-20px;
+  z-index:-1;
+  width:92px;
+  height:48px;
+  background:#14162f;
+  border-top:6px solid #d8c8ff;
+}
+.cat-head-disc .cat-cd-shell::before{
+  left:22px;
+  transform:rotate(-12deg);
+  border-left:6px solid #d8c8ff;
+  border-radius:42px 0 0 0;
+}
+.cat-head-disc .cat-cd-shell::after{
+  right:22px;
+  transform:rotate(12deg);
+  border-right:6px solid #d8c8ff;
+  border-radius:0 42px 0 0;
+}
+
+.cat-head-disc .cat-cd{
+  width:276px !important;
+  height:276px !important;
+  border-radius:50% !important;
+  overflow:hidden !important;
+}
+
+/* 이전 귀 요소는 혹시 남아도 표시하지 않음 */
+.hero-music-v720 .cat-ear,
+.hero-music-v720 .cat-ear-left,
+.hero-music-v720 .cat-ear-right{
+  display:none !important;
+}
+
+/* 재생 시작 시 고양이 귀와 얼굴 테두리가 함께 빛남 */
+.cat-cd-stage.play-start .cat-head-ear{
+  filter:brightness(1.28);
+  box-shadow:
+    0 0 24px rgba(255,155,218,.82),
+    0 0 42px rgba(166,149,255,.55);
+}
+.cat-cd-stage.play-start .cat-head-disc .cat-cd-shell{
+  animation:catHeadPulse 1.05s ease-out;
+}
+@keyframes catHeadPulse{
+  0%{
+    box-shadow:
+      0 18px 36px rgba(2,4,20,.38),
+      0 0 0 7px #d8c8ff,
+      0 0 0 11px rgba(255,160,220,.24),
+      0 0 20px rgba(171,148,255,.35);
+  }
+  45%{
+    box-shadow:
+      0 18px 36px rgba(2,4,20,.38),
+      0 0 0 7px #ffd0ec,
+      0 0 0 15px rgba(255,160,220,.36),
+      0 0 44px rgba(255,153,217,.65);
+  }
+  100%{
+    box-shadow:
+      0 18px 36px rgba(2,4,20,.38),
+      0 0 0 7px #d8c8ff,
+      0 0 0 11px rgba(255,160,220,.24),
+      0 0 30px rgba(171,148,255,.42);
+  }
+}
+
+/* 관리자 로그인 카드가 다른 폼 CSS에 침범되지 않게 */
+#loginView #loginForm{
+  display:grid !important;
+}
+#loginView #loginForm label{
+  display:grid !important;
+}
+#adminView.hidden{
+  display:none !important;
+}
+#loginView.hidden{
+  display:none !important;
+}
+
+@media(max-width:500px){
+  .hero-music-v720 .cat-cd-stage{
+    width:330px !important;
+    height:325px !important;
+  }
+  .cat-head-disc{
+    transform:scale(.9);
+    transform-origin:center;
+  }
+}
