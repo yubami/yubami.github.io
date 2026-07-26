@@ -34,7 +34,7 @@ function reset(form){
   previewAll(form);
   renderTagPreview(form);
 }
-function formData(form){const out={};for(const[k,v]of new FormData(form)){if(k!=="_id")out[k]=typeof v==="string"?v.trim():v}if(form.dataset.collection==="instagram")out.downloadAllowed=!!form.elements.downloadAllowed?.checkedif(out.difficulty)out.difficulty=Number(out.difficulty);if(out.debtCount!==undefined&&out.debtCount!=="")out.debtCount=Number(out.debtCount);if(out.sortOrder!==undefined&&out.sortOrder!=="")out.sortOrder=Number(out.sortOrder);if("tags" in out)out.tags=parseTags(out.tags);out.updatedAt=serverTimestamp();return out}
+function formData(form){const out={};for(const[k,v]of new FormData(form)){if(k!=="_id")out[k]=typeof v==="string"?v.trim():v}if(form.dataset.collection==="instagram")out.downloadAllowed=!!form.elements.downloadAllowed?.checked;if(out.difficulty)out.difficulty=Number(out.difficulty);if(out.debtCount!==undefined&&out.debtCount!=="")out.debtCount=Number(out.debtCount);if(out.sortOrder!==undefined&&out.sortOrder!=="")out.sortOrder=Number(out.sortOrder);if("tags" in out)out.tags=parseTags(out.tags);out.updatedAt=serverTimestamp();return out}
 
 function syncChoiceButtons(form){
   form.querySelectorAll('[data-choice-for]').forEach(group=>{
