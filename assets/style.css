@@ -3172,3 +3172,92 @@ html[data-theme="morning"] .portrait-pop-bubble::after{
 @media(max-width:680px){
   .schedule-basic-grid{grid-template-columns:1fr}
 }
+
+
+/* V8.5 — 요청한 두 가지 스타일만 수정 */
+
+/* 아바타 갤러리 설명: 최대 2줄, 카드 높이 고정 */
+.avatar-history-card{
+  display:flex!important;
+  flex-direction:column!important;
+  height:262px!important;
+}
+.avatar-history-card>img{
+  flex:0 0 auto!important;
+  width:100%!important;
+  height:178px!important;
+  aspect-ratio:auto!important;
+  object-fit:cover!important;
+}
+.avatar-history-copy{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+.avatar-history-copy h3{
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.avatar-history-copy p{
+  display:-webkit-box!important;
+  -webkit-box-orient:vertical!important;
+  -webkit-line-clamp:2!important;
+  overflow:hidden!important;
+  max-height:3em!important;
+  min-height:3em!important;
+  text-overflow:ellipsis!important;
+}
+
+/* 업보 개수 배지: 고양이 모양 제거, 동그라미로 변경 */
+.debt-count{
+  width:82px!important;
+  height:82px!important;
+  border-radius:50%!important;
+  isolation:auto!important;
+  overflow:hidden!important;
+}
+.debt-count::before,
+.debt-count::after{
+  display:none!important;
+  content:none!important;
+}
+
+/* 아침 테마에서 잘 보이는 배지 */
+body.theme-morning .debt-count,
+body[data-theme="morning"] .debt-count,
+html[data-theme="morning"] .debt-count,
+.theme-morning .debt-count{
+  background:linear-gradient(145deg,#ff7d9e,#ff9b65)!important;
+  color:#ffffff!important;
+  box-shadow:
+    0 10px 22px rgba(218,91,119,.24),
+    inset 0 1px 0 rgba(255,255,255,.38)!important;
+}
+
+/* 밤 테마에서 잘 보이는 배지 */
+body.theme-night .debt-count,
+body[data-theme="night"] .debt-count,
+html[data-theme="night"] .debt-count,
+.theme-night .debt-count{
+  background:linear-gradient(145deg,#8b5cf6,#5a4bcf)!important;
+  color:#ffffff!important;
+  box-shadow:
+    0 10px 24px rgba(65,48,145,.4),
+    inset 0 1px 0 rgba(255,255,255,.22)!important;
+}
+
+/* 테마 클래스가 아직 붙기 전 기본값 */
+.debt-count{
+  background:linear-gradient(145deg,#f45b8f,#ff8b61)!important;
+  color:#ffffff!important;
+}
+
+@media(max-width:680px){
+  .avatar-history-card{
+    height:286px!important;
+  }
+  .avatar-history-card>img{
+    height:200px!important;
+  }
+}
