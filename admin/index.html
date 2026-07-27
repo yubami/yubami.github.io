@@ -6,7 +6,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#080d28" name="theme-color"/>
 <title>유바미 관리자</title>
-<link href="../assets/style.css?v=8.5" rel="stylesheet"/>
+<link href="../assets/style.css?v=8.7" rel="stylesheet"/>
 </head>
 <body><div aria-hidden="true" id="ambientLights"></div><div aria-hidden="true" id="cursorStars"></div>
 <header><div class="shell nav"><a class="brand" href="../index.html"><span class="brand-word">YUBAMI</span></a><div aria-label="화면 테마" class="theme-switch" role="group"><button data-theme-choice="morning" type="button">☀ <span>아침</span></button><button data-theme-choice="night" type="button">🌙 <span>밤</span></button></div><a class="btn soft" href="../index.html">일반 사이트</a></div></header>
@@ -19,7 +19,7 @@
 <h1 class="page-title">사이트 관리</h1><p><span id="adminEmail"></span> · <button class="btn soft" id="logout">로그아웃</button></p>
 <div class="admin-grid">
 <aside class="card side">
-<button class="active" data-panel="home">🏠 홈 화면</button><button data-panel="profile">👤 자기소개</button><button data-panel="embers">🔥 불씨도감</button><button data-panel="songs">🎵 노래</button><button data-panel="notices">📢 공지</button><button data-panel="schedules">📅 일정</button><button data-panel="wardrobe-categories">🗂️ 옷장 카테고리</button><button data-panel="wardrobe">👗 옷장</button><button data-panel="instagram">📷 바미스타그램</button><button data-panel="debts">🎯 룰렛 업보</button><button data-panel="rules">📜 규칙</button><button data-panel="cloudinary">🖼️ 사진 업로드 설정</button>
+<button class="active" data-panel="home">🏠 홈 화면</button><button data-panel="profile">👤 자기소개</button><button data-panel="embers">🔥 불씨도감</button><button data-panel="songs">🎵 노래</button><button data-panel="notices">📢 공지</button><button data-panel="schedules">📅 일정</button><button data-panel="wardrobe-categories">🗂️ 옷장 카테고리</button><button data-panel="wardrobe">👗 옷장</button><button data-panel="instagram">📷 바미스타그램</button><button data-panel="debts">🎯 룰렛 업보</button><button data-panel="rules">📜 규칙</button><button data-panel="cloudinary">🖼️ 사진 업로드 설정</button><button data-panel="account">🔐 관리자 계정</button>
 </aside>
 <section class="card pad">
 <div class="panel active" id="panel-home"><h2>홈 화면 관리</h2>
@@ -222,9 +222,46 @@
 </form><div class="manage" data-list="siteRules"></div>
 </div>
 <div class="panel" id="panel-cloudinary"><h2>Cloudinary 사진 업로드 설정</h2><p class="image-help">Cloudinary에서 확인한 두 값을 한 번 저장하면 이 브라우저에서 사진 업로드 버튼을 사용할 수 있어요.</p><form class="form" id="cloudinarySettings"><label>Cloud name<input class="field" name="cloudName" placeholder="예: yubami" required=""/></label><label>Unsigned upload preset<input class="field" name="uploadPreset" placeholder="예: yubami_unsigned" required=""/></label><div class="actions"><button class="btn primary">설정 저장</button></div><p aria-live="polite" class="save-status"></p></form><div class="setup-guide"><h3>처음 한 번 설정</h3><ol><li>Cloudinary 계정을 만들고 Console에 로그인</li><li>Settings → Upload → Upload presets로 이동</li><li>Add upload preset을 누르고 Signing mode를 Unsigned로 설정</li><li>Cloud name과 preset 이름을 위에 입력하고 저장</li></ol><p>API Secret은 절대로 입력하거나 공개하지 마세요.</p></div></div>
+<div class="panel" id="panel-account">
+  <h2>관리자 계정</h2>
+  <p class="image-help">
+    현재 로그인한 관리자 계정의 비밀번호를 변경할 수 있어요.
+    보안을 위해 현재 비밀번호를 다시 확인합니다.
+  </p>
+
+  <div class="account-current-email">
+    <span>현재 관리자 이메일</span>
+    <strong data-account-email></strong>
+  </div>
+
+  <form class="form account-password-form" id="passwordChangeForm">
+    <label>현재 비밀번호
+      <input class="field" name="currentPassword" type="password"
+             autocomplete="current-password" required/>
+    </label>
+
+    <label>새 비밀번호
+      <input class="field" name="newPassword" type="password"
+             autocomplete="new-password" minlength="6" required/>
+    </label>
+
+    <label>새 비밀번호 확인
+      <input class="field" name="confirmPassword" type="password"
+             autocomplete="new-password" minlength="6" required/>
+    </label>
+
+    <p class="image-help">새 비밀번호는 6자 이상 입력해 주세요.</p>
+
+    <div class="actions">
+      <button class="btn primary" type="submit">비밀번호 변경</button>
+    </div>
+    <p class="save-status" id="passwordChangeStatus" aria-live="polite"></p>
+  </form>
+</div>
+
 </section>
 </div>
 </section>
 </div></main>
-<script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script><script src="admin.js?v=8.5" type="module"></script>
+<script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script><script src="admin.js?v=8.7" type="module"></script>
 <script src="../assets/effects.js?v=7.9"></script></body></html>

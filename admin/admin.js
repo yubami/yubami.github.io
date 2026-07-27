@@ -1,5 +1,5 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged,EmailAuthProvider,reauthenticateWithCredential,updatePassword} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 import {getFirestore,collection,addDoc,updateDoc,deleteDoc,doc,getDoc,getDocs,setDoc,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 import {firebaseConfig,ADMIN_EMAIL} from "../assets/config.js";
 
@@ -72,7 +72,76 @@ document.querySelectorAll('.clear-image').forEach(b=>b.addEventListener('click',
 document.querySelectorAll('.tag-input').forEach(i=>i.addEventListener('input',()=>renderTagPreview(i.form)));
 
 async function loadSingleton(form){const [collectionName,documentName]=form.dataset.document.split('/'),snap=await getDoc(doc(db,collectionName,documentName));if(snap.exists()){const x=snap.data();for(const e of form.elements)if(e.name&&x[e.name]!==undefined){if(e.type==="checkbox")e.checked=!!x[e.name];else e.value=x[e.name];}previewAll(form);syncChoiceButtons(form)}}
-let started=false;onAuthStateChanged(auth,user=>{const ok=user&&user.email===ADMIN_EMAIL;$("#loginView").classList.toggle("hidden",ok);$("#adminView").classList.toggle("hidden",!ok);if(ok){$("#adminEmail").textContent=user.email;if(!started){started=true;start()}}});
+
+const passwordChangeForm=document.querySelector('#passwordChangeForm');
+const passwordChangeStatus=document.querySelector('#passwordChangeStatus');
+const accountEmail=document.querySelector('[data-account-email]');
+
+function passwordErrorMessage(error){
+  const code=error?.code||'';
+  if(code==='auth/invalid-credential'||code==='auth/wrong-password'){
+    return '현재 비밀번호가 올바르지 않아요.';
+  }
+  if(code==='auth/weak-password'){
+    return '새 비밀번호는 6자 이상 입력해 주세요.';
+  }
+  if(code==='auth/requires-recent-login'){
+    return '보안을 위해 로그아웃한 뒤 다시 로그인하고 시도해 주세요.';
+  }
+  if(code==='auth/network-request-failed'){
+    return '네트워크 연결을 확인한 뒤 다시 시도해 주세요.';
+  }
+  if(code==='auth/too-many-requests'){
+    return '시도 횟수가 너무 많아요. 잠시 후 다시 시도해 주세요.';
+  }
+  return error?.message||'비밀번호를 변경하지 못했어요.';
+}
+
+passwordChangeForm?.addEventListener('submit',async event=>{
+  event.preventDefault();
+
+  const user=auth.currentUser;
+  const currentPassword=passwordChangeForm.elements.currentPassword.value;
+  const newPassword=passwordChangeForm.elements.newPassword.value;
+  const confirmPassword=passwordChangeForm.elements.confirmPassword.value;
+  const button=passwordChangeForm.querySelector('button[type="submit"]');
+
+  if(!user||user.email!==ADMIN_EMAIL){
+    passwordChangeStatus.textContent='관리자 계정으로 다시 로그인해 주세요.';
+    return;
+  }
+  if(newPassword.length<6){
+    passwordChangeStatus.textContent='새 비밀번호는 6자 이상 입력해 주세요.';
+    return;
+  }
+  if(newPassword!==confirmPassword){
+    passwordChangeStatus.textContent='새 비밀번호와 확인 값이 서로 달라요.';
+    return;
+  }
+  if(currentPassword===newPassword){
+    passwordChangeStatus.textContent='현재 비밀번호와 다른 새 비밀번호를 입력해 주세요.';
+    return;
+  }
+
+  button.disabled=true;
+  passwordChangeStatus.textContent='현재 비밀번호를 확인하는 중...';
+
+  try{
+    const credential=EmailAuthProvider.credential(user.email,currentPassword);
+    await reauthenticateWithCredential(user,credential);
+    passwordChangeStatus.textContent='새 비밀번호를 적용하는 중...';
+    await updatePassword(user,newPassword);
+    passwordChangeForm.reset();
+    passwordChangeStatus.textContent='비밀번호가 변경됐어요. 다음 로그인부터 새 비밀번호를 사용해 주세요.';
+  }catch(error){
+    console.error(error);
+    passwordChangeStatus.textContent=passwordErrorMessage(error);
+  }finally{
+    button.disabled=false;
+  }
+});
+
+let started=false;onAuthStateChanged(auth,user=>{const ok=user&&user.email===ADMIN_EMAIL;$("#loginView").classList.toggle("hidden",ok);$("#adminView").classList.toggle("hidden",!ok);if(ok){$("#adminEmail").textContent=user.email;if(accountEmail)accountEmail.textContent=user.email;if(!started){started=true;start()}}});
 
 
 let avatarGalleryItems=[];
@@ -258,14 +327,11 @@ const defaultHomeLinks=[
   {id:'cafe',icon:'☕',label:'팬카페',url:'#',color:'#a855f7'}
 ];
 const linkId=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());
-function normalizeHomeLink(v={}){return{id:v.id||linkId(),icon:v.icon||'🐾',label:v.label||'새 바로가기',url:v.url||'https://',color:v.color||'#8b5cf6'}}
+function normalizeHomeLink(v={}){return{id:v.id||linkId(),icon:v.icon||'🐾',label:v.label||'새 바로가기',url:v.url||'https://'}}
 function renderHomeLinks(){
   if(!homeLinksManager)return;
   homeLinksManager.innerHTML=homeLinksDraft.map((item,index)=>`<div class="home-link-edit-row" data-link-id="${item.id}"><input class="field icon-field" data-k="icon" value="${esc(item.icon)}" aria-label="아이콘"><input class="field" data-k="label" value="${esc(item.label)}" placeholder="채널명"><input class="field" data-k="url" value="${esc(item.url)}" placeholder="채널 주소">
-      <label class="link-color-field" title="버튼 색상">
-        <span>색상</span>
-        <input type="color" data-k="color" value="${esc(item.color||'#8b5cf6')}" aria-label="버튼 색상">
-      </label><div class="mini"><button type="button" class="soft" data-up ${index===0?'disabled':''}>↑</button><button type="button" class="soft" data-down ${index===homeLinksDraft.length-1?'disabled':''}>↓</button><button type="button" class="danger" data-remove>삭제</button></div></div>`).join('');
+      <div class="mini"><button type="button" class="soft" data-up ${index===0?'disabled':''}>↑</button><button type="button" class="soft" data-down ${index===homeLinksDraft.length-1?'disabled':''}>↓</button><button type="button" class="danger" data-remove>삭제</button></div></div>`).join('');
 }
 onSnapshot(doc(db,'home','main'),snap=>{
   if(!snap.exists()||homeLinksInitialized)return;
